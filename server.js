@@ -53,3 +53,5 @@ app.put("/users/:id", (req, res) => {
     users.splice(userIndex,1);
     res.json({ message: "User deleted successfully" });
   });
+
+  module.exports = app;
