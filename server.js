@@ -2,21 +2,21 @@
 
 //To Do: Error Handling, split into separate express files under routes folder, Authorization, Testing, DynamoDB integration
 
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 const { v4: uuidv4 } = require("uuid");
-const port = 3000
+const port = 3000;
 
 // parse requests 
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+  res.send('Hello World!');
+});
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`Example app listening on port ${port}`);
+});
 
 //Basic User CRUD
 
@@ -41,17 +41,17 @@ app.get("/users/:id", (req, res) => {
 app.put("/users/:id", (req, res) => {
   const userId = req.params.id;
   const userIndex = users.findIndex(user => user.id === userId);
-   const newName = req.body.name;
-   users[userIndex].name = newName;
-   res.json(users[userIndex]);
+  const newName = req.body.name;
+  users[userIndex].name = newName;
+  res.json(users[userIndex]);
 
 });
 
-  app.delete("/users/:id", (req, res) => {
-    const userId = req.params.id;
-    const userIndex = users.findIndex(user => user.id === userId);
-    users.splice(userIndex,1);
-    res.json({ message: "User deleted successfully" });
-  });
+app.delete("/users/:id", (req, res) => {
+  const userId = req.params.id;
+  const userIndex = users.findIndex(user => user.id === userId);
+  users.splice(userIndex,1);
+  res.json({ message: "User deleted successfully" });
+});
 
-  module.exports = app;
+module.exports = app;

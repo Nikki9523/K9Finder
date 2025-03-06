@@ -18,3 +18,5 @@ jobs:
         name: Use Node.js 18.x
         cache: 'npm'
     - run: npm ci
+    - run: npm run lint
+    - run: npm run supertest
