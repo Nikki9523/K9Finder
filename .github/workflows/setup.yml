@@ -25,11 +25,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Compress'
-        uses: montudor/action-compress@v1
+        uses: somaz94/compress-decompress@v1
         with:
-          files: '.'
-          format: 'zip'
-          output: 'app.zip'
+        command: compress
+        source: .
+        format: zip
+
 
 # https://github.com/marketplace/actions/s3-sync
   deploy-to-s3:
