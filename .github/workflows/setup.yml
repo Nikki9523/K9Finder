@@ -19,7 +19,18 @@ jobs:
     - run: npm ci
     - run: npm run lint
     - run: npm run supertest
-    
+
+# https://github.com/marketplace/actions/compress-decompress
+  compress:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Compress'
+        uses: montudor/action-compress@v1
+        with:
+          files: '.'
+          format: 'zip'
+          output: 'app.zip'
+
 # https://github.com/marketplace/actions/s3-sync
   deploy-to-s3:
     runs-on: ubuntu-latest
@@ -27,6 +38,7 @@ jobs:
       - name: 'S3 Deploy'
         uses: jakejarvis/s3-sync-action@master
         with:
+          source_dir: './app.zip'
           args: --acl public-read
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
