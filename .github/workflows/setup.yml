@@ -25,7 +25,7 @@ jobs:
   deploy-to-s3:
     runs-on: ubuntu-latest
     steps:
-      - name: 'S3 Deploy'
+        name: 'S3 Deploy'
         uses: shallwefootball/s3-upload-action@master
         with:
           aws_key_id: ${{ secrets.AWS_KEY_ID }}
