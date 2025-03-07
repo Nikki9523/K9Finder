@@ -28,7 +28,7 @@ jobs:
       - name: 'S3 Deploy'
         uses: jakejarvis/s3-sync-action@master
         with:
-          source_dir: './server.js'
+          entryPoint: './server.js
           args: --acl public-read
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
