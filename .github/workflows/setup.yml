@@ -28,6 +28,7 @@ jobs:
 
 # https://www.timveletta.com/blog/pushing-content-to-s3-from-github-actions/
   upload:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
