@@ -6,9 +6,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
+# Break out lint and test into separate jobs
 jobs:
   build:
-
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -20,3 +20,45 @@ jobs:
     - run: npm ci
     - run: npm run lint
     - run: npm run supertest
+    - run: ls -l
+    - run: zip -r test-s3.zip test-s3
+    - run: ls -l
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-s3-zip
+        path: test-s3.zip
+
+#make this conditional to only upload to s3 when merging to main
+
+# https://www.timveletta.com/blog/pushing-content-to-s3-from-github-actions/
+  upload:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: test-s3-zip
+      - name: Sync files to S3 bucket
+        run: |
+          aws s3 cp test-s3.zip s3://k9finderhost/test-s3.zip
+
+    
+# jobs are separate. zipped file from build does not exist in upload job
+#need to use artifacts to pass files between the jobs
+  
+
+  #Get S3 working as first version of build pipeline
+  # Write up some details about it and how I would improve it
+  # Look into signed URLs for S3
+  # Write down points on what I will present/hand up at the end. What's the goal?
+  #v2 - add lambda deploys
