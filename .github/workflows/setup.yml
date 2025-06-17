@@ -42,9 +42,15 @@ jobs:
       - name: Sync files to S3 bucket
         run: |
           aws s3 cp test-s3.zip s3://k9finderhost
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-s3-zip
+          path: test-s3.zip
 
     
-
+# jobs are separate. zipped file from build does not exist in upload job
+#need to use artifacts to pass files between the jobs
   
 
   #Get S3 working as first version of build pipeline
