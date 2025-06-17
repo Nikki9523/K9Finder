@@ -48,10 +48,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: test-s3-zip
-          path: test-s3.zip
       - name: Sync files to S3 bucket
         run: |
-          aws s3 cp test-s3.zip s3://k9finderhost
+          aws s3 cp test-s3.zip s3://k9finderhost/test-s3.zip
 
     
 # jobs are separate. zipped file from build does not exist in upload job
