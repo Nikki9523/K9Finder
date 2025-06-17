@@ -21,6 +21,8 @@ jobs:
     - run: npm run lint
     - run: npm run supertest
 #zip as part of build step and then s3 PUT
+    - name: Zip code
+      run: zip -r test-s3.zip test-s3
 
 #make this conditional to only upload to s3 when merging to main
 
@@ -38,7 +40,7 @@ jobs:
           aws-region: us-east-1
       - name: Sync files to S3 bucket
         run: |
-          aws s3 sync test-s3 s3://k9finderhost --delete
+          aws s3 sync test-s3.zip s3://k9finderhost --delete
 
     
 
