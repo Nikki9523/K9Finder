@@ -24,7 +24,7 @@ jobs:
     - run: zip -r test-s3.zip test-s3
     - run: ls -l
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-s3-zip
         path: test-s3.zip
@@ -45,7 +45,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: test-s3-zip
           path: test-s3.zip
