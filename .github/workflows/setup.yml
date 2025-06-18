@@ -20,9 +20,7 @@ jobs:
     - run: npm ci
     - run: npm run lint
     - run: npm run supertest
-    - run: ls -l
     - run: zip -r test-s3.zip test-s3
-    - run: ls -l
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -51,11 +49,6 @@ jobs:
       - name: Sync files to S3 bucket
         run: |
           aws s3 cp test-s3.zip s3://k9finderhost/test-s3.zip
-
-    
-# jobs are separate. zipped file from build does not exist in upload job
-#need to use artifacts to pass files between the jobs
-  
 
   #Get S3 working as first version of build pipeline
   # Write up some details about it and how I would improve it
