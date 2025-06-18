@@ -50,8 +50,6 @@ jobs:
         run: |
           aws s3 cp k9Finder.zip s3://k9finderhost/k9Finder.zip
 
-  #Get S3 working as first version of build pipeline
-  # Write up some details about it and how I would improve it
   # Look into signed URLs for S3
   # Write down points on what I will present/hand up at the end. What's the goal?
   #v2 - add lambda deploys
