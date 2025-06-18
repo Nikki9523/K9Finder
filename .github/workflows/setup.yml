@@ -20,14 +20,12 @@ jobs:
     - run: npm ci
     - run: npm run lint
     - run: npm run supertest
-    - run: ls -l
-    - run: zip -r test-s3.zip test-s3
-    - run: ls -l
+    - run: zip -r k9Finder.zip package.json package-lock.json server.js dynamo.js node_modules/
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: test-s3-zip
-        path: test-s3.zip
+        name: k9Finder.zip
+        path: k9Finder.zip
 
 #make this conditional to only upload to s3 when merging to main
 
@@ -47,15 +45,10 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: test-s3-zip
+          name: k9Finder.zip
       - name: Sync files to S3 bucket
         run: |
-          aws s3 cp test-s3.zip s3://k9finderhost/test-s3.zip
-
-    
-# jobs are separate. zipped file from build does not exist in upload job
-#need to use artifacts to pass files between the jobs
-  
+          aws s3 cp k9Finder.zip s3://k9finderhost/k9Finder.zip
 
   #Get S3 working as first version of build pipeline
   # Write up some details about it and how I would improve it
