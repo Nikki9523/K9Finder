@@ -7,13 +7,17 @@
     "test": "mocha ./tests/*.spec.js",
     "supertest": "jest",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "build": "node build.js",
+    "dev": "node local.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@vendia/serverless-express": "^4.12.6",
     "dotenv": "^16.5.0",
+    "esbuild": "^0.25.5",
     "express": "^4.21.2",
     "node": "^22.16.0",
     "serverless-http": "^3.2.0",
