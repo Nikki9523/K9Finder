@@ -5,7 +5,6 @@
 //https://www.youtube.com/watch?v=xUFnPGVs7so
 
 const express = require('express');
-const serverless = require('serverless-http');
 const app = express();
 const { v4: uuidv4 } = require("uuid");
 // const port = 3000;
@@ -64,4 +63,3 @@ app.delete("/users/:id", (req, res) => {
 });
 
 module.exports = app;
-module.exports.handler = serverless(app);
