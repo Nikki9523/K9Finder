@@ -20,7 +20,8 @@ jobs:
     - run: npm ci
     - run: npm run lint
     - run: npm run supertest
-    - run: zip -r k9Finder.zip package.json server.js dynamo.js node_modules/
+    - run: npm run build
+    - run: zip -r k9Finder.zip dist/
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
