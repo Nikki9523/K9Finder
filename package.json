@@ -13,7 +13,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.828.0",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
     "node": "^22.16.0",
@@ -21,6 +20,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.828.0",
     "@eslint/js": "^9.21.0",
     "@stylistic/eslint-plugin-js": "^4.2.0",
     "chai": "^5.2.0",
