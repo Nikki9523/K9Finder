@@ -1,24 +1,27 @@
 // https://expressjs.com/en/starter/hello-world.html
 
-//To Do: Error Handling, split into separate express files under routes folder, Authorization, Testing, DynamoDB integration
+//To Do: Error Handling, split into separate express files under routes folder, Authorization, Testing, DynamoDB 
+
+//https://www.youtube.com/watch?v=xUFnPGVs7so
 
 const express = require('express');
+const serverless = require('serverless-http');
 const app = express();
 const { v4: uuidv4 } = require("uuid");
-const port = 3000;
+// const port = 3000;
 
 // parse requests 
 app.use(express.json());
 
-app.get('/', (req, res) => {
+app.get('/hello', (req, res) => {
   res.send('Hello World!');
 });
 
-if (process.env.NODE_ENV !== 'test') {
-  app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-  });
-}
+// if (process.env.NODE_ENV !== 'test') {
+//   app.listen(port, () => {
+//     console.log(`Example app listening on port ${port}`);
+//   });
+// }
 
 //Basic User CRUD
 
@@ -61,3 +64,4 @@ app.delete("/users/:id", (req, res) => {
 });
 
 module.exports = app;
+module.exports.handler = serverless(app);
