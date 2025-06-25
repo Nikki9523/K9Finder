@@ -28,4 +28,4 @@ const getUsers = async () => {
   }
 };
 
-getUsers();
+module.exports = { getUsers };
