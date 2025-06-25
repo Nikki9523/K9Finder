@@ -2,12 +2,7 @@ const { DynamoDBClient, ScanCommand } = require("@aws-sdk/client-dynamodb");
 
 require('dotenv').config();
 
-const dynamoClient = new DynamoDBClient({ region: process.env.AWS_DEFAULT_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-  }
-});
+const dynamoClient = new DynamoDBClient({ region: process.env.AWS_DEFAULT_REGION });
 
 
 const TABLE_NAME = "k9finder";
@@ -19,6 +14,7 @@ const getUsers = async () => {
   };
 
   try {
+    console.log("Getting users from DynamoDB with params:", params);
     const users = await dynamoClient.send(new ScanCommand(params));
     console.log("Users retrieved:", users.Items);
     return users.Items;
@@ -28,4 +24,4 @@ const getUsers = async () => {
   }
 };
 
-getUsers();
+module.exports = { getUsers };

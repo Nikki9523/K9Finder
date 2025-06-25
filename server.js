@@ -1,63 +1,84 @@
 // https://expressjs.com/en/starter/hello-world.html
 
-//To Do: Error Handling, split into separate express files under routes folder, Authorization, Testing, DynamoDB integration
+//To Do: Error Handling, split into separate express files under routes folder, Authorization, Testing, DynamoDB 
+
+//https://www.youtube.com/watch?v=xUFnPGVs7so
 
 const express = require('express');
 const app = express();
-const { v4: uuidv4 } = require("uuid");
-const port = 3000;
+// const { v4: uuidv4 } = require("uuid");
+const { getUsers } = require("./dynamo.js");
+// const port = 3000;
 
 // parse requests 
 app.use(express.json());
 
-app.get('/', (req, res) => {
+app.get('/hello', (req, res) => {
   res.send('Hello World!');
 });
 
-if (process.env.NODE_ENV !== 'test') {
-  app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-  });
-}
+// if (process.env.NODE_ENV !== 'test') {
+//   app.listen(port, () => {
+//     console.log(`Example app listening on port ${port}`);
+//   });
+// }
 
 //Basic User CRUD
 
-let users = [{id: "1234", name: 'Nicola'}, {id:"456", name: 'Michele'}];
+// let users = [{id: "1234", name: 'Nicola'}, {id:"456", name: 'Michele'}];
 
-app.post("/users", (req, res) => {
-  const newUser = { id: uuidv4(), name: req.body.name};
-  users.push(newUser);
-  res.status(201).json(newUser);
-});
+app.get('/users', async (req, res) => {
+  try {
+    console.log("Retrieving users from DynamoDB...");
+    const items = await getUsers();
 
-app.get("/users", (req, res) => {
-  res.json(users);
-});
+    console.log("Items retrieved from DynamoDB:", items);
 
-app.get("/users/:id", (req, res) => {
-  const userId = req.params.id;
-  const user = users.find(user => user.id === userId);
+    const mappedUsers = items.map(item => ({
+      userId: item.userId?.S,
+      name: item.name?.S,
+    }));
 
-  if (!user) {
-    return res.status(404).json({ message: "User does not exist" });
+    console.log("users:", mappedUsers);
+
+    res.status(200).json(mappedUsers);
+  } catch (error) {
+    console.error("Error retrieving users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-  res.json(user);
 });
 
-app.put("/users/:id", (req, res) => {
-  const userId = req.params.id;
-  const userIndex = users.findIndex(user => user.id === userId);
-  const newName = req.body.name;
-  users[userIndex].name = newName;
-  res.json(users[userIndex]);
+// app.post("/users", (req, res) => {
+//   const newUser = { id: uuidv4(), name: req.body.name};
+//   users.push(newUser);
+//   res.status(201).json(newUser);
+// });
 
-});
 
-app.delete("/users/:id", (req, res) => {
-  const userId = req.params.id;
-  const userIndex = users.findIndex(user => user.id === userId);
-  users.splice(userIndex,1);
-  res.json({ message: "User deleted successfully" });
-});
+// app.get("/users/:id", (req, res) => {
+//   const userId = req.params.id;
+//   const user = users.find(user => user.id === userId);
+
+//   if (!user) {
+//     return res.status(404).json({ message: "User does not exist" });
+//   }
+//   res.json(user);
+// });
+
+// app.put("/users/:id", (req, res) => {
+//   const userId = req.params.id;
+//   const userIndex = users.findIndex(user => user.id === userId);
+//   const newName = req.body.name;
+//   users[userIndex].name = newName;
+//   res.json(users[userIndex]);
+
+// });
+
+// app.delete("/users/:id", (req, res) => {
+//   const userId = req.params.id;
+//   const userIndex = users.findIndex(user => user.id === userId);
+//   users.splice(userIndex,1);
+//   res.json({ message: "User deleted successfully" });
+// });
 
 module.exports = app;

@@ -6,6 +6,9 @@ import eslintPluginJest from 'eslint-plugin-jest';
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {
+    ignores: ['dist/**'],
+  },
+  {
     languageOptions: {
       globals: {
         ...globals.node,
