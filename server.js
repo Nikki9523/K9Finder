@@ -7,6 +7,7 @@
 const express = require('express');
 const app = express();
 const { v4: uuidv4 } = require("uuid");
+const { getUsers } = require("./dynamo.js");
 // const port = 3000;
 
 // parse requests 
@@ -26,15 +27,22 @@ app.get('/hello', (req, res) => {
 
 let users = [{id: "1234", name: 'Nicola'}, {id:"456", name: 'Michele'}];
 
+
+app.get("/users", (req, res) => {
+  getUsers().then(users => {
+    res.json(users);
+  }).catch(err => {
+    console.error("Unable to retrieve users", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  });
+});
+
 app.post("/users", (req, res) => {
   const newUser = { id: uuidv4(), name: req.body.name};
   users.push(newUser);
   res.status(201).json(newUser);
 });
 
-app.get("/users", (req, res) => {
-  res.json(users);
-});
 
 app.get("/users/:id", (req, res) => {
   const userId = req.params.id;
