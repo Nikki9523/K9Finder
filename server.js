@@ -29,14 +29,19 @@ app.get('/hello', (req, res) => {
 
 app.get('/users', async (req, res) => {
   try {
+    console.log("Retrieving users from DynamoDB...");
     const items = await getUsers();
 
-    const users = items.map(item => ({
+    console.log("Items retrieved from DynamoDB:", items);
+
+    const mappedUsers = items.map(item => ({
       userId: item.userId?.S,
       name: item.name?.S,
     }));
 
-    res.status(200).json(users);
+    console.log("users:", mappedUsers);
+
+    res.status(200).json(mappedUsers);
   } catch (error) {
     console.error("Error retrieving users:", error);
     res.status(500).json({ error: "Internal Server Error" });

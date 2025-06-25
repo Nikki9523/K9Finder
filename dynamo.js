@@ -19,6 +19,7 @@ const getUsers = async () => {
   };
 
   try {
+    console.log("Getting users from DynamoDB with params:", params);
     const users = await dynamoClient.send(new ScanCommand(params));
     console.log("Users retrieved:", users.Items);
     return users.Items;
