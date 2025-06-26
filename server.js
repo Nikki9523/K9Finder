@@ -47,15 +47,17 @@ app.get('/users', async (req, res) => {
 // });
 
 
-// app.get("/users/:id", (req, res) => {
-//   const userId = req.params.id;
-//   const user = users.find(user => user.id === userId);
 
-//   if (!user) {
-//     return res.status(404).json({ message: "User does not exist" });
-//   }
-//   res.json(user);
-// });
+app.get("/users/:id", async (req, res) => {
+  const userId = req.params.id;
+  const users = await getUsers();
+  const user = users.find(user => user.id === userId);
+
+  if (!user) {
+    return res.status(404).json({ message: "User does not exist" });
+  }
+  res.json(user);
+});
 
 // app.put("/users/:id", (req, res) => {
 //   const userId = req.params.id;
