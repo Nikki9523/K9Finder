@@ -20,6 +20,9 @@ jobs:
     - run: npm ci
     - run: npm run lint
     - run: npm run supertest
+      env:
+        AWS_REGION: us-east-1
+        DYNAMO_ENDPOINT: http://localhost:8000
     - run: npm run build
     - run: zip -r k9Finder.zip dist/
     - name: Upload artifact
