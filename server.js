@@ -24,10 +24,6 @@ app.get('/hello', (req, res) => {
 //   });
 // }
 
-//Basic User CRUD
-
-// let users = [{id: "1234", name: 'Nicola'}, {id:"456", name: 'Michele'}];
-
 app.get('/users', async (req, res) => {
   try {
     console.log("Retrieving users from DynamoDB...");
@@ -49,9 +45,13 @@ app.get('/users', async (req, res) => {
 
 
 app.get("/users/:id", async (req, res) => {
+
   const userId = req.params.id;
+
   const users = await getUsers();
-  const user = users.find(user => user.id === userId);
+
+  const usersFormatted = users.map(user => unmarshall(user));
+  const user = usersFormatted.find(user => user.id === userId);
 
   if (!user) {
     return res.status(404).json({ message: "User does not exist" });

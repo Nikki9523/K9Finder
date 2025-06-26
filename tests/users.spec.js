@@ -2,18 +2,18 @@ const request = require("supertest");
 const app = require("../server");
 
 
-// describe("Get Specific existing User", () => {
-//   it("Success : User can retrieve existing user", async () => {
-//     const response = await request(app).get("/users/1234");
-//     expect(response.status).toBe(200);
-//     expect(response.body).toEqual({ id: "1234", name: "Nicola" });
-//   });
+describe("Get Specific existing User", () => {
+  it("Success : User can retrieve existing user", async () => {
+    const response = await request(app).get("/users/123");
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ id: "123", name: "nicola" });
+  });
 
-//   it("Failure : User cannot retrieve non-existant record", async () => {
-//     const response = await request(app).get("/users/nonexistent");
-//     expect(response.status).toBe(404);
-//   });
-// });
+  it("Failure : User cannot retrieve non-existant record", async () => {
+    const response = await request(app).get("/users/nonexistent");
+    expect(response.status).toBe(404);
+  });
+});
 
 describe("Get Users", () => {
   it("Success : User can retrieve all users", async () => {
