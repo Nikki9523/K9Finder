@@ -19,7 +19,7 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run lint
-    # - run: npm run supertest
+    - run: npm run supertest
     - run: npm run build
     - run: zip -r k9Finder.zip dist/
     - name: Upload artifact
