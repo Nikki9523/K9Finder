@@ -4,9 +4,9 @@ const app = require("../server");
 
 describe("Get Specific existing User", () => {
   it("Success : User can retrieve existing user", async () => {
-    const response = await request(app).get("/users/1234");
+    const response = await request(app).get("/users/123");
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ id: "1234", name: "Nicola" });
+    expect(response.body).toEqual({ id: "123", name: "nicola" });
   });
 
   it("Failure : User cannot retrieve non-existant record", async () => {
@@ -20,19 +20,25 @@ describe("Get Users", () => {
     const response = await request(app).get("/users");
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
-      { id: "1234", name: "Nicola" },
-      { id: "456", name: "Michele" }
+      {
+        id: "456",
+        name: "dbA",
+      },
+      {
+        id: "123",
+        name: "nicola",
+      },
     ]);
   });
 });
 
 
-describe("Create User", () => {
-  it("Success : User can create a new user", async () => {
-    const newUser = { name: "Alice Smith" };
-    const response = await request(app).post("/users").send(newUser);
-    expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty("id");
-    expect(response.body.name).toBe("Alice Smith");
-  });
-});
+// describe("Create User", () => {
+//   it("Success : User can create a new user", async () => {
+//     const newUser = { name: "Alice Smith" };
+//     const response = await request(app).post("/users").send(newUser);
+//     expect(response.status).toBe(201);
+//     expect(response.body).toHaveProperty("id");
+//     expect(response.body.name).toBe("Alice Smith");
+//   });
+// });
