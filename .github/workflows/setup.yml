@@ -15,18 +15,17 @@ jobs:
         image : amazon/dynamodb-local:latest
         ports:
           - 8000:8000
-
-      env:
-        IS_LOCAL: true
-        AWS_REGION: us-east-1
-        AWS_ACCESS_KEY_ID: 'test'
-        AWS_SECRET_ACCESS_KEY: 'test'
+    env:
+      IS_LOCAL: true
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: 'test'
+      AWS_SECRET_ACCESS_KEY: 'test'
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js 18.x
       uses: actions/setup-node@v4
       with:
-        name: Use Node.js 18.x
+        node-version: '18'
         cache: 'npm'
     - run: npm ci
     - run: npm run lint
