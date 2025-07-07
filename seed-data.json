@@ -1,0 +1,20 @@
+{
+  "k9finder": [
+    {
+      "PutRequest": {
+        "Item": {
+          "id": {"S": "001"},
+          "name": {"S": "nicola"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": {"S": "002"},
+          "name": {"S": "bob"}
+        }
+      }
+    }
+  ]
+}
