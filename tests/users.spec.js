@@ -1,12 +1,22 @@
 const request = require("supertest");
 const app = require("../server");
 
+const { seedTestData, teardownTestData, createTableIfNotExists } = require("../dynamo");
+
+beforeEach(async () => {
+  await createTableIfNotExists();
+  await seedTestData();
+});
+
+afterAll(async () => {
+  await teardownTestData();
+});
 
 describe("Get Specific existing User", () => {
   it("Success : User can retrieve existing user", async () => {
-    const response = await request(app).get("/users/123");
+    const response = await request(app).get("/users/001");
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ id: "123", name: "nicola" });
+    expect(response.body).toEqual({ id: "001", name: "nicola" });
   });
 
   it("Failure : User cannot retrieve non-existant record", async () => {
@@ -21,12 +31,12 @@ describe("Get Users", () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
       {
-        id: "456",
-        name: "dbA",
+        id: "001",
+        name: "nicola",
       },
       {
-        id: "123",
-        name: "nicola",
+        id: "002",
+        name: "bob",
       },
     ]);
   });

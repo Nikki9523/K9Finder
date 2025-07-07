@@ -10,22 +10,26 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      dynamodb-local:
+        image : amazon/dynamodb-local:latest
+        ports:
+          - 8000:8000
+    env:
+      IS_LOCAL: true
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: 'test'
+      AWS_SECRET_ACCESS_KEY: 'test'
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js 18.x
       uses: actions/setup-node@v4
       with:
-        name: Use Node.js 18.x
+        node-version: '18'
         cache: 'npm'
     - run: npm ci
     - run: npm run lint
-    # look into dynamodb-local
-    # - run: npm run supertest
-    #   env:
-    #     AWS_REGION: us-east-1
-    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     DYNAMO_ENDPOINT: http://localhost:8000
+    - run: npm run supertest
     - run: npm run build
     - run: zip -r k9Finder.zip dist/
     - name: Upload artifact
