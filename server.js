@@ -58,9 +58,20 @@ app.post('/users', async (req, res) => {
     const newUser = { id: uuidv4(), name: req.body.name};
     console.log("New user data:", newUser);
     await createUser(newUser);
+    res.status(201).json( { id: newUser.id, name: newUser.name});
   } catch (error) {
     console.error("Error creating user:", error);
     return res.status(500).json({ error: "Failed to create user" });
+  }
+});
+
+app.post("/users", async (req, res) => {
+  try {
+    const { name } = req.body;
+    // ... create user in DB ...
+    res.status(201).json({ id: "someId", name });
+  } catch (err) {
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
