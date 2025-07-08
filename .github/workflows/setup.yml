@@ -17,15 +17,15 @@ jobs:
           - 8000:8000
     env:
       IS_LOCAL: true
-      AWS_REGION: us-east-1
+      AWS_REGION: proccess.env.AWS_REGION || 'us-east-1'
       AWS_ACCESS_KEY_ID: 'dynamodbLocalDummyKeyId'
       AWS_SECRET_ACCESS_KEY: 'dynamodbLocalDummyAccessKey'
     steps:
     - uses: actions/checkout@v4
-    - name: Use Node.js 18.x
+    - name: Use Node.js 22.x
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '22'
         cache: 'npm'
     - run: npm ci
     - run: npm run lint
@@ -60,7 +60,3 @@ jobs:
       - name: Sync files to S3 bucket
         run: |
           aws s3 cp k9Finder.zip s3://k9finderhost/k9Finder.zip
-
-  # Look into signed URLs for S3
-  # Write down points on what I will present/hand up at the end. What's the goal?
-  #v2 - add lambda deploys
