@@ -18,8 +18,8 @@ jobs:
     env:
       IS_LOCAL: true
       AWS_REGION: us-east-1
-      AWS_ACCESS_KEY_ID: 'dynamodb-local-dummy-creds'
-      AWS_SECRET_ACCESS_KEY: 'dynamodb-local-dummy-creds'
+      AWS_ACCESS_KEY_ID: 'dynamodbLocalDummyKeyId'
+      AWS_SECRET_ACCESS_KEY: 'dynamodbLocalDummyAccessKey'
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js 18.x
