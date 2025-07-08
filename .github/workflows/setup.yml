@@ -60,3 +60,10 @@ jobs:
       - name: Sync files to S3 bucket
         run: |
           aws s3 cp k9Finder.zip s3://k9finderhost/k9Finder.zip
+      - name: Update Lambda function
+        run: |
+          aws lambda update-function-code \
+            --function-name k9FinderAPI \
+            --s3-bucket k9finderhost \
+            --s3-key k9Finder.zip \
+            --region us-east-1
