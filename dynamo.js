@@ -29,6 +29,25 @@ const getUsers = async () => {
   }
 };
 
+const createUser = async (user) => {
+  const params = {
+    TableName: TABLE_NAME,
+    Item: {
+      id: { S: user.id },
+      name: { S: user.name }
+    }
+  };
+
+  try {
+    await dynamoClient.send(new PutItemCommand(params));
+  } catch (error) {
+    console.error("Error creating user:", error);
+    throw new Error("Failed to create user");
+  }
+};
+
+// functions for testing
+
 const createTableIfNotExists = async () => {
   try {
     await dynamoClient.send(new DescribeTableCommand({ TableName: TABLE_NAME }));
@@ -96,4 +115,4 @@ const teardownTestData = async () => {
   }
 };
 
-module.exports = { getUsers, seedTestData, teardownTestData, createTableIfNotExists };
+module.exports = { getUsers, createUser, seedTestData, teardownTestData, createTableIfNotExists };

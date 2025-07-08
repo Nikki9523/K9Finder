@@ -7,8 +7,8 @@
 const express = require('express');
 const { unmarshall } = require("@aws-sdk/util-dynamodb");
 const app = express();
-// const { v4: uuidv4 } = require("uuid");
-const { getUsers } = require("./dynamo.js");
+const { v4: uuidv4 } = require("uuid");
+const { getUsers, createUser } = require("./dynamo.js");
 // const port = 3000;
 
 // parse requests 
@@ -36,13 +36,6 @@ app.get('/users', async (req, res) => {
   }
 });
 
-// app.post("/users", (req, res) => {
-//   const newUser = { id: uuidv4(), name: req.body.name};
-//   users.push(newUser);
-//   res.status(201).json(newUser);
-// });
-
-
 
 app.get("/users/:id", async (req, res) => {
 
@@ -57,6 +50,18 @@ app.get("/users/:id", async (req, res) => {
     return res.status(404).json({ message: "User does not exist" });
   }
   res.json(user);
+});
+
+app.post('/users', async (req, res) => {
+  try {
+    console.log("Creating new user...");
+    const newUser = { id: uuidv4(), name: req.body.name};
+    console.log("New user data:", newUser);
+    await createUser(newUser);
+  } catch (error) {
+    console.error("Error creating user:", error);
+    return res.status(500).json({ error: "Failed to create user" });
+  }
 });
 
 // app.put("/users/:id", (req, res) => {
