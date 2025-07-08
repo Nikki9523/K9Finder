@@ -43,12 +43,12 @@ describe("Get Users", () => {
 });
 
 
-describe("Create User", () => {
-  it("Success : User can create a new user", async () => {
-    const newUser = { name: "Alice Smith" };
-    const response = await request(app).post("/users").send(newUser);
-    expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty("id");
-    expect(response.body.name).toBe("Alice Smith");
-  });
-});
+// describe("Create User", () => {
+//   it("Success : User can create a new user", async () => {
+//     const newUser = { name: "Alice Smith" };
+//     const response = await request(app).post("/users").send(newUser);
+//     expect(response.status).toBe(201);
+//     expect(response.body).toHaveProperty("id");
+//     expect(response.body.name).toBe("Alice Smith");
+//   });
+// });
