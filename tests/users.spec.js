@@ -52,3 +52,15 @@ describe("Create User", () => {
     expect(response.body.name).toBe("Alice Smith");
   });
 });
+
+describe("Update User", () => {
+  it("Success : User can update an existing user", async () => {
+    const existingUser = { id: "001", name: "nicola" };
+    const updatedUser = { name: "Nikki" };
+    const response = await request(app).put(`/users/${existingUser.id}`).send(updatedUser);
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("id");
+    expect(response.body.id).toBe(existingUser.id);
+    expect(response.body.name).toBe("Nikki");
+  });
+});

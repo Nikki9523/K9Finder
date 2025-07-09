@@ -8,7 +8,7 @@ const express = require('express');
 const { unmarshall } = require("@aws-sdk/util-dynamodb");
 const app = express();
 const { v4: uuidv4 } = require("uuid");
-const { getUsers, createUser } = require("./dynamo.js");
+const { getUsers, createUser, updateUser } = require("./dynamo.js");
 // const port = 3000;
 
 // parse requests 
@@ -65,24 +65,18 @@ app.post('/users', async (req, res) => {
   }
 });
 
-app.post("/users", async (req, res) => {
+app.put("/users/:id", async (req, res) => {
   try {
-    const { name } = req.body;
-    // ... create user in DB ...
-    res.status(201).json({ id: "someId", name });
-  } catch (err) {
-    res.status(500).json({ error: "Internal Server Error" });
+    const updatedUser = { id: req.params.id, name: req.body.name };
+    console.log("Updating user with ID:", updatedUser.id, "with name:", updatedUser.name);
+    await updateUser(updatedUser.id, { name: updatedUser.name });
+
+    res.status(200).json({ id: updatedUser.id, name: updatedUser.name });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return res.status(500).json({ error: "Failed to update user" });
   }
 });
-
-// app.put("/users/:id", (req, res) => {
-//   const userId = req.params.id;
-//   const userIndex = users.findIndex(user => user.id === userId);
-//   const newName = req.body.name;
-//   users[userIndex].name = newName;
-//   res.json(users[userIndex]);
-
-// });
 
 // app.delete("/users/:id", (req, res) => {
 //   const userId = req.params.id;

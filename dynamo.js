@@ -46,6 +46,34 @@ const createUser = async (user) => {
   }
 };
 
+const { UpdateItemCommand } = require("@aws-sdk/client-dynamodb");
+
+// https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html#DDB-UpdateItem-request-AttributeUpdates
+
+const updateUser = async (userId, updatedUser) => {
+  const params = {
+    TableName: TABLE_NAME,
+    Key: {
+      id: { S: userId }
+    },
+    UpdateExpression: "set #name = :name",
+    ExpressionAttributeNames: {
+      "#name": "name"
+    },
+    ExpressionAttributeValues: {
+      ":name": { S: updatedUser.name }
+    },
+    ReturnValues: "UPDATED_NEW"
+  };
+  try {
+    const result = await dynamoClient.send(new UpdateItemCommand(params));
+    return result;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw new Error("Failed to update user");
+  }
+};
+
 // functions for testing
 
 const createTableIfNotExists = async () => {
@@ -115,4 +143,4 @@ const teardownTestData = async () => {
   }
 };
 
-module.exports = { getUsers, createUser, seedTestData, teardownTestData, createTableIfNotExists };
+module.exports = { getUsers, createUser, updateUser, seedTestData, teardownTestData, createTableIfNotExists };
