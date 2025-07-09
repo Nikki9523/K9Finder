@@ -1,7 +1,14 @@
 const request = require("supertest");
 const app = require("../server");
+const auth = require("../auth");
+let AUTH_HEADER;
 
 const { seedTestData, teardownTestData, createTableIfNotExists } = require("../dynamo");
+
+beforeAll(async () => {
+  const token = await auth.generateBearerTokenForIntegrationTests();
+  AUTH_HEADER = `Bearer ${token}`;
+});
 
 beforeEach(async () => {
   await createTableIfNotExists();
@@ -14,20 +21,21 @@ afterAll(async () => {
 
 describe("Get Specific existing User", () => {
   it("Success : User can retrieve existing user", async () => {
-    const response = await request(app).get("/users/001");
+    const response = await request(app).get("/users/001").set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ id: "001", name: "nicola" });
   });
 
   it("Failure : User cannot retrieve non-existant record", async () => {
-    const response = await request(app).get("/users/nonexistent");
+    const response = await request(app).get("/users/nonexistent").set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(404);
   });
 });
 
 describe("Get Users", () => {
   it("Success : User can retrieve all users", async () => {
-    const response = await request(app).get("/users");
+    const response = await request(app).get("/users").set("Authorization", AUTH_HEADER);
+    console.log("Get Users response:", response.body);
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
       {
@@ -46,7 +54,7 @@ describe("Get Users", () => {
 describe("Create User", () => {
   it("Success : User can create a new user", async () => {
     const newUser = { name: "Alice Smith" };
-    const response = await request(app).post("/users").send(newUser);
+    const response = await request(app).post("/users").send(newUser).set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("id");
     expect(response.body.name).toBe("Alice Smith");
@@ -57,7 +65,7 @@ describe("Update User", () => {
   it("Success : User can update an existing user", async () => {
     const existingUser = { id: "001", name: "nicola" };
     const updatedUser = { name: "Nikki" };
-    const response = await request(app).put(`/users/${existingUser.id}`).send(updatedUser);
+    const response = await request(app).put(`/users/${existingUser.id}`).send(updatedUser).set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("id");
     expect(response.body.id).toBe(existingUser.id);
@@ -68,13 +76,13 @@ describe("Update User", () => {
 describe("Delete User", () => {
   it("Success : User can delete a user", async () => {
     const user = { id: "001", name: "nicola" };
-    const response = await request(app).delete(`/users/${user.id}`);
+    const response = await request(app).delete(`/users/${user.id}`).set("Authorization", AUTH_HEADER);
     console.log("Delete response:", response.body);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("id");
     expect(response.body.id).toBe(user.id);
 
-    const getResponse = await request(app).get(`/users/${user.id}`);
+    const getResponse = await request(app).get(`/users/${user.id}`).set("Authorization", AUTH_HEADER);
     expect(getResponse.status).toBe(404);
   });
 });

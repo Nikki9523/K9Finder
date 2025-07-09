@@ -4,19 +4,19 @@
 
 //https://www.youtube.com/watch?v=xUFnPGVs7so
 
+require('dotenv').config();
 const express = require('express');
+const { authenticateJWT } = require('./auth');
 const { unmarshall } = require("@aws-sdk/util-dynamodb");
 const app = express();
 const { v4: uuidv4 } = require("uuid");
 const { getUsers, createUser, updateUser, deleteUser } = require("./dynamo.js");
 // const port = 3000;
+app.use(authenticateJWT);
 
 // parse requests 
 app.use(express.json());
 
-app.get('/hello', (req, res) => {
-  res.send('Hello World!');
-});
 
 // if (process.env.NODE_ENV !== 'test') {
 //   app.listen(port, () => {
