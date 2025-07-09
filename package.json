@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./tests/*.spec.js",
-    "supertest": "jest",
+    "unit": "jest tests/unit'",
+    "integration": "jest tests/integration",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "node build.js",
