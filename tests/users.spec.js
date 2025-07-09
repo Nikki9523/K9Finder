@@ -64,3 +64,17 @@ describe("Update User", () => {
     expect(response.body.name).toBe("Nikki");
   });
 });
+
+describe("Delete User", () => {
+  it("Success : User can delete a user", async () => {
+    const user = { id: "001", name: "nicola" };
+    const response = await request(app).delete(`/users/${user.id}`);
+    console.log("Delete response:", response.body);
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("id");
+    expect(response.body.id).toBe(user.id);
+
+    const getResponse = await request(app).get(`/users/${user.id}`);
+    expect(getResponse.status).toBe(404);
+  });
+});

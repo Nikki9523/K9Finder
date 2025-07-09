@@ -1,4 +1,4 @@
-const { DynamoDBClient, CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, ScanCommand } = require("@aws-sdk/client-dynamodb");
+const { DynamoDBClient, CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, ScanCommand, UpdateItemCommand, DeleteItemCommand } = require("@aws-sdk/client-dynamodb");
 const testData = require('./seed-data.json');
 
 require('dotenv').config();
@@ -45,9 +45,6 @@ const createUser = async (user) => {
     throw new Error("Failed to create user");
   }
 };
-
-const { UpdateItemCommand } = require("@aws-sdk/client-dynamodb");
-
 // https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html#DDB-UpdateItem-request-AttributeUpdates
 
 const updateUser = async (userId, updatedUser) => {
@@ -74,6 +71,21 @@ const updateUser = async (userId, updatedUser) => {
   }
 };
 
+const deleteUser = async (userId) => {
+  const params = {
+    TableName: TABLE_NAME,
+    Key: {
+      id: { S: userId },
+    }
+  };
+
+  try {
+    await dynamoClient.send(new DeleteItemCommand(params));
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw new Error("Failed to delete user");
+  }
+};
 // functions for testing
 
 const createTableIfNotExists = async () => {
@@ -143,4 +155,4 @@ const teardownTestData = async () => {
   }
 };
 
-module.exports = { getUsers, createUser, updateUser, seedTestData, teardownTestData, createTableIfNotExists };
+module.exports = { getUsers, createUser, updateUser, deleteUser, seedTestData, teardownTestData, createTableIfNotExists };

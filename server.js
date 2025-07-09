@@ -8,7 +8,7 @@ const express = require('express');
 const { unmarshall } = require("@aws-sdk/util-dynamodb");
 const app = express();
 const { v4: uuidv4 } = require("uuid");
-const { getUsers, createUser, updateUser } = require("./dynamo.js");
+const { getUsers, createUser, updateUser, deleteUser } = require("./dynamo.js");
 // const port = 3000;
 
 // parse requests 
@@ -78,11 +78,18 @@ app.put("/users/:id", async (req, res) => {
   }
 });
 
-// app.delete("/users/:id", (req, res) => {
-//   const userId = req.params.id;
-//   const userIndex = users.findIndex(user => user.id === userId);
-//   users.splice(userIndex,1);
-//   res.json({ message: "User deleted successfully" });
-// });
+app.delete("/users/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    console.log("Deleting user with ID:", userId);
+    
+    await deleteUser(userId);
+    
+    res.status(200).json({ message: "User deleted successfully", id: userId });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return res.status(500).json({ error: "Failed to delete user" });
+  }
+});
 
 module.exports = app;
