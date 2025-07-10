@@ -1,12 +1,12 @@
 const request = require("supertest");
 const app = require("./../../server");
-const auth = require("./../../auth");
+const testUtils = require("../testUtils");
 let AUTH_HEADER;
 
-const { seedTestData, teardownTestData, createTableIfNotExists } = require("../../dynamo");
+const { seedTestData, teardownTestData, createTableIfNotExists } = require("../testUtils");
 
 beforeAll(async () => {
-  const token = await auth.generateBearerTokenForIntegrationTests();
+  const token = await testUtils.generateBearerTokenForIntegrationTests();
   AUTH_HEADER = `Bearer ${token}`;
 });
 
