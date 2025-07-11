@@ -4,6 +4,8 @@ const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFA
 const {CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const testData = require('../seed-data.json');
 
+require('dotenv').config();
+
 async function generateBearerTokenForIntegrationTests() {
   if (
     !process.env.COGNITO_CLIENT_ID ||
@@ -34,8 +36,6 @@ async function generateBearerTokenForIntegrationTests() {
     throw err;
   }
 }
-
-require('dotenv').config();
 
 const isLocal = process.env.IS_LOCAL === 'true';
 

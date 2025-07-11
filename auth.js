@@ -29,6 +29,12 @@ const authenticateJWT = (req, res, next) => {
   }
   const token = authHeader.split(" ")[1];
 
+  console.log("JWT verification debug:");
+  console.log("AWS_DEFAULT_REGION:", process.env.AWS_DEFAULT_REGION);
+  console.log("COGNITO_USER_POOL_ID:", process.env.COGNITO_USER_POOL_ID);
+  console.log("JWKS URI:", `https://cognito-idp.${process.env.AWS_DEFAULT_REGION}.amazonaws.com/${process.env.COGNITO_USER_POOL_ID}/.well-known/jwks.json`);
+  console.log("Token:", token.split('.')[1]);
+
   jwt.verify(
     token,
     getKey,
