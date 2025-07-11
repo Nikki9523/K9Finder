@@ -17,7 +17,7 @@ jobs:
           - 8000:8000
     env:
       IS_LOCAL: true
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: 'dynamodbLocalDummyKeyId'
       AWS_SECRET_ACCESS_KEY: 'dynamodbLocalDummyAccessKey'
       COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
