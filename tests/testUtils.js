@@ -1,10 +1,8 @@
-
+require('dotenv').config();
 const { CognitoIdentityProviderClient, InitiateAuthCommand } = require("@aws-sdk/client-cognito-identity-provider");
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFAULT_REGION });
 const {CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const testData = require('../seed-data.json');
-
-require('dotenv').config();
 
 async function generateBearerTokenForIntegrationTests() {
   if (
