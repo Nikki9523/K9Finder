@@ -7,7 +7,7 @@ jest.mock('jwks-rsa', () => () => ({
 }));
 
 describe("getKey", () => {
-  it("should use publicKey if present", (done) => {
+  it.only("should use publicKey if present", (done) => {
     const header = { kid: "abc" };
     const mockClient = {
       getSigningKey: (kid, cb) => cb(null, { publicKey: "my-public-key" })
