@@ -1,14 +1,6 @@
 require('dotenv').config();
 const { CognitoIdentityProviderClient, InitiateAuthCommand } = require("@aws-sdk/client-cognito-identity-provider");
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFAULT_REGION });
-
-if (process.env.AWS_DEFAULT_REGION === 'us-east-1') {
-  console.log("Using correct region");
-} else {
-  console.error("region incorrect");
-}
-
-
 const {CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const testData = require('../seed-data.json');
 

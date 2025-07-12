@@ -21,6 +21,7 @@ jobs:
       AWS_ACCESS_KEY_ID: 'dynamodbLocalDummyKeyId'
       AWS_SECRET_ACCESS_KEY: 'dynamodbLocalDummyAccessKey'
       COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
+      COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
       TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
       TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
       SECRET_HASH: ${{ secrets.SECRET_HASH }}
