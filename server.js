@@ -12,10 +12,11 @@ const app = express();
 const { v4: uuidv4 } = require("uuid");
 const { getUsers, createUser, updateUser, deleteUser } = require("./dynamo.js");
 // const port = 3000;
-app.use(authenticateJWT);
 
 // parse requests 
 app.use(express.json());
+
+app.use(authenticateJWT);
 
 
 // if (process.env.NODE_ENV !== 'test') {
