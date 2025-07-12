@@ -113,4 +113,5 @@ const teardownTestData = async () => {
   }
 };
 
+
 module.exports = { generateBearerTokenForIntegrationTests, seedTestData, teardownTestData, createTableIfNotExists };
