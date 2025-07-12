@@ -28,12 +28,6 @@ async function generateBearerTokenForIntegrationTests() {
   try {
     const command = new InitiateAuthCommand(params);
     const data = await cognito.send(command);
-    console.log("Authentication successful, token generated.");
-    const token = data.AuthenticationResult.IdToken;
-    const decodedHeader = JSON.parse(
-      Buffer.from(token.split(".")[0], "base64").toString()
-    );
-    console.log("Token kid:", decodedHeader.kid);
     return data.AuthenticationResult.IdToken;
   } catch (err) {
     console.error("Error initiating auth:", err);
