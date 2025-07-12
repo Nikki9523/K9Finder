@@ -4,19 +4,19 @@
 
 //https://www.youtube.com/watch?v=xUFnPGVs7so
 
+require('dotenv').config();
 const express = require('express');
+const { authenticateJWT } = require('./auth');
 const { unmarshall } = require("@aws-sdk/util-dynamodb");
 const app = express();
-// const { v4: uuidv4 } = require("uuid");
-const { getUsers } = require("./dynamo.js");
+const { v4: uuidv4 } = require("uuid");
+const { getUsers, createUser, updateUser, deleteUser } = require("./dynamo.js");
 // const port = 3000;
+app.use(authenticateJWT);
 
 // parse requests 
 app.use(express.json());
 
-app.get('/hello', (req, res) => {
-  res.send('Hello World!');
-});
 
 // if (process.env.NODE_ENV !== 'test') {
 //   app.listen(port, () => {
@@ -36,13 +36,6 @@ app.get('/users', async (req, res) => {
   }
 });
 
-// app.post("/users", (req, res) => {
-//   const newUser = { id: uuidv4(), name: req.body.name};
-//   users.push(newUser);
-//   res.status(201).json(newUser);
-// });
-
-
 
 app.get("/users/:id", async (req, res) => {
 
@@ -59,20 +52,44 @@ app.get("/users/:id", async (req, res) => {
   res.json(user);
 });
 
-// app.put("/users/:id", (req, res) => {
-//   const userId = req.params.id;
-//   const userIndex = users.findIndex(user => user.id === userId);
-//   const newName = req.body.name;
-//   users[userIndex].name = newName;
-//   res.json(users[userIndex]);
+app.post('/users', async (req, res) => {
+  try {
+    console.log("Creating new user...");
+    const newUser = { id: uuidv4(), name: req.body.name};
+    console.log("New user data:", newUser);
+    await createUser(newUser);
+    res.status(201).json( { id: newUser.id, name: newUser.name});
+  } catch (error) {
+    console.error("Error creating user:", error);
+    return res.status(500).json({ error: "Failed to create user" });
+  }
+});
 
-// });
+app.put("/users/:id", async (req, res) => {
+  try {
+    const updatedUser = { id: req.params.id, name: req.body.name };
+    console.log("Updating user with ID:", updatedUser.id, "with name:", updatedUser.name);
+    await updateUser(updatedUser.id, { name: updatedUser.name });
 
-// app.delete("/users/:id", (req, res) => {
-//   const userId = req.params.id;
-//   const userIndex = users.findIndex(user => user.id === userId);
-//   users.splice(userIndex,1);
-//   res.json({ message: "User deleted successfully" });
-// });
+    res.status(200).json({ id: updatedUser.id, name: updatedUser.name });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return res.status(500).json({ error: "Failed to update user" });
+  }
+});
+
+app.delete("/users/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    console.log("Deleting user with ID:", userId);
+    
+    await deleteUser(userId);
+    
+    res.status(200).json({ message: "User deleted successfully", id: userId });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return res.status(500).json({ error: "Failed to delete user" });
+  }
+});
 
 module.exports = app;

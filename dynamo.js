@@ -1,5 +1,4 @@
-const { DynamoDBClient, CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, ScanCommand } = require("@aws-sdk/client-dynamodb");
-const testData = require('./seed-data.json');
+const { DynamoDBClient, PutItemCommand, ScanCommand, UpdateItemCommand, DeleteItemCommand } = require("@aws-sdk/client-dynamodb");
 
 require('dotenv').config();
 
@@ -29,71 +28,62 @@ const getUsers = async () => {
   }
 };
 
-const createTableIfNotExists = async () => {
+const createUser = async (user) => {
+  const params = {
+    TableName: TABLE_NAME,
+    Item: {
+      id: { S: user.id },
+      name: { S: user.name }
+    }
+  };
+
   try {
-    await dynamoClient.send(new DescribeTableCommand({ TableName: TABLE_NAME }));
-    console.log("Table already exists.");
-  } catch (err) {
-    if (err.name === "ResourceNotFoundException") {
-      const params = {
-        TableName: TABLE_NAME,
-        AttributeDefinitions: [
-          { AttributeName: "id", AttributeType: "S" }
-        ],
-        KeySchema: [
-          { AttributeName: "id", KeyType: "HASH" }
-        ],
-        ProvisionedThroughput: {
-          ReadCapacityUnits: 1,
-          WriteCapacityUnits: 1
-        }
-      };
-      await dynamoClient.send(new CreateTableCommand(params));
-      console.log("Table created.");
-    } else {
-      throw err;
-    }
+    await dynamoClient.send(new PutItemCommand(params));
+  } catch (error) {
+    console.error("Error creating user:", error);
+    throw new Error("Failed to create user");
   }
 };
+// https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html#DDB-UpdateItem-request-AttributeUpdates
 
-const seedTestData = async () => {
-  const items = testData.k9finder.map(data => data.PutRequest.Item);
-  if (items.length === 0) {
-    console.log("No test data found in seed-data.json");
-  }
-
-  for (const item of items) {
-    const params = {
-      TableName: "k9finder",
-      Item: item,
-    };
-    try {
-      await dynamoClient.send(new PutItemCommand(params));
-      console.log(`Seeded item: ${JSON.stringify(item)}`);
-    } catch (error) {
-      console.error("Error seeding test data:", error);
-      throw new Error("Could not seed test data");
-    }
-  }
-};
-
-const teardownTestData = async () => {
+const updateUser = async (userId, updatedUser) => {
+  const params = {
+    TableName: TABLE_NAME,
+    Key: {
+      id: { S: userId }
+    },
+    UpdateExpression: "set #name = :name",
+    ExpressionAttributeNames: {
+      "#name": "name"
+    },
+    ExpressionAttributeValues: {
+      ":name": { S: updatedUser.name }
+    },
+    ReturnValues: "UPDATED_NEW"
+  };
   try {
-    await dynamoClient.send(
-      new DeleteTableCommand({ TableName: TABLE_NAME })
-    );
-    console.log("Table deleted successfully.");
-  } catch (err) {
-    if (err.name === "ResourceNotFoundException") {
-      console.log("Table does not exist, nothing to teardown.");
-      return;
-    } else if (err.name === "failed to delete table") {
-      console.error("Failed to delete table, it may not exist or there was an error.");
-      return;
-    } else {
-      throw err;
-    }
+    const result = await dynamoClient.send(new UpdateItemCommand(params));
+    return result;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw new Error("Failed to update user");
   }
 };
 
-module.exports = { getUsers, seedTestData, teardownTestData, createTableIfNotExists };
+const deleteUser = async (userId) => {
+  const params = {
+    TableName: TABLE_NAME,
+    Key: {
+      id: { S: userId },
+    }
+  };
+
+  try {
+    await dynamoClient.send(new DeleteItemCommand(params));
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw new Error("Failed to delete user");
+  }
+};
+
+module.exports = { getUsers, createUser, updateUser, deleteUser};

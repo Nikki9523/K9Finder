@@ -17,9 +17,15 @@ jobs:
           - 8000:8000
     env:
       IS_LOCAL: true
-      AWS_REGION: proccess.env.AWS_REGION || 'us-east-1'
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_ACCESS_KEY_ID: 'dynamodbLocalDummyKeyId'
       AWS_SECRET_ACCESS_KEY: 'dynamodbLocalDummyAccessKey'
+      COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
+      COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
+      TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
+      TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+      SECRET_HASH: ${{ secrets.SECRET_HASH }}
+
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js 22.x
@@ -29,7 +35,8 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run lint
-    - run: npm run supertest
+    - run: npm run unit
+    - run: npm run integration
     - run: npm run build
     - run: zip -r k9Finder.zip dist/
     - name: Upload artifact
