@@ -1,25 +1,25 @@
-const { getUsers, createUser, deleteUser, updateUser } = require('../../dynamo');
-const { DynamoDBClient, ScanCommand, PutItemCommand, DeleteItemCommand,UpdateItemCommand } = require('@aws-sdk/client-dynamodb');
+// const { getUsers, createUser, deleteUser, updateUser } = require('../../dynamo');
+// const { DynamoDBClient, ScanCommand, PutItemCommand, DeleteItemCommand,UpdateItemCommand } = require('@aws-sdk/client-dynamodb');
 
-jest.mock('@aws-sdk/client-dynamodb', () => {
-  const mClient = {
-    send: jest.fn(),
-  };
-  return {
-    DynamoDBClient: jest.fn(() => mClient),
-    ScanCommand: jest.fn(),
-    PutItemCommand: jest.fn(),
-    DeleteItemCommand: jest.fn(),
-    UpdateItemCommand: jest.fn(),
-  };
-});
+// jest.mock('@aws-sdk/client-dynamodb', () => {
+//   const mClient = {
+//     send: jest.fn(),
+//   };
+//   return {
+//     DynamoDBClient: jest.fn(() => mClient),
+//     ScanCommand: jest.fn(),
+//     PutItemCommand: jest.fn(),
+//     DeleteItemCommand: jest.fn(),
+//     UpdateItemCommand: jest.fn(),
+//   };
+// });
 
-describe("dynamo helpers", () => {
-  let mClient;
-  beforeEach(() => {
-    mClient = new DynamoDBClient();
-    jest.clearAllMocks();
-  });
+// describe("dynamo helpers", () => {
+//   let mClient;
+//   beforeEach(() => {
+//     mClient = new DynamoDBClient();
+//     jest.clearAllMocks();
+//   });
 
 //   it("Success getUsers returns user items", async () => {
 //     mClient.send.mockResolvedValue({

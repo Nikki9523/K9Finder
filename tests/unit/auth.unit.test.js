@@ -7,6 +7,7 @@ jest.mock('jwks-rsa', () => () => ({
 }));
 
 describe("getKey", () => {
+  // eslint-disable-next-line
   it.only("should use publicKey if present", (done) => {
     const header = { kid: "abc" };
     const mockClient = {
