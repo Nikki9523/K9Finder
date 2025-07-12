@@ -16,9 +16,16 @@ jest.mock('@aws-sdk/client-dynamodb', () => {
 
 describe("dynamo helpers", () => {
   let mClient;
+  let errorSpy;
+
   beforeEach(() => {
     mClient = new DynamoDBClient();
     jest.clearAllMocks();
+    errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    errorSpy.mockRestore();
   });
 
   it("Success getUsers returns user items", async () => {
@@ -29,18 +36,25 @@ describe("dynamo helpers", () => {
       ],
     });
     const users = await getUsers();
-    const formattedUsers = users.map(user => ({
+    const formattedUsers = users.map((user) => ({
       id: user.id.S,
       name: user.name.S,
     }));
-    expect(formattedUsers).toEqual([{ id: "123abc", name: "Anne" }, { id: "456def", name: "Sarah" }]);
+    expect(formattedUsers).toEqual([
+      { id: "123abc", name: "Anne" },
+      { id: "456def", name: "Sarah" },
+    ]);
     expect(mClient.send).toHaveBeenCalledWith(expect.any(ScanCommand));
   });
-  // eslint-disable-next-line
-  it.only("Failure: user receives error message when getUsers fails", async () => {
+
+  it("Failure: user receives error message when getUsers fails", async () => {
     mClient.send.mockRejectedValue(new Error("Failure on getUsers"));
     await expect(getUsers()).rejects.toThrow("Could not get users");
     expect(mClient.send).toHaveBeenCalledWith(expect.any(ScanCommand));
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Error getting users:",
+      expect.any(Error)
+    );
   });
 
   it("Success: User creates new item", async () => {
@@ -50,11 +64,15 @@ describe("dynamo helpers", () => {
     expect(mClient.send).toHaveBeenCalledWith(expect.any(PutItemCommand));
   });
 
-  it("Failure: Error received on DynamoDB failure", async () => {
+  it("Failure: error thrown when createUser fails", async () => {
     mClient.send.mockRejectedValue(new Error("CreateUser failed"));
     const user = { id: "789", name: "Sandy" };
     await expect(createUser(user)).rejects.toThrow("Failed to create user");
     expect(mClient.send).toHaveBeenCalledWith(expect.any(PutItemCommand));
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Error creating user:",
+      expect.any(Error)
+    );
   });
 
   it("Success: User can delete item", async () => {
@@ -67,14 +85,22 @@ describe("dynamo helpers", () => {
     mClient.send.mockRejectedValue(new Error("Deletion Fails"));
     await expect(deleteUser("456")).rejects.toThrow("Failed to delete user");
     expect(mClient.send).toHaveBeenCalledWith(expect.any(DeleteItemCommand));
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Error deleting user:",
+      expect.any(Error)
+    );
   });
 
   it("Success: user can update item", async () => {
-    mClient.send.mockResolvedValue({ Attributes: { id: { S: "456def" }, name: { S: "Sarah Updated" } } });
+    mClient.send.mockResolvedValue({
+      Attributes: { id: { S: "456def" }, name: { S: "Sarah Updated" } },
+    });
     const userId = "456def";
     const updatedUser = { name: "Sarah Updated" };
     const result = await updateUser(userId, updatedUser);
-    expect(result).toEqual({ Attributes: { id: { S: "456def" }, name: { S: "Sarah Updated" } } });
+    expect(result).toEqual({
+      Attributes: { id: { S: "456def" }, name: { S: "Sarah Updated" } },
+    });
     expect(mClient.send).toHaveBeenCalledWith(expect.any(UpdateItemCommand));
   });
 
@@ -86,5 +112,9 @@ describe("dynamo helpers", () => {
       "Failed to update user"
     );
     expect(mClient.send).toHaveBeenCalledWith(expect.any(UpdateItemCommand));
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Error updating user:",
+      expect.any(Error)
+    );
   });
 });

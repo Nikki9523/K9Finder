@@ -1,14 +1,15 @@
-const { authenticateJWT, getKey } = require('../../auth');
 const httpMocks = require('node-mocks-http');
 const jwt = require('jsonwebtoken');
 
+// Mock jwks-rsa globally for getKey tests
 jest.mock('jwks-rsa', () => () => ({
   getSigningKey: (kid, cb) => cb(null, { publicKey: 'test-key' }),
 }));
 
+const { authenticateJWT, getKey } = require('../../auth');
+
 describe("getKey", () => {
-  // eslint-disable-next-line
-  it.only("should use publicKey if present", (done) => {
+  it("Success: uses publicKey if present", (done) => {
     const header = { kid: "abc" };
     const mockClient = {
       getSigningKey: (kid, cb) => cb(null, { publicKey: "my-public-key" })
@@ -20,7 +21,7 @@ describe("getKey", () => {
     }, mockClient);
   });
 
-  it("should use rsaPublicKey if publicKey is missing", (done) => {
+  it("Success: uses rsaPublicKey if publicKey is missing", (done) => {
     const header = { kid: "def" };
     const mockClient = {
       getSigningKey: (kid, cb) => cb(null, { rsaPublicKey: "my-rsa-key" })
@@ -31,13 +32,11 @@ describe("getKey", () => {
       done();
     }, mockClient);
   });
-});
 
-describe("error getting signing key", () => {
-  it("should return error if signing key is not found", (done) => {
+  it("Failure: returns error if signing key is not found", (done) => {
     const header = { kid: "badkid" };
     const mockClient = {
-      getSigningKey: (kid, cb) => cb(new Error("Key error"), null)
+      getSigningKey: (kid, cb) => cb(new Error("Signing key not found"), null)
     };
     getKey(header, (err, signingKey) => {
       expect(err).toBeTruthy();
@@ -49,7 +48,18 @@ describe("error getting signing key", () => {
 });
 
 describe("authenticateJWT middleware", () => {
-  it("Success: should call next() if token is valid", (done) => {
+  let errorSpy;
+
+  beforeEach(() => {
+    errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    errorSpy.mockRestore();
+    jest.restoreAllMocks();
+  });
+
+  it("Success: calls next() if token is valid", (done) => {
     const token = jwt.sign({ sub: "123" }, "test-key", { algorithm: "HS256" });
     const req = httpMocks.createRequest({
       headers: { authorization: `Bearer ${token}` },
@@ -57,19 +67,18 @@ describe("authenticateJWT middleware", () => {
     const res = httpMocks.createResponse();
     const next = jest.fn();
 
-    jest
-      .spyOn(jwt, "verify")
-      .mockImplementation((token, getKey, opts, cb) =>
-        cb(null, { sub: "123" })
-      );
+    jest.spyOn(jwt, "verify").mockImplementation((token, getKey, opts, cb) =>
+      cb(null, { sub: "123" })
+    );
 
     authenticateJWT(req, res, next);
 
     expect(next).toHaveBeenCalled();
+    expect(errorSpy).not.toHaveBeenCalled();
     done();
   });
 
-  it("Failure: should return 401 if no Authorization header", (done) => {
+  it("Failure: returns 401 if no Authorization header", (done) => {
     const req = httpMocks.createRequest();
     const res = httpMocks.createResponse();
     const next = jest.fn();
@@ -78,29 +87,34 @@ describe("authenticateJWT middleware", () => {
 
     expect(res.statusCode).toBe(401);
     expect(res._getData()).toMatch(/Missing or invalid Authorization header/);
+    expect(errorSpy).not.toHaveBeenCalled();
     done();
   });
 
-  it("Failure: request should fail if token is invalid", (done) => {
+  it("Failure: returns 401 if token is invalid", (done) => {
     const token = jwt.sign({ sub: "123" }, "test-key", { algorithm: "HS256" });
     const req = httpMocks.createRequest({
       headers: { authorization: `Bearer ${token}` },
     });
     const res = httpMocks.createResponse();
     const next = jest.fn();
-    jest
-      .spyOn(jwt, "verify")
-      .mockImplementation((token, getKey, opts, cb) =>
-        cb(new Error("Invalid token"))
-      );
+
+    jest.spyOn(jwt, "verify").mockImplementation((token, getKey, opts, cb) =>
+      cb(new Error("Invalid token"))
+    );
+
     authenticateJWT(req, res, next);
+
     expect(res.statusCode).toBe(401);
     expect(res._getData()).toMatch(/Invalid token/);
+    expect(errorSpy).toHaveBeenCalledWith(
+      "JWT verification error:",
+      expect.any(Error)
+    );
     done();
   });
 
-  it("should return 401 if signing key is missing", (done) => {
-    // Re-mock jwks-rsa to simulate getSigningKey error
+  it("Failure: returns 401 if signing key is missing", (done) => {
     jest.resetModules();
     jest.doMock("jwks-rsa", () => () => ({
       getSigningKey: (kid, cb) => cb(new Error("Signing key not found")),
@@ -115,7 +129,6 @@ describe("authenticateJWT middleware", () => {
     const res = httpMocks.createResponse();
     const next = jest.fn();
 
-    // Patch jwt.verify to call getKey and simulate error
     jest.spyOn(jwt, "verify").mockImplementation((token, getKey, opts, cb) => {
       getKey({ kid: "bad" }, (err) => cb(err));
     });
@@ -124,10 +137,15 @@ describe("authenticateJWT middleware", () => {
 
     expect(res.statusCode).toBe(401);
     expect(res._getData()).toMatch(/Invalid token|Signing key not found/);
+    expect(errorSpy).toHaveBeenCalledWith(
+      "JWT verification error:",
+      expect.any(Error)
+    );
     done();
   });
 });
 
+// Mock Cognito client for completeness
 jest.mock('@aws-sdk/client-cognito-identity-provider', () => {
   const mClient = {
     send: jest.fn(),
