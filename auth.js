@@ -29,6 +29,21 @@ const authenticateJWT = (req, res, next) => {
   }
   const token = authHeader.split(" ")[1];
 
+  console.log("AWS_DEFAULT_REGION:", process.env.AWS_DEFAULT_REGION);
+  console.log("COGNITO_USER_POOL_ID:", process.env.COGNITO_USER_POOL_ID);
+  const jwksUri = `https://cognito-idp.${process.env.AWS_DEFAULT_REGION}.amazonaws.com/${process.env.COGNITO_USER_POOL_ID}/.well-known/jwks.json`;
+  console.log("JWKS URI:", jwksUri);
+
+  const tokenHeader = token.split(".")[0];
+  try {
+    const decodedHeader = JSON.parse(
+      Buffer.from(tokenHeader, "base64").toString()
+    );
+    console.log("Token kid:", decodedHeader.kid);
+  } catch (e) {
+    console.log("Could not decode token header:", e);
+  }
+
   jwt.verify(
     token,
     getKey,
