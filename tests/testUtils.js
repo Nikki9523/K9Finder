@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { CognitoIdentityProviderClient, InitiateAuthCommand } = require("@aws-sdk/client-cognito-identity-provider");
+const { CognitoIdentityProviderClient, InitiateAuthCommand,AdminDeleteUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFAULT_REGION });
 const {CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const testData = require('../seed-data.json');
@@ -113,5 +113,20 @@ const teardownTestData = async () => {
   }
 };
 
+const removeCognitoTestUser = async () => {
+  const params = {
+    UserPoolId: process.env.COGNITO_USER_POOL_ID,
+    Username: process.env.TEST_USERNAME_2,
+  };
 
-module.exports = { generateBearerTokenForIntegrationTests, seedTestData, teardownTestData, createTableIfNotExists };
+  try {
+    await cognito.send(new AdminDeleteUserCommand(params));
+    console.log("Cognito test user removed successfully.");
+  } catch (error) {
+    console.error("Error removing Cognito test user:", error);
+    throw new Error("Failed to remove Cognito test user");
+  }
+};
+
+
+module.exports = { generateBearerTokenForIntegrationTests, seedTestData, teardownTestData, createTableIfNotExists,removeCognitoTestUser };

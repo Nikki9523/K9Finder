@@ -1,6 +1,7 @@
 const request = require("supertest");
 const app = require("./../../server");
 const testUtils = require("../testUtils");
+const cognitoUsername = process.env.TEST_USERNAME_2;
 let AUTH_HEADER;
 
 const { seedTestData, teardownTestData, createTableIfNotExists } = require("../testUtils");
@@ -52,11 +53,16 @@ describe("Get Users", () => {
 
 
 describe("Create User in dynamoDB + Cognito", () => {
+
+  afterEach(async () => {
+    await testUtils.removeCognitoTestUser();
+  });
+  
   it("Success : User can create a new user", async () => {
     const newUser = { 
       name: "Nikki", 
-      email: "nicolastack16+test@gmail.com",
-      password: "YourTestPassword123!"
+      email: cognitoUsername,
+      password: process.env.TEST_PASSWORD
     };
     const response = await request(app)
       .post("/users")
@@ -66,7 +72,7 @@ describe("Create User in dynamoDB + Cognito", () => {
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("id");
     expect(response.body.name).toBe("Nikki");
-    expect(response.body.email).toBe("nicolastack16+test@gmail.com");
+    expect(response.body.email).toBe(cognitoUsername);
   });
 });
 
