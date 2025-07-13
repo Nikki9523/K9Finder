@@ -124,7 +124,7 @@ const removeCognitoTestUser = async () => {
     console.log("Cognito test user removed successfully.");
   } catch (error) {
     console.error("Error removing Cognito test user:", error);
-    console.log("the error name is:", error.name, "and the error message is: ", error.message);
+    console.log("Error: ", error);
     throw new Error("Failed to remove Cognito test user");
   }
 };
