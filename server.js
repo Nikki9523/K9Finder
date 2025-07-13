@@ -11,6 +11,7 @@ const { unmarshall } = require("@aws-sdk/util-dynamodb");
 const app = express();
 const { v4: uuidv4 } = require("uuid");
 const { getUsers, createUser, updateUser, deleteUser } = require("./dynamo.js");
+const { createCognitoUser } = require('./cognito');
 // const port = 3000;
 
 // parse requests 
@@ -56,13 +57,13 @@ app.get("/users/:id", async (req, res) => {
 app.post('/users', async (req, res) => {
   try {
     console.log("Creating new user...");
-    const newUser = { id: uuidv4(), name: req.body.name};
-    console.log("New user data:", newUser);
-    await createUser(newUser);
-    res.status(201).json( { id: newUser.id, name: newUser.name});
+    const createdUser = await createUser({ id: uuidv4(), name: req.body.name, email: req.body.email });
+    await createCognitoUser({ name: req.body.name, email: req.body.email, password: req.body.password });
+    console.log("Created user:", createdUser);
+    res.status(201).json(createdUser);
   } catch (error) {
     console.error("Error creating user:", error);
-    return res.status(500).json({ error: "Failed to create user" });
+    res.status(500).json({ error: "Failed to create user" });
   }
 });
 

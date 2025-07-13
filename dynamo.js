@@ -33,12 +33,14 @@ const createUser = async (user) => {
     TableName: TABLE_NAME,
     Item: {
       id: { S: user.id },
-      name: { S: user.name }
+      name: { S: user.name },
+      email: { S: user.email }
     }
   };
 
   try {
     await dynamoClient.send(new PutItemCommand(params));
+    return { id: user.id, name: user.name, email: user.email };
   } catch (error) {
     console.error("Error creating user:", error);
     throw new Error("Failed to create user");

@@ -51,13 +51,22 @@ describe("Get Users", () => {
 });
 
 
-describe("Create User", () => {
+describe("Create User in dynamoDB + Cognito", () => {
   it("Success : User can create a new user", async () => {
-    const newUser = { name: "Alice Smith" };
-    const response = await request(app).post("/users").send(newUser).set("Authorization", AUTH_HEADER);
+    const newUser = { 
+      name: "Nikki", 
+      email: "nicolastack16+test@gmail.com",
+      password: "YourTestPassword123!"
+    };
+    const response = await request(app)
+      .post("/users")
+      .send(newUser)
+      .set("Authorization", AUTH_HEADER);
+
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("id");
-    expect(response.body.name).toBe("Alice Smith");
+    expect(response.body.name).toBe("Nikki");
+    expect(response.body.email).toBe("nicolastack16+test@gmail.com");
   });
 });
 
