@@ -39,10 +39,7 @@ const createUser = async (user) => {
   };
 
   try {
-    const response = await dynamoClient.send(new PutItemCommand(params));
-    if (!response || !response.Items || response.Items.length === 0) {
-      throw new Error("No items returned from dynamoDB");
-    }
+    await dynamoClient.send(new PutItemCommand(params));
     return { id: user.id, name: user.name, email: user.email };
   } catch (error) {
     console.error("Error creating user:", error);
