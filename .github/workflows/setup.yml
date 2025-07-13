@@ -25,6 +25,7 @@ jobs:
       TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
       TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
       SECRET_HASH: ${{ secrets.SECRET_HASH }}
+      TEST_USERNAME_2: ${{ secrets.TEST_USERNAME_2 }}
 
     steps:
     - uses: actions/checkout@v4
