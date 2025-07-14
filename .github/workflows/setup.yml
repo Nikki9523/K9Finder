@@ -43,6 +43,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
+        retention-days: 1
         name: k9Finder.zip
         path: k9Finder.zip
 
