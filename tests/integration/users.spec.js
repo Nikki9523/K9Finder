@@ -1,3 +1,4 @@
+require("dotenv").config();
 const request = require("supertest");
 const app = require("./../../server");
 const testUtils = require("../testUtils");
@@ -57,7 +58,7 @@ describe("Create User in dynamoDB + Cognito", () => {
   afterEach(async () => {
     await testUtils.removeCognitoTestUser();
   });
-  
+
   it("Success : User can create a new user", async () => {
     const newUser = { 
       name: "Nikki", 
