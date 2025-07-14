@@ -78,14 +78,33 @@ describe("Create User in dynamoDB + Cognito", () => {
 });
 
 describe("Update User", () => {
-  it("Success : User can update an existing user", async () => {
-    const existingUser = { id: "001", name: "nicola" };
-    const updatedUser = { name: "Nikki" };
-    const response = await request(app).put(`/users/${existingUser.id}`).send(updatedUser).set("Authorization", AUTH_HEADER);
+  afterEach(async () => {
+    await testUtils.resetCognitoTestUser();
+  });
+  it.only("should update an existing user in cognito and dynamo", async () => {
+    const existingUser = {
+      id: "001",
+      username: "741854c8-b021-709b-359d-fe3e31b79201",
+      name: "nicola",
+      email: "nicolastack16+test@gmail.com",
+    };
+
+    const updatedUser = {
+      name: "Nikki",
+      username: existingUser.username, // This is the Cognito Username
+      email: "nicolastack16+updated@gmail.com",
+    };
+    console.log("Updating user:", existingUser.id, updatedUser);
+    const response = await request(app)
+      .put(`/users/${existingUser.id}`)
+      .send(updatedUser)
+      .set("Authorization", AUTH_HEADER);
+
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("id");
     expect(response.body.id).toBe(existingUser.id);
     expect(response.body.name).toBe("Nikki");
+    expect(response.body.email).toBe(updatedUser.email);
   });
 });
 

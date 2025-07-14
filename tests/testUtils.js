@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { CognitoIdentityProviderClient, InitiateAuthCommand,AdminDeleteUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
+const { CognitoIdentityProviderClient, InitiateAuthCommand,AdminDeleteUserCommand, AdminUpdateUserAttributesCommand } = require("@aws-sdk/client-cognito-identity-provider");
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFAULT_REGION });
 const {CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const testData = require('../seed-data.json');
@@ -122,6 +122,7 @@ const removeCognitoTestUser = async () => {
   try {
     await cognito.send(new AdminDeleteUserCommand(params));
     console.log("Cognito test user removed successfully.");
+    // add validation later to verify user was deleted
   } catch (error) {
     console.error("Error removing Cognito test user:", error);
     console.log("Error: ", error);
@@ -129,5 +130,23 @@ const removeCognitoTestUser = async () => {
   }
 };
 
+const resetCognitoTestUser = async () => {
+  const params = {
+    UserPoolId: process.env.COGNITO_USER_POOL_ID,
+    Username: "741854c8-b021-709b-359d-fe3e31b79201",
+  };
+  // Resetting the values of the test cognito user
+  params.UserAttributes = [
+    { Name: "email", Value: "nicolastack16+test@gmail.com" },
+    { Name: "name", Value: "nicola" },
+  ];
+  try {
+    await cognito.send(new AdminUpdateUserAttributesCommand(params));
+    console.log("Cognito test user reset successfully.");
+  } catch (error) {
+    console.error("Error resetting Cognito test user:", error);
+    throw new Error("Failed to reset Cognito test user");
+  }
+};
 
-module.exports = { generateBearerTokenForIntegrationTests, seedTestData, teardownTestData, createTableIfNotExists,removeCognitoTestUser };
+module.exports = { generateBearerTokenForIntegrationTests, seedTestData, teardownTestData, createTableIfNotExists,removeCognitoTestUser, resetCognitoTestUser };

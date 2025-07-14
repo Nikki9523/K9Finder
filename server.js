@@ -11,7 +11,7 @@ const { unmarshall } = require("@aws-sdk/util-dynamodb");
 const app = express();
 const { v4: uuidv4 } = require("uuid");
 const { getUsers, createUser, updateUser, deleteUser } = require("./dynamo.js");
-const { createCognitoUser } = require('./cognito');
+const { createCognitoUser, updateCognitoUser } = require('./cognito');
 // const port = 3000;
 
 // parse requests 
@@ -69,11 +69,27 @@ app.post('/users', async (req, res) => {
 
 app.put("/users/:id", async (req, res) => {
   try {
-    const updatedUser = { id: req.params.id, name: req.body.name };
-    console.log("Updating user with ID:", updatedUser.id, "with name:", updatedUser.name);
-    await updateUser(updatedUser.id, { name: updatedUser.name });
+    const updatedUser = {
+      id: req.params.id,
+      name: req.body.name,
+      email: req.body.email,
+    };
 
-    res.status(200).json({ id: updatedUser.id, name: updatedUser.name });
+    //dynamoDb
+    await updateUser(updatedUser.id, {
+      name: updatedUser.name,
+      email: updatedUser.email,
+    });
+    //cognito
+    console.log("Route update payload:", req.body);
+    await updateCognitoUser(
+      req.body.username,
+      updatedUser.name,
+      updatedUser.email
+    );
+    console.log("User updated successfully:", updatedUser);
+
+    res.status(200).json({ id: updatedUser.id, name: updatedUser.name, email: updatedUser.email });
   } catch (error) {
     console.error("Error updating user:", error);
     return res.status(500).json({ error: "Failed to update user" });

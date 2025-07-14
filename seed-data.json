@@ -4,7 +4,8 @@
       "PutRequest": {
         "Item": {
           "id": {"S": "001"},
-          "name": {"S": "nicola"}
+          "name": {"S": "nicola"},
+          "email": {"S": "nicolastack16@gmail.com"}
         }
       }
     },
