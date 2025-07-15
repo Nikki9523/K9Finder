@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { CognitoIdentityProviderClient, InitiateAuthCommand,AdminDeleteUserCommand, AdminUpdateUserAttributesCommand } = require("@aws-sdk/client-cognito-identity-provider");
+const { CognitoIdentityProviderClient, InitiateAuthCommand,AdminDeleteUserCommand, AdminUpdateUserAttributesCommand, AdminCreateUserCommand, ListUsersCommand } = require("@aws-sdk/client-cognito-identity-provider");
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFAULT_REGION });
 const {CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const testData = require('../seed-data.json');
@@ -113,10 +113,32 @@ const teardownTestData = async () => {
   }
 };
 
-const removeCognitoTestUser = async () => {
+const createCognitoTestUserForDeletionTest = async (email) => {
   const params = {
     UserPoolId: process.env.COGNITO_USER_POOL_ID,
-    Username: process.env.TEST_USERNAME_2,
+    Username: email,
+    MessageAction: "SUPPRESS",
+    UserAttributes: [
+      { Name: "email", Value: email },
+    ]
+  };
+  try {
+    await cognito.send(new AdminCreateUserCommand({
+      ...params,
+      Username: "nicolastack16+testdelete@gmail.com",
+      TemporaryPassword: process.env.TEST_PASSWORD
+    }));
+    console.log("Cognito test user created successfully.");
+  } catch (error) {
+    console.error("Error creating Cognito test user:", error);
+    throw new Error("Failed to create Cognito test user");
+  }
+};
+
+const removeCognitoTestUser = async (email) => {
+  const params = {
+    UserPoolId: process.env.COGNITO_USER_POOL_ID,
+    Username: email
   };
 
   try {
@@ -130,23 +152,27 @@ const removeCognitoTestUser = async () => {
   }
 };
 
+async function getCognitoUserByEmail(email) {
+  const params = {
+    UserPoolId: process.env.COGNITO_USER_POOL_ID,
+    Filter: `email = "${email}"`
+  };
+  const command = new ListUsersCommand(params);
+  const result = await cognito.send(command);
+  return result.Users && result.Users.length > 0 ? result.Users[0] : undefined;
+}
+
+
 const resetCognitoTestUser = async () => {
   const params = {
     UserPoolId: process.env.COGNITO_USER_POOL_ID,
-    Username: "741854c8-b021-709b-359d-fe3e31b79201",
+    Username: "nicolastack16+updated@gmail.com",
+    UserAttributes: [
+      { Name: "name", Value: "jane" },
+      { Name: "email", Value:"nicolastack16+test@gmail.com"}
+    ],
   };
-  // Resetting the values of the test cognito user
-  params.UserAttributes = [
-    { Name: "email", Value: "nicolastack16+test@gmail.com" },
-    { Name: "name", Value: "nicola" },
-  ];
-  try {
-    await cognito.send(new AdminUpdateUserAttributesCommand(params));
-    console.log("Cognito test user reset successfully.");
-  } catch (error) {
-    console.error("Error resetting Cognito test user:", error);
-    throw new Error("Failed to reset Cognito test user");
-  }
+  return cognito.send(new AdminUpdateUserAttributesCommand(params));
 };
 
-module.exports = { generateBearerTokenForIntegrationTests, seedTestData, teardownTestData, createTableIfNotExists,removeCognitoTestUser, resetCognitoTestUser };
+module.exports = { generateBearerTokenForIntegrationTests, seedTestData, teardownTestData, createTableIfNotExists,removeCognitoTestUser, resetCognitoTestUser, createCognitoTestUserForDeletionTest,getCognitoUserByEmail };

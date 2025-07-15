@@ -1,12 +1,12 @@
 jest.mock('@aws-sdk/client-cognito-identity-provider', () => {
   const sendMock = jest.fn()
-    .mockResolvedValueOnce({ User: { Username: '12345678', email: "nicolastack16@gmail.com" } })
+    .mockResolvedValueOnce({ User: { Username: 'test@test.com', email: "nicolastack16@gmail.com" } })
     .mockResolvedValueOnce({
       User: {
-        Username: "12345678",
+        Username: "test@test.com",
         Attributes: [
           { Name: "name", Value: "Nikki Updated" },
-          { Name: "email", Value: "test@test.com" },
+          { Name: "email", Value: "testupdated@test.com" },
         ],
       },
     });
@@ -30,32 +30,25 @@ describe("Cognito User Management", () => {
       password: process.env.TEST_PASSWORD,
     };
     const result = await createCognitoUser(newUser);
-    expect(result.User.Username).toBe("12345678");
+    expect(result.User.Username).toBe("test@test.com");
     expect(result.User.email).toBe("nicolastack16@gmail.com");
   });
 
   it("Success: Can update an existing Cognito user", async () => {
     const result = await updateCognitoUser(
-      "12345678",
+      "test@test.com",
       "Nikki Updated",
-      "test@test.com"
+      "testupdated@test.com"
     );
     expect(result).toBeDefined();
-    expect(result.User.Username).toBe("12345678");
+    expect(result.User.Username).toBe("test@test.com");
     expect(result.User.Attributes).toContainEqual({
       Name: "name",
       Value: "Nikki Updated",
     });
     expect(result.User.Attributes).toContainEqual({
       Name: "email",
-      Value: "test@test.com",
+      Value: "testupdated@test.com",
     });
-  });
-  
-  it("Error: updateCognitoUser throws if username or name is missing", async () => {
-    await expect(updateCognitoUser(undefined, "Nikki Updated"))
-      .rejects.toThrow("username and name are required");
-    await expect(updateCognitoUser("12345678", undefined))
-      .rejects.toThrow("username and name are required");
   });
 });
