@@ -5,7 +5,6 @@ const testUtils = require("../testUtils");
 let AUTH_HEADER;
 
 const { seedTestData, teardownTestData, createTableIfNotExists } = require("../testUtils");
-const { setMaxIdleHTTPParsers } = require("http");
 
 beforeAll(async () => {
   const token = await testUtils.generateBearerTokenForIntegrationTests();
