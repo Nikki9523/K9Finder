@@ -18,13 +18,14 @@ jobs:
     env:
       IS_LOCAL: true
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      AWS_ACCESS_KEY_ID: 'dynamodbLocalDummyKeyId'
-      AWS_SECRET_ACCESS_KEY: 'dynamodbLocalDummyAccessKey'
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       COGNITO_CLIENT_ID: ${{ secrets.COGNITO_CLIENT_ID }}
       COGNITO_USER_POOL_ID: ${{ secrets.COGNITO_USER_POOL_ID }}
       TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
       TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
       SECRET_HASH: ${{ secrets.SECRET_HASH }}
+      TEST_USERNAME_2: ${{ secrets.TEST_USERNAME_2 }}
 
     steps:
     - uses: actions/checkout@v4
@@ -42,6 +43,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
+        retention-days: 1
         name: k9Finder.zip
         path: k9Finder.zip
 

@@ -59,14 +59,14 @@ describe("dynamo helpers", () => {
 
   it("Success: User creates new item", async () => {
     mClient.send.mockResolvedValue({});
-    const user = { id: "456", name: "Bob" };
-    await expect(createUser(user)).resolves.toBeUndefined();
+    const user = { id: "456", name: "Bob", email:"test@test.com" };
+    await expect(createUser(user)).resolves.toEqual(user);
     expect(mClient.send).toHaveBeenCalledWith(expect.any(PutItemCommand));
   });
 
   it("Failure: error thrown when createUser fails", async () => {
     mClient.send.mockRejectedValue(new Error("CreateUser failed"));
-    const user = { id: "789", name: "Sandy" };
+    const user = { id: "789", name: "Sandy", email:"test@test.com" };
     await expect(createUser(user)).rejects.toThrow("Failed to create user");
     expect(mClient.send).toHaveBeenCalledWith(expect.any(PutItemCommand));
     expect(errorSpy).toHaveBeenCalledWith(

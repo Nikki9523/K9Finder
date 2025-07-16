@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { CognitoIdentityProviderClient, InitiateAuthCommand } = require("@aws-sdk/client-cognito-identity-provider");
+const { CognitoIdentityProviderClient, InitiateAuthCommand,AdminDeleteUserCommand, AdminUpdateUserAttributesCommand, AdminCreateUserCommand, ListUsersCommand } = require("@aws-sdk/client-cognito-identity-provider");
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFAULT_REGION });
 const {CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const testData = require('../seed-data.json');
@@ -113,4 +113,66 @@ const teardownTestData = async () => {
   }
 };
 
-module.exports = { generateBearerTokenForIntegrationTests, seedTestData, teardownTestData, createTableIfNotExists };
+const createCognitoTestUserForDeletionTest = async (email) => {
+  const params = {
+    UserPoolId: process.env.COGNITO_USER_POOL_ID,
+    Username: email,
+    MessageAction: "SUPPRESS",
+    UserAttributes: [
+      { Name: "email", Value: email },
+    ]
+  };
+  try {
+    await cognito.send(new AdminCreateUserCommand({
+      ...params,
+      Username: "nicolastack16+testdelete@gmail.com",
+      TemporaryPassword: process.env.TEST_PASSWORD
+    }));
+    console.log("Cognito test user created successfully.");
+  } catch (error) {
+    console.error("Error creating Cognito test user:", error);
+    throw new Error("Failed to create Cognito test user");
+  }
+};
+
+const removeCognitoTestUser = async (email) => {
+  const params = {
+    UserPoolId: process.env.COGNITO_USER_POOL_ID,
+    Username: email
+  };
+
+  try {
+    await cognito.send(new AdminDeleteUserCommand(params));
+    console.log("Cognito test user removed successfully.");
+    // add validation later to verify user was deleted
+  } catch (error) {
+    console.error("Error removing Cognito test user:", error);
+    console.log("Error: ", error);
+    throw new Error("Failed to remove Cognito test user");
+  }
+};
+
+async function getCognitoUserByEmail(email) {
+  const params = {
+    UserPoolId: process.env.COGNITO_USER_POOL_ID,
+    Filter: `email = "${email}"`
+  };
+  const command = new ListUsersCommand(params);
+  const result = await cognito.send(command);
+  return result.Users && result.Users.length > 0 ? result.Users[0] : undefined;
+}
+
+
+const resetCognitoTestUser = async () => {
+  const params = {
+    UserPoolId: process.env.COGNITO_USER_POOL_ID,
+    Username: "nicolastack16+updated@gmail.com",
+    UserAttributes: [
+      { Name: "name", Value: "jane" },
+      { Name: "email", Value:"nicolastack16+test@gmail.com"}
+    ],
+  };
+  return cognito.send(new AdminUpdateUserAttributesCommand(params));
+};
+
+module.exports = { generateBearerTokenForIntegrationTests, seedTestData, teardownTestData, createTableIfNotExists,removeCognitoTestUser, resetCognitoTestUser, createCognitoTestUserForDeletionTest,getCognitoUserByEmail };
