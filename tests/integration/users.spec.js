@@ -6,10 +6,10 @@ let AUTH_HEADER;
 
 const { seedTestData, teardownTestData, createTableIfNotExists } = require("../testUtils");
 
-beforeAll(async () => {
-  const token = await testUtils.generateBearerTokenForIntegrationTests();
-  AUTH_HEADER = `Bearer ${token}`;
-});
+// beforeAll(async () => {
+//   const token = await testUtils.generateBearerTokenForIntegrationTests(userType);
+//   AUTH_HEADER = `Bearer ${token}`;
+// });
 
 beforeEach(async () => {
   await createTableIfNotExists();
@@ -21,19 +21,54 @@ afterAll(async () => {
 });
 
 describe("Get Specific existing User", () => {
+  beforeAll(async () => {
+    const token = await testUtils.generateBearerTokenForIntegrationTests(
+      "admin"
+    );
+    AUTH_HEADER = `Bearer ${token}`;
+  });
   it("Success : User can retrieve existing user", async () => {
-    const response = await request(app).get("/users/001").set("Authorization", AUTH_HEADER);
+    const response = await request(app)
+      .get("/users/001")
+      .set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ id: "001", name: "nicola", email: "nicolastack16@gmail.com" });
+    expect(response.body).toEqual({
+      id: "001",
+      name: "nicola",
+      email: "nicolastack16@gmail.com",
+    });
   });
 
   it("Failure : User cannot retrieve non-existant record", async () => {
-    const response = await request(app).get("/users/nonexistent").set("Authorization", AUTH_HEADER);
+    const response = await request(app)
+      .get("/users/nonexistent")
+      .set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(404);
   });
 });
 
 describe("Get Users", () => {
+  beforeAll(async () => {
+    const token = await testUtils.generateBearerTokenForIntegrationTests("adopter");
+    AUTH_HEADER = `Bearer ${token}`;
+  });
+  it("Failure : User without admin userType cannot retrieve all users", async () => {
+    const response = await request(app)
+      .get("/users")
+      .set("Authorization", AUTH_HEADER);
+    expect(response.status).toBe(403);
+    expect(response.body).toEqual({ error: "Forbidden" });
+  });
+});
+
+describe("Get Users with adopter userType", () => {
+  beforeAll(async () => {
+    const token = await testUtils.generateBearerTokenForIntegrationTests(
+      "admin"
+    );
+    AUTH_HEADER = `Bearer ${token}`;
+  });
+
   it("Success : User can retrieve all users", async () => {
     const response = await request(app)
       .get("/users")
@@ -42,6 +77,12 @@ describe("Get Users", () => {
     expect(response.status).toBe(200);
     console.log("Users retrieved:", response.body);
     expect(response.body).toEqual([
+      {
+        name: "Waterford Dog Adoption Shelter",
+        id: "12345",
+        userType: "shelter",
+        email: "nicolastack16+shelter1@gmail.com",
+      },
       { name: "nicola", email: "nicolastack16@gmail.com", id: "001" },
       { name: "bob", id: "002" },
       {
@@ -49,27 +90,47 @@ describe("Get Users", () => {
         email: "nicolastack16+testdelete@gmail.com",
         id: "003",
       },
-      { name: "jane", email: "nicolastack16+test@gmail.com", id: "004" },
+      {
+        name: "Ron Weasley",
+        id: "3456",
+        userType: "adpoter",
+        email: "nicolastack16+adopter@gmail.com",
+      },
+      {
+        name: "jane",
+        id: "004",
+        userType: "adopter",
+        email: "nicolastack16+test@gmail.com",
+      },
     ]);
   });
 });
 
 describe("Create User in dynamoDB + Cognito", () => {
+  beforeAll(async () => {
+    const token = await testUtils.generateBearerTokenForIntegrationTests(
+      "admin"
+    );
+    AUTH_HEADER = `Bearer ${token}`;
+  });
 
   afterEach(async () => {
     await testUtils.removeCognitoTestUser("nicolastack16+create@gmail.com");
   });
 
   it("Success : User can create a new user", async () => {
-    const newUser = { 
-      name: "Nikki", 
+    const newUser = {
+      name: "Nikki",
       email: "nicolastack16+create@gmail.com",
-      password: process.env.TEST_PASSWORD
+      password: process.env.TEST_PASSWORD,
+      userType: "adopter",
     };
     const response = await request(app)
       .post("/users")
       .send(newUser)
       .set("Authorization", AUTH_HEADER);
+
+    console.log("Create User response:", response.body);
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("id");
@@ -79,6 +140,12 @@ describe("Create User in dynamoDB + Cognito", () => {
 });
 
 describe("Update User", () => {
+  beforeAll(async () => {
+    const token = await testUtils.generateBearerTokenForIntegrationTests(
+      "admin"
+    );
+    AUTH_HEADER = `Bearer ${token}`;
+  });
   afterEach(async () => {
     await testUtils.resetCognitoTestUser();
   });
@@ -100,6 +167,7 @@ describe("Update User", () => {
       .send(updatedUser)
       .set("Authorization", AUTH_HEADER);
 
+    console.log("response:", response.body);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("id");
     expect(response.body.id).toBe(existingUser.id);
@@ -110,10 +178,14 @@ describe("Update User", () => {
 
 describe("Delete User", () => {
   beforeAll(async () => {
+    const token = await testUtils.generateBearerTokenForIntegrationTests(
+      "admin"
+    );
+    AUTH_HEADER = `Bearer ${token}`;
     await testUtils.createCognitoTestUserForDeletionTest(
       "nicolastack16+testdelete@gmail.com"
     );
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
   });
 
   it("Success : User can delete a user", async () => {

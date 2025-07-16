@@ -14,7 +14,8 @@
         "Item": {
           "id": {"S": "004"},
           "name": {"S": "jane"},
-          "email": {"S": "nicolastack16+test@gmail.com"}
+          "email": {"S": "nicolastack16+test@gmail.com"},
+          "userType": {"S": "adopter"}
         }
       }
     },
@@ -34,6 +35,36 @@
           "name": {"S": "bob"}
         }
       }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": {"S": "12345"},
+          "name": {"S": "Waterford Dog Adoption Shelter"},
+          "email": {"S": "nicolastack16+shelter1@gmail.com"},
+          "userType": {"S": "shelter"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": {"S": "3456"},
+          "name": {"S": "Cody Smith"},
+          "email": {"S": "nicolastack16+admin@gmail.com"},
+          "userType": {"S": "admin"}
+        }
     }
+  },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": {"S": "3456"},
+          "name": {"S": "Ron Weasley"},
+          "email": {"S": "nicolastack16+adopter@gmail.com"},
+          "userType": {"S": "adpoter"}
+        }
+    }
+  }
   ]
 }

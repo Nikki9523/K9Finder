@@ -1,4 +1,4 @@
-const { DynamoDBClient, PutItemCommand, ScanCommand, UpdateItemCommand, DeleteItemCommand } = require("@aws-sdk/client-dynamodb");
+const { DynamoDBClient, PutItemCommand,ScanCommand, UpdateItemCommand, DeleteItemCommand } = require("@aws-sdk/client-dynamodb");
 
 require('dotenv').config();
 
@@ -34,13 +34,14 @@ const createUser = async (user) => {
     Item: {
       id: { S: user.id },
       name: { S: user.name },
-      email: { S: user.email }
+      email: { S: user.email },
+      userType: { S: user.userType}
     }
   };
 
   try {
     await dynamoClient.send(new PutItemCommand(params));
-    return { id: user.id, name: user.name, email: user.email };
+    return { id: user.id, name: user.name, email: user.email, userType: user.userType };
   } catch (error) {
     console.error("Error creating user:", error);
     throw new Error("Failed to create user");

@@ -47,4 +47,9 @@ const authenticateJWT = (req, res, next) => {
   );
 };
 
-module.exports = {authenticateJWT, getKey};
+const checkPermissions = (user, requiredGroup) => {
+  const groups = user["cognito:groups"] || [];
+  return groups.includes(requiredGroup);
+};
+
+module.exports = {authenticateJWT, getKey, checkPermissions};

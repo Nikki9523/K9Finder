@@ -1,10 +1,13 @@
 require('dotenv').config();
-const { CognitoIdentityProviderClient, InitiateAuthCommand,AdminDeleteUserCommand, AdminUpdateUserAttributesCommand, AdminCreateUserCommand, ListUsersCommand } = require("@aws-sdk/client-cognito-identity-provider");
+const { CognitoIdentityProviderClient,InitiateAuthCommand,AdminDeleteUserCommand, AdminUpdateUserAttributesCommand, AdminCreateUserCommand, ListUsersCommand } = require("@aws-sdk/client-cognito-identity-provider");
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFAULT_REGION });
 const {CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const {addUserToGroupInCognito} = require('../cognito');
 const testData = require('../seed-data.json');
 
-async function generateBearerTokenForIntegrationTests() {
+async function generateBearerTokenForIntegrationTests(userType) {
+  let secret;
+  let username;
   if (
     !process.env.COGNITO_CLIENT_ID ||
     !process.env.TEST_USERNAME ||
@@ -15,13 +18,24 @@ async function generateBearerTokenForIntegrationTests() {
       "Missing required values for generating token. Please set COGNITO_CLIENT_ID, TEST_USERNAME, TEST_PASSWORD, and SECRET_HASH in your environment variables."
     );
   }
+
+  if (userType === "adopter") {
+    username = process.env.TEST_USERNAME;
+    secret = process.env.SECRET_HASH;
+  } else if (userType === "admin") {
+    username = process.env.TEST_USERNAME_ADMIN;
+    secret = process.env.SECRET_HASH_ADMIN;
+  } else {
+    throw new Error("Invalid userType. Use 'adopter' or 'admin'.");
+  }
+
   const params = {
     AuthFlow: "USER_PASSWORD_AUTH",
     ClientId: process.env.COGNITO_CLIENT_ID,
     AuthParameters: {
-      USERNAME: process.env.TEST_USERNAME,
+      USERNAME: username,
       PASSWORD: process.env.TEST_PASSWORD,
-      SECRET_HASH: process.env.SECRET_HASH,
+      SECRET_HASH: secret
     },
   };
 
@@ -128,6 +142,8 @@ const createCognitoTestUserForDeletionTest = async (email) => {
       Username: "nicolastack16+testdelete@gmail.com",
       TemporaryPassword: process.env.TEST_PASSWORD
     }));
+
+    await addUserToGroupInCognito(email, "adopter");
     console.log("Cognito test user created successfully.");
   } catch (error) {
     console.error("Error creating Cognito test user:", error);

@@ -6,12 +6,12 @@
 
 require('dotenv').config();
 const express = require('express');
-const { authenticateJWT } = require('./auth');
+const { authenticateJWT, checkPermissions } = require('./auth');
 const { unmarshall } = require("@aws-sdk/util-dynamodb");
 const app = express();
 const { v4: uuidv4 } = require("uuid");
 const { getUsers, createUser, updateUser, deleteUser } = require("./dynamo.js");
-const { createCognitoUser, updateCognitoUser, deleteCognitoUser, getCognitoUserByEmail} = require('./cognito');
+const { createCognitoUser, addUserToGroupInCognito, updateCognitoUser, deleteCognitoUser, getCognitoUserByEmail} = require('./cognito');
 // const port = 3000;
 
 // parse requests 
@@ -31,11 +31,18 @@ app.use(authenticateJWT);
   be the same info as dynamoDB
   */
 
-app.get('/users', async (req, res) => {
+// Restrict access to admin?
+// shelter user can list adopters
+app.get("/users", async (req, res) => {
+  console.log("Checking user permissions...");
+  console.log("User:", req.user);
+  if (!checkPermissions(req.user, "admin")) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
   try {
     console.log("Retrieving users from DynamoDB...");
     const users = await getUsers();
-    res.status(200).json(users.map(user => unmarshall(user)));
+    res.status(200).json(users.map((user) => unmarshall(user)));
     console.log("Users retrieved successfully");
   } catch (error) {
     console.error("Error retrieving users:", error);
@@ -43,7 +50,10 @@ app.get('/users', async (req, res) => {
   }
 });
 
+// adopters get all shelter users
 
+//restrict to admin or self
+// shelter user can get adopter info
 app.get("/users/:id", async (req, res) => {
 
   const userId = req.params.id;
@@ -59,14 +69,17 @@ app.get("/users/:id", async (req, res) => {
   res.json(user);
 });
 
+// resetrict to admin, will add self register later
 app.post('/users', async (req, res) => {
   try {
-    if (!req.body.email || !req.body.name || !req.body.password) {
+    if (!req.body.email || !req.body.name || !req.body.userType || !req.body.password) {
       return res.status(400).json({ error: "Missing required fields: name, email, password" });
     }
     console.log("Creating new user...");
-    const createdUser = await createUser({ id: uuidv4(), name: req.body.name, email: req.body.email });
-    await createCognitoUser({ name: req.body.name, email: req.body.email, password: req.body.password });
+    const createdUser = await createUser({ id: uuidv4(), name: req.body.name, email: req.body.email, userType: req.body.userType });
+    await createCognitoUser({ name: req.body.name, email: req.body.email, password: req.body.password, userType: req.body.userType });
+    await addUserToGroupInCognito(req.body.email, req.body.userType);
+    console.log("User created successfully in DynamoDB and Cognito:", createdUser);
     console.log("Created user:", createdUser);
     res.status(201).json(createdUser);
   } catch (error) {
@@ -75,13 +88,25 @@ app.post('/users', async (req, res) => {
   }
 });
 
+// restrict to admin or self
 app.put("/users/:id", async (req, res) => {
   try {
+    const userId = req.params.id;
+
+    const users = await getUsers();
+    const usersFormatted = users.map((user) => unmarshall(user));
+    const existingUser = usersFormatted.find((user) => user.id === userId);
+
+    if (!existingUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
     const updatedUser = {
-      id: req.params.id,
+      id: userId,
       name: req.body.name,
       email: req.body.email,
-      newEmail: req.body.newEmail
+      newEmail: req.body.newEmail,
+      userType: existingUser.userType // Don't think userType should be able to be updated but might change
     };
 
     //dynamoDb
@@ -97,13 +122,14 @@ app.put("/users/:id", async (req, res) => {
     );
     console.log("User updated successfully:", updatedUser);
 
-    res.status(200).json({ id: updatedUser.id, name: updatedUser.name, email: updatedUser.email });
+    res.status(200).json({ id: updatedUser.id, name: updatedUser.name, email: updatedUser.email, userType: updatedUser.userType });
   } catch (error) {
     console.error("Error updating user:", error);
     return res.status(500).json({ error: "Failed to update user" });
   }
 });
 
+// restrict to admin or self
 app.delete("/users/:id", async (req, res) => {
   try {
     const userId = req.params.id;
