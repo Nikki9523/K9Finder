@@ -1,12 +1,11 @@
 const httpMocks = require('node-mocks-http');
 const jwt = require('jsonwebtoken');
 
-// Mock jwks-rsa globally for getKey tests
 jest.mock('jwks-rsa', () => () => ({
   getSigningKey: (kid, cb) => cb(null, { publicKey: 'test-key' }),
 }));
 
-const { authenticateJWT, getKey } = require('../../auth');
+const { authenticateJWT, getKey, checkPermissions } = require('../../auth');
 
 describe("getKey", () => {
   it("Success: uses publicKey if present", (done) => {
@@ -119,7 +118,7 @@ describe("authenticateJWT middleware", () => {
     jest.doMock("jwks-rsa", () => () => ({
       getSigningKey: (kid, cb) => cb(new Error("Signing key not found")),
     }));
-    // Re-require auth to get the new mock
+   
     const { authenticateJWT } = require("../../auth");
 
     const token = jwt.sign({ sub: "123" }, "test-key", { algorithm: "HS256" });
@@ -144,8 +143,6 @@ describe("authenticateJWT middleware", () => {
     done();
   });
 });
-
-// Mock Cognito client for completeness
 jest.mock('@aws-sdk/client-cognito-identity-provider', () => {
   const mClient = {
     send: jest.fn(),
@@ -154,4 +151,22 @@ jest.mock('@aws-sdk/client-cognito-identity-provider', () => {
     CognitoIdentityProviderClient: jest.fn(() => mClient),
     InitiateAuthCommand: jest.fn(),
   };
+});
+
+describe('checkPermissions', () => {
+  it('returns true if user is in the required group', () => {
+    const user = { "cognito:groups": ["admin", "shelter"] };
+    expect(checkPermissions(user, "admin")).toBe(true);
+    expect(checkPermissions(user, "shelter")).toBe(true);
+  });
+
+  it('returns false if user is not in the required group', () => {
+    const user = { "cognito:groups": ["user"] };
+    expect(checkPermissions(user, "admin")).toBe(false);
+  });
+
+  it('returns false if user has no groups', () => {
+    const user = {};
+    expect(checkPermissions(user, "admin")).toBe(false);
+  });
 });

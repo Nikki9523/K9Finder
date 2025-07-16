@@ -17,11 +17,10 @@ async function createCognitoUser({ name, email, password, userType }) {
 }
 
 async function addUserToGroupInCognito(email, groupName) {
-  console.log("Adding user to Cognito group:", email, groupName);
   const params = {
     UserPoolId: process.env.COGNITO_USER_POOL_ID,
     Username: email,
-    GroupName: groupName
+    GroupName: groupName,
   };
   return cognito.send(new AdminAddUserToGroupCommand(params));
 }
