@@ -1,7 +1,7 @@
 const { CognitoIdentityProviderClient, AdminCreateUserCommand, AdminAddUserToGroupCommand , AdminUpdateUserAttributesCommand, AdminDeleteUserCommand, ListUsersCommand } = require("@aws-sdk/client-cognito-identity-provider");
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFAULT_REGION });
 
-async function createCognitoUser({ name, email, password, userType }) {
+async function createCognitoUser({ name, email, password }) {
   const params = {
     UserPoolId: process.env.COGNITO_USER_POOL_ID,
     MessageAction: "SUPPRESS",

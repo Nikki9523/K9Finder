@@ -105,7 +105,7 @@ app.post('/users', async (req, res) => {
       return res.status(400).json({ error: "Missing required fields: name, email, password" });
     }
     console.log("Creating new user...");
-    const cognitoUser = await createCognitoUser({ name: req.body.name, email: req.body.email, password: req.body.password, userType: req.body.userType });
+    const cognitoUser = await createCognitoUser({ name: req.body.name, email: req.body.email, password: req.body.password});
     const cognitoUserId = cognitoUser.User.Username;
     await addUserToGroupInCognito(req.body.email, req.body.userType);
     const createdUser = await createUser({ id: cognitoUserId, name: req.body.name, email: req.body.email, userType: req.body.userType });
