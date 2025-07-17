@@ -2,7 +2,7 @@ name: Build, Test and Upload Artifact
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "only-deploy-on-merge" ]
   pull_request:
     branches: [ "main" ]
 
