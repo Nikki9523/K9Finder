@@ -20,6 +20,8 @@ afterAll(async () => {
   await teardownTestData();
 });
 
+//try refactor tests to make them more DRY
+
 describe("Get Specific existing User", () => {
   beforeAll(async () => {
     const token = await testUtils.generateBearerTokenForIntegrationTests(
@@ -47,7 +49,7 @@ describe("Get Specific existing User", () => {
   });
 });
 
-describe("Get Users", () => {
+describe("Get All Users", () => {
   beforeAll(async () => {
     const token = await testUtils.generateBearerTokenForIntegrationTests("adopter");
     AUTH_HEADER = `Bearer ${token}`;
@@ -61,7 +63,7 @@ describe("Get Users", () => {
   });
 });
 
-describe("Get Users with adopter userType", () => {
+describe("Get Users with adopter userType as admin user", () => {
   beforeAll(async () => {
     const token = await testUtils.generateBearerTokenForIntegrationTests(
       "admin"
@@ -103,6 +105,113 @@ describe("Get Users with adopter userType", () => {
         email: "nicolastack16+test@gmail.com",
       },
     ]);
+  });
+});
+
+describe("Get Users with shelter userType as admin user", () => {
+  beforeAll(async () => {
+    const token = await testUtils.generateBearerTokenForIntegrationTests(
+      "admin"
+    );
+    AUTH_HEADER = `Bearer ${token}`;
+  });
+  it("Success : User can retrieve all shelter users", async () => {
+    const response = await request(app)
+      .get("/users/shelters")
+      .set("Authorization", AUTH_HEADER);
+    console.log("Get Shelter Users response:", response.body);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([
+      {
+        name: "Waterford Dog Adoption Shelter",
+        id: "12345",
+        userType: "shelter",
+        email: "nicolastack16+shelter1@gmail.com"
+      }
+    ]);
+  });
+});
+
+describe("Get Users with adopter userType as shelter user", () => {
+  beforeAll(async () => {
+    const token = await testUtils.generateBearerTokenForIntegrationTests(
+      "shelter"
+    );
+    console.log("Generated token for shelter user:", token);
+    AUTH_HEADER = `Bearer ${token}`;
+  });
+  it("Success : Shelter User can retrieve all adopter users", async () => {
+    const response = await request(app)
+      .get("/users/adopters")
+      .set("Authorization", AUTH_HEADER);
+    console.log("Get Adopter Users response:", response.body);
+    expect(response.status).toBe(200);
+    console.log("Get Adopter Users response:", response.body);
+    expect(response.body).toEqual([
+      {
+        name: "jane",
+        id: "004",
+        userType: "adopter",
+        email: "nicolastack16+test@gmail.com",
+      },
+    ]);
+  });
+});
+
+describe("Get Users with shelter userType as adopter user", () => {
+  beforeAll(async () => {
+    const token = await testUtils.generateBearerTokenForIntegrationTests(
+      "adopter"
+    );
+    AUTH_HEADER = `Bearer ${token}`;
+  });
+
+  it("Success : Adopter User can retrieve all shelter users", async () => {
+    const response = await request(app)
+      .get("/users/shelters")
+      .set("Authorization", AUTH_HEADER);
+    console.log("Get Shelter Users response:", response.body);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([
+      {
+        name: "Waterford Dog Adoption Shelter",
+        id: "12345",
+        userType: "shelter",
+        email: "nicolastack16+shelter1@gmail.com"
+      }
+    ]);
+  });
+});
+
+describe("Failure: Get Users with adopter userType as adopter user", () => {
+  beforeAll(async () => {
+    const token = await testUtils.generateBearerTokenForIntegrationTests(
+      "adopter"
+    );
+    AUTH_HEADER = `Bearer ${token}`;
+  });
+  it("Failure : Adopter User cannot retrieve all adopter users", async () => {
+    const response = await request(app)
+      .get("/users/adopters")
+      .set("Authorization", AUTH_HEADER);
+    expect(response.status).toBe(403);
+    expect(response.body).toEqual({ error: "Forbidden" });
+  });
+});
+
+describe("Failure: Get Users with shelter userType as shelther user", () => {
+  beforeAll(async () => {
+    const token = await testUtils.generateBearerTokenForIntegrationTests(
+      "shelter"
+    );
+    AUTH_HEADER = `Bearer ${token}`;
+  });
+  it("Failure : Shelter User cannot retrieve all shelter users", async () => {
+    const response = await request(app)
+      .get("/users/shelters")
+      .set("Authorization", AUTH_HEADER);
+    expect(response.status).toBe(403);
+    expect(response.body).toEqual({ error: "Forbidden" });
   });
 });
 

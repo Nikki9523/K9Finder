@@ -4,6 +4,7 @@ const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFA
 const {CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const {addUserToGroupInCognito} = require('../cognito');
 const testData = require('../seed-data.json');
+const e = require('express');
 
 async function generateBearerTokenForIntegrationTests(userType) {
   let secret;
@@ -25,6 +26,9 @@ async function generateBearerTokenForIntegrationTests(userType) {
   } else if (userType === "admin") {
     username = process.env.TEST_USERNAME_ADMIN;
     secret = process.env.SECRET_HASH_ADMIN;
+  }else if (userType === "shelter") {
+    username = process.env.TEST_USERNAME_SHELTER;
+    secret = process.env.SECRET_HASH_SHELTER;
   } else {
     throw new Error("Invalid userType. Use 'adopter' or 'admin'.");
   }

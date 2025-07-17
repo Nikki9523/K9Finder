@@ -31,8 +31,8 @@ app.use(authenticateJWT);
   be the same info as dynamoDB
   */
 
-// Restrict access to admin?
-// shelter user can list adopters
+
+// refactor these users functions to be more DRY
 app.get("/users", async (req, res) => {
   console.log("Checking user permissions...");
   console.log("User:", req.user);
@@ -50,7 +50,41 @@ app.get("/users", async (req, res) => {
   }
 });
 
-// adopters get all shelter users
+app.get("/users/shelters", async (req, res) => {
+  console.log("Checking user permissions...");
+  console.log("User:", req.user);
+  if (!checkPermissions(req.user, "admin") && !checkPermissions(req.user, "adopter")) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  try {
+    console.log("Retrieving users from DynamoDB...");
+    const users = await getUsers();
+    const shelters = users.map(unmarshall).filter(u => u.userType === "shelter");
+    res.status(200).json(shelters);
+    console.log("Shelter users retrieved successfully");
+  } catch (error) {
+    console.error("Error retrieving users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/users/adopters", async (req, res) => {
+  console.log("Checking user permissions...");
+  console.log("User:", req.user);
+  if (!checkPermissions(req.user, "admin") && !checkPermissions(req.user, "shelter")) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  try {
+    console.log("Retrieving users from DynamoDB...");
+    const users = await getUsers();
+    const adopters = users.map(unmarshall).filter(u => u.userType === "adopter");
+    res.status(200).json(adopters);
+    console.log("Adopter users retrieved successfully");
+  } catch (error) {
+    console.error("Error retrieving users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 //restrict to admin or self
 // shelter user can get adopter info
