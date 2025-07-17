@@ -5,7 +5,7 @@ jest.mock('jwks-rsa', () => () => ({
   getSigningKey: (kid, cb) => cb(null, { publicKey: 'test-key' }),
 }));
 
-const { authenticateJWT, getKey, checkPermissions } = require('../../auth');
+const { authenticateJWT, getKey, checkPermissions, checkIfUserIsRequestingOwnDetails } = require('../../auth');
 
 describe("getKey", () => {
   it("Success: uses publicKey if present", (done) => {
@@ -168,5 +168,18 @@ describe('checkPermissions', () => {
   it('returns false if user has no groups', () => {
     const user = {};
     expect(checkPermissions(user, "admin")).toBe(false);
+  });
+});
+
+describe('checkIfUserIsRequestingOwnDetails', () => {
+  it('returns true if user is requesting their own details', () => {
+    const userId = '123';
+    const cognitoUserId = '123';
+    expect(checkIfUserIsRequestingOwnDetails(userId, cognitoUserId)).toBe(true);
+  });
+  it('returns false if user is requesting someone elses details', () => {
+    const userId = '123';
+    const cognitoUserId = '456';
+    expect(checkIfUserIsRequestingOwnDetails(userId, cognitoUserId)).toBe(false);
   });
 });

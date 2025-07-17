@@ -6,10 +6,9 @@
 
 require('dotenv').config();
 const express = require('express');
-const { authenticateJWT, checkPermissions } = require('./auth');
+const { authenticateJWT, checkPermissions, checkIfUserIsRequestingOwnDetails } = require('./auth');
 const { unmarshall } = require("@aws-sdk/util-dynamodb");
 const app = express();
-const { v4: uuidv4 } = require("uuid");
 const { getUsers, createUser, updateUser, deleteUser } = require("./dynamo.js");
 const { createCognitoUser, addUserToGroupInCognito, updateCognitoUser, deleteCognitoUser, getCognitoUserByEmail} = require('./cognito');
 // const port = 3000;
@@ -52,7 +51,6 @@ app.get("/users", async (req, res) => {
 
 app.get("/users/shelters", async (req, res) => {
   console.log("Checking user permissions...");
-  console.log("User:", req.user);
   if (!checkPermissions(req.user, "admin") && !checkPermissions(req.user, "adopter")) {
     return res.status(403).json({ error: "Forbidden" });
   }
@@ -70,12 +68,10 @@ app.get("/users/shelters", async (req, res) => {
 
 app.get("/users/adopters", async (req, res) => {
   console.log("Checking user permissions...");
-  console.log("User:", req.user);
   if (!checkPermissions(req.user, "admin") && !checkPermissions(req.user, "shelter")) {
     return res.status(403).json({ error: "Forbidden" });
   }
   try {
-    console.log("Retrieving users from DynamoDB...");
     const users = await getUsers();
     const adopters = users.map(unmarshall).filter(u => u.userType === "adopter");
     res.status(200).json(adopters);
@@ -86,11 +82,15 @@ app.get("/users/adopters", async (req, res) => {
   }
 });
 
-//restrict to admin or self
-// shelter user can get adopter info
 app.get("/users/:id", async (req, res) => {
-
+  console.log("request params:", req.params);
   const userId = req.params.id;
+  const cognitoUserId = req.user.sub;
+  console.log("userId in params is:", userId);
+  console.log("the user requesting it is:", req.user);
+  if (!checkPermissions(req.user, "admin") && !checkPermissions(req.user, "shelter") && !checkIfUserIsRequestingOwnDetails(userId, cognitoUserId)) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
 
   const users = await getUsers();
 
@@ -110,11 +110,12 @@ app.post('/users', async (req, res) => {
       return res.status(400).json({ error: "Missing required fields: name, email, password" });
     }
     console.log("Creating new user...");
-    const createdUser = await createUser({ id: uuidv4(), name: req.body.name, email: req.body.email, userType: req.body.userType });
-    await createCognitoUser({ name: req.body.name, email: req.body.email, password: req.body.password, userType: req.body.userType });
+    const cognitoUser = await createCognitoUser({ name: req.body.name, email: req.body.email, password: req.body.password, userType: req.body.userType });
+    console.log("Cognito user created successfully:", cognitoUser);
+    const cognitoUserId = cognitoUser.User.Username;
     await addUserToGroupInCognito(req.body.email, req.body.userType);
+    const createdUser = await createUser({ id: cognitoUserId, name: req.body.name, email: req.body.email, userType: req.body.userType });
     console.log("User created successfully in DynamoDB and Cognito:", createdUser);
-    console.log("Created user:", createdUser);
     res.status(201).json(createdUser);
   } catch (error) {
     console.error("Error creating user:", error);

@@ -52,4 +52,8 @@ const checkPermissions = (user, requiredGroup) => {
   return groups.includes(requiredGroup);
 };
 
-module.exports = {authenticateJWT, getKey, checkPermissions};
+const checkIfUserIsRequestingOwnDetails = (userId, cognitoUserId) => {
+  return userId === cognitoUserId;
+};
+
+module.exports = {authenticateJWT, getKey, checkPermissions,checkIfUserIsRequestingOwnDetails};

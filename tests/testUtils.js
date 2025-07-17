@@ -4,7 +4,6 @@ const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFA
 const {CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const {addUserToGroupInCognito} = require('../cognito');
 const testData = require('../seed-data.json');
-const e = require('express');
 
 async function generateBearerTokenForIntegrationTests(userType) {
   let secret;

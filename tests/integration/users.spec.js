@@ -22,7 +22,7 @@ afterAll(async () => {
 
 //try refactor tests to make them more DRY
 
-describe("Get Specific existing User", () => {
+describe("Get Specific existing User as admin", () => {
   beforeAll(async () => {
     const token = await testUtils.generateBearerTokenForIntegrationTests(
       "admin"
@@ -31,13 +31,14 @@ describe("Get Specific existing User", () => {
   });
   it("Success : User can retrieve existing user", async () => {
     const response = await request(app)
-      .get("/users/001")
+      .get("/users/248814d8-00d1-707d-3f83-dbb749859424")
       .set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
-      id: "001",
+      id: "248814d8-00d1-707d-3f83-dbb749859424",
       name: "nicola",
       email: "nicolastack16@gmail.com",
+      userType: "adopter"
     });
   });
 
@@ -49,17 +50,81 @@ describe("Get Specific existing User", () => {
   });
 });
 
-describe("Get All Users", () => {
+describe("Get Specific existing User as shelter user", () => {
   beforeAll(async () => {
-    const token = await testUtils.generateBearerTokenForIntegrationTests("adopter");
+    const token = await testUtils.generateBearerTokenForIntegrationTests(
+      "shelter"
+    );
     AUTH_HEADER = `Bearer ${token}`;
   });
-  it("Failure : User without admin userType cannot retrieve all users", async () => {
+
+  it("Success : Shelter User can retrieve existing adopter user", async () => {
     const response = await request(app)
-      .get("/users")
+      .get("/users/248814d8-00d1-707d-3f83-dbb749859424")
+      .set("Authorization", AUTH_HEADER);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      id: "248814d8-00d1-707d-3f83-dbb749859424",
+      name: "nicola",
+      email: "nicolastack16@gmail.com",
+      userType: "adopter"
+    });
+  });
+  it("Success : Shelter User can retrieve their own details", async () => {
+    const response = await request(app)
+      .get("/users/12345")
+      .set("Authorization", AUTH_HEADER);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      id: "12345",
+      name: "Waterford Dog Adoption Shelter",
+      userType: "shelter",
+      email: "nicolastack16+shelter1@gmail.com"
+    });
+  });
+  it("Failure: Shelter User cannot get list of other shelters", async () => {
+    const response = await request(app)
+      .get("/users/shelters")
       .set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(403);
     expect(response.body).toEqual({ error: "Forbidden" });
+  });
+});
+
+describe("Get Specific existing User as adopter user", () => {
+  beforeAll(async () => {
+    const token = await testUtils.generateBearerTokenForIntegrationTests(
+      "adopter"
+    );
+    AUTH_HEADER = `Bearer ${token}`;
+  });
+
+  describe("Get specific user as adopter user", () => {
+    beforeAll(async () => {
+      const token = await testUtils.generateBearerTokenForIntegrationTests(
+        "adopter"
+      );
+      AUTH_HEADER = `Bearer ${token}`;
+    });
+    it("Success : Adopter User can retrieve their own details", async () => {
+      const response = await request(app)
+        .get("/users/248814d8-00d1-707d-3f83-dbb749859424")
+        .set("Authorization", AUTH_HEADER);
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        id: "248814d8-00d1-707d-3f83-dbb749859424",
+        name: "nicola",
+        email: "nicolastack16@gmail.com",
+        "userType": "adopter"
+      });
+    });
+    it("Failure : Adopter User cannot retrieve another user's details", async () => {
+      const response = await request(app)
+        .get("/users/3456")
+        .set("Authorization", AUTH_HEADER);
+      expect(response.status).toBe(403);
+      expect(response.body).toEqual({ error: "Forbidden" });
+    });
   });
 });
 
@@ -77,33 +142,49 @@ describe("Get Users with adopter userType as admin user", () => {
       .set("Authorization", AUTH_HEADER);
     console.log("Get Users response:", response.body);
     expect(response.status).toBe(200);
-    console.log("Users retrieved:", response.body);
-    expect(response.body).toEqual([
+    expect(response.body).toEqual([                                                                
       {
-        name: "Waterford Dog Adoption Shelter",
-        id: "12345",
-        userType: "shelter",
-        email: "nicolastack16+shelter1@gmail.com",
-      },
-      { name: "nicola", email: "nicolastack16@gmail.com", id: "001" },
-      { name: "bob", id: "002" },
-      {
-        name: "test delete",
-        email: "nicolastack16+testdelete@gmail.com",
-        id: "003",
+        name: 'nicola',
+        id: '248814d8-00d1-707d-3f83-dbb749859424',
+        userType: 'adopter',
+        email: 'nicolastack16@gmail.com'
       },
       {
-        name: "Ron Weasley",
-        id: "3456",
-        userType: "adpoter",
-        email: "nicolastack16+adopter@gmail.com",
+        name: 'Waterford Dog Adoption Shelter',
+        id: '12345',
+        userType: 'shelter',
+        email: 'nicolastack16+shelter1@gmail.com'
       },
       {
-        name: "jane",
-        id: "004",
-        userType: "adopter",
-        email: "nicolastack16+test@gmail.com",
+        name: 'Cody Smith',
+        id: '78910',
+        userType: 'admin',
+        email: 'nicolastack16+admin@gmail.com'
       },
+      { name: 'bob', id: '002' },
+      {
+        name: 'test delete',
+        email: 'nicolastack16+testdelete@gmail.com',
+        id: '003'
+      },
+      {
+        name: 'Ron Weasley',
+        id: '3456',
+        userType: 'adopter',
+        email: 'nicolastack16+adopter@gmail.com'
+      },
+      {
+        name: 'jane',
+        id: '004',
+        userType: 'adopter',
+        email: 'nicolastack16+test@gmail.com'
+      },
+      {
+        name: 'Carlow Dog Adoption Shelter',
+        id: '101010',
+        userType: 'shelter',
+        email: 'nicolastack16+shelter2@gmail.com'
+      }
     ]);
   });
 });
@@ -115,7 +196,7 @@ describe("Get Users with shelter userType as admin user", () => {
     );
     AUTH_HEADER = `Bearer ${token}`;
   });
-  it("Success : User can retrieve all shelter users", async () => {
+  it("Success : Admin User can retrieve all shelter users", async () => {
     const response = await request(app)
       .get("/users/shelters")
       .set("Authorization", AUTH_HEADER);
@@ -127,6 +208,12 @@ describe("Get Users with shelter userType as admin user", () => {
         id: "12345",
         userType: "shelter",
         email: "nicolastack16+shelter1@gmail.com"
+      },
+      {
+        name: "Carlow Dog Adoption Shelter",
+        id: "101010",
+        userType: "shelter",
+        email: "nicolastack16+shelter2@gmail.com"
       }
     ]);
   });
@@ -144,16 +231,27 @@ describe("Get Users with adopter userType as shelter user", () => {
     const response = await request(app)
       .get("/users/adopters")
       .set("Authorization", AUTH_HEADER);
-    console.log("Get Adopter Users response:", response.body);
     expect(response.status).toBe(200);
     console.log("Get Adopter Users response:", response.body);
-    expect(response.body).toEqual([
+    expect(response.body).toEqual([                                                        
       {
-        name: "jane",
-        id: "004",
-        userType: "adopter",
-        email: "nicolastack16+test@gmail.com",
+        name: 'nicola',
+        id: '248814d8-00d1-707d-3f83-dbb749859424',
+        userType: 'adopter',
+        email: 'nicolastack16@gmail.com'
       },
+      {
+        name: 'Ron Weasley',
+        id: '3456',
+        userType: 'adopter',
+        email: 'nicolastack16+adopter@gmail.com'
+      },
+      {
+        name: 'jane',
+        id: '004',
+        userType: 'adopter',
+        email: 'nicolastack16+test@gmail.com'
+      }
     ]);
   });
 });
@@ -177,8 +275,14 @@ describe("Get Users with shelter userType as adopter user", () => {
         name: "Waterford Dog Adoption Shelter",
         id: "12345",
         userType: "shelter",
-        email: "nicolastack16+shelter1@gmail.com"
-      }
+        email: "nicolastack16+shelter1@gmail.com",
+      },
+      {
+        name: "Carlow Dog Adoption Shelter",
+        id: "101010",
+        userType: "shelter",
+        email: "nicolastack16+shelter2@gmail.com",
+      },
     ]);
   });
 });
