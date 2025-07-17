@@ -32,13 +32,18 @@ async function generateBearerTokenForIntegrationTests(userType) {
 
   if (userType === "adopter") {
     username = process.env.TEST_USERNAME;
+    console.log("Generating token for adopter:", username);
   } else if (userType === "admin") {
     username = process.env.TEST_USERNAME_ADMIN;
+    console.log("Generating token for admin:", username);
   } else if (userType === "shelter") {
     username = process.env.TEST_USERNAME_SHELTER;
+    console.log("Generating token for shelter:", username);
   } else {
     throw new Error("Invalid userType. Use 'adopter' or 'admin' or 'shelter'.");
   }
+
+  console.log("Generating token for user:", username);
 
   secret = generateSecretHash(username, clientId, clientSecret);
 
