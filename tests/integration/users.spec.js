@@ -24,9 +24,7 @@ afterAll(async () => {
 
 describe("Get Specific existing User as admin", () => {
   beforeAll(async () => {
-    const token = await testUtils.generateBearerTokenForIntegrationTests(
-      "admin"
-    );
+    const token = await testUtils.generateBearerTokenForIntegrationTests("admin");
     AUTH_HEADER = `Bearer ${token}`;
   });
   it("Success : User can retrieve existing user", async () => {

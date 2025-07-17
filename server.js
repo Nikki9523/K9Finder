@@ -18,7 +18,6 @@ app.use(express.json());
 
 app.use(authenticateJWT);
 
-
 // if (process.env.NODE_ENV !== 'test') {
 //   app.listen(port, () => {
 //     console.log(`Example app listening on port ${port}`);

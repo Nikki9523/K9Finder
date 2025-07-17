@@ -22,6 +22,7 @@ function getKey(header, callback, customClient) {
   });
 }
 
+
 const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {

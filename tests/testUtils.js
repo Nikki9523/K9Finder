@@ -2,11 +2,22 @@ require('dotenv').config();
 const { CognitoIdentityProviderClient,InitiateAuthCommand,AdminDeleteUserCommand, AdminUpdateUserAttributesCommand, AdminCreateUserCommand, ListUsersCommand } = require("@aws-sdk/client-cognito-identity-provider");
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFAULT_REGION });
 const {CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const {addUserToGroupInCognito} = require('../cognito');
-const testData = require('../seed-data.json');
+const { addUserToGroupInCognito } = require("../cognito");
+const testData = require("../seed-data.json");
+const crypto = require("crypto");
+
+const generateSecretHash = (username, clientId, clientSecret) => {
+  return crypto
+    .createHmac("SHA256", clientSecret)
+    .update(username + clientId)
+    .digest("base64");
+};
 
 async function generateBearerTokenForIntegrationTests(userType) {
+  const clientId = process.env.COGNITO_CLIENT_ID;
+  const clientSecret = process.env.COGNITO_CLIENT_SECRET;
   let secret;
+
   let username;
   if (
     !process.env.COGNITO_CLIENT_ID ||
@@ -21,16 +32,15 @@ async function generateBearerTokenForIntegrationTests(userType) {
 
   if (userType === "adopter") {
     username = process.env.TEST_USERNAME;
-    secret = process.env.SECRET_HASH;
   } else if (userType === "admin") {
     username = process.env.TEST_USERNAME_ADMIN;
-    secret = process.env.SECRET_HASH_ADMIN;
-  }else if (userType === "shelter") {
+  } else if (userType === "shelter") {
     username = process.env.TEST_USERNAME_SHELTER;
-    secret = process.env.SECRET_HASH_SHELTER;
   } else {
-    throw new Error("Invalid userType. Use 'adopter' or 'admin'.");
+    throw new Error("Invalid userType. Use 'adopter' or 'admin' or 'shelter'.");
   }
+
+  secret = generateSecretHash(username, clientId, clientSecret);
 
   const params = {
     AuthFlow: "USER_PASSWORD_AUTH",
