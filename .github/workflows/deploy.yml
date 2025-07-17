@@ -3,19 +3,19 @@
 name: Deploy Artifact to Lambda
 on:
   workflow_run:
-    workflows: ["Build, Test and Upload Artifact"]
+    workflows: ["Download and Deploy Artifact"]
     types:
       - completed
   push:
     branches: [ "main" ]
+    
+env:
+  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-  env:
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION}}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  upload:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
