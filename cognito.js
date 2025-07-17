@@ -2,7 +2,6 @@ const { CognitoIdentityProviderClient, AdminCreateUserCommand, AdminAddUserToGro
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFAULT_REGION });
 
 async function createCognitoUser({ name, email, password, userType }) {
-  console.log("Creating Cognito user:", name, email, userType);
   const params = {
     UserPoolId: process.env.COGNITO_USER_POOL_ID,
     MessageAction: "SUPPRESS",
@@ -26,7 +25,6 @@ async function addUserToGroupInCognito(email, groupName) {
 }
 
 async function updateCognitoUser(email, name, newEmail) {
-  console.log("Updating Cognito user:", email, name, newEmail);
   const params = {
     UserPoolId: process.env.COGNITO_USER_POOL_ID,
     Username: email,
@@ -45,7 +43,6 @@ async function deleteCognitoUser(username) {
   };
   try {
     await cognito.send(new AdminDeleteUserCommand(params));
-    console.log("Cognito user deleted successfully:", username);
   } catch (error) {
     console.error("Error deleting Cognito user:", error);
     throw new Error("Failed to delete Cognito user");

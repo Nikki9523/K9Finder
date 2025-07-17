@@ -37,24 +37,19 @@ async function generateBearerTokenForIntegrationTests(userType) {
     if (!username) {
       throw new Error("TEST_USERNAME is not set. Please set it in your environment variables.");
     }
-    console.log("Generating token for adopter:", username);
   } else if (userType === "admin") {
     username = process.env.TEST_USERNAME_ADMIN;
     if (!username) {
       throw new Error("TEST_USERNAME_ADMIN is not set. Please set it in your environment variables.");
     }
-    console.log("Generating token for admin:", username);
   } else if (userType === "shelter") {
     username = process.env.TEST_USERNAME_SHELTER;
     if (!username) {
       throw new Error("TEST_USERNAME_SHELTER is not set. Please set it in your environment variables.");
     }
-    console.log("Generating token for shelter:", username);
   } else {
     throw new Error("Invalid userType. Use 'adopter' or 'admin' or 'shelter'.");
   }
-
-  console.log("Generating token for user:", username);
 
   secret = generateSecretHash(username, clientId, clientSecret);
 

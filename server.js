@@ -33,7 +33,6 @@ app.use(authenticateJWT);
 // refactor these users functions to be more DRY
 app.get("/users", async (req, res) => {
   console.log("Checking user permissions...");
-  console.log("User:", req.user);
   if (!checkPermissions(req.user, "admin")) {
     return res.status(403).json({ error: "Forbidden" });
   }
@@ -107,7 +106,6 @@ app.post('/users', async (req, res) => {
     }
     console.log("Creating new user...");
     const cognitoUser = await createCognitoUser({ name: req.body.name, email: req.body.email, password: req.body.password, userType: req.body.userType });
-    console.log("Cognito user created successfully:", cognitoUser);
     const cognitoUserId = cognitoUser.User.Username;
     await addUserToGroupInCognito(req.body.email, req.body.userType);
     const createdUser = await createUser({ id: cognitoUserId, name: req.body.name, email: req.body.email, userType: req.body.userType });
@@ -119,7 +117,6 @@ app.post('/users', async (req, res) => {
   }
 });
 
-// restrict to admin or self
 app.put("/users/:id", async (req, res) => {
   try {
     const userId = req.params.id;
@@ -151,7 +148,6 @@ app.put("/users/:id", async (req, res) => {
       updatedUser.name,
       updatedUser.newEmail
     );
-    console.log("User updated successfully:", updatedUser);
 
     res.status(200).json({ id: updatedUser.id, name: updatedUser.name, email: updatedUser.email, userType: updatedUser.userType });
   } catch (error) {
@@ -165,16 +161,13 @@ app.delete("/users/:id", async (req, res) => {
   try {
     const userId = req.params.id;
     const email = req.body.email;
-    console.log("Deleting user with ID:", userId, "and email:", email);
 
     // dynamoDB
     await deleteUser(userId);
 
-    console.log("Deleting Cognito user with email:", email);
     const validateUserExists = await getCognitoUserByEmail(email);
 
     if (!validateUserExists) {
-      console.log("User does not exist in cognito. Nothing to delete");
       return res.status(404).json({ message: "User does not exist" });
     }
     
