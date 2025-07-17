@@ -83,11 +83,8 @@ app.get("/users/adopters", async (req, res) => {
 });
 
 app.get("/users/:id", async (req, res) => {
-  console.log("request params:", req.params);
   const userId = req.params.id;
   const cognitoUserId = req.user.sub;
-  console.log("userId in params is:", userId);
-  console.log("the user requesting it is:", req.user);
   if (!checkPermissions(req.user, "admin") && !checkPermissions(req.user, "shelter") && !checkIfUserIsRequestingOwnDetails(userId, cognitoUserId)) {
     return res.status(403).json({ error: "Forbidden" });
   }
