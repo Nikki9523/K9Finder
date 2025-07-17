@@ -22,6 +22,7 @@ function getKey(header, callback, customClient) {
   });
 }
 
+
 const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -47,4 +48,13 @@ const authenticateJWT = (req, res, next) => {
   );
 };
 
-module.exports = {authenticateJWT, getKey};
+const checkPermissions = (user, requiredGroup) => {
+  const groups = user["cognito:groups"] || [];
+  return groups.includes(requiredGroup);
+};
+
+const checkIfUserIsRequestingOwnDetails = (userId, cognitoUserId) => {
+  return userId === cognitoUserId;
+};
+
+module.exports = {authenticateJWT, getKey, checkPermissions,checkIfUserIsRequestingOwnDetails};

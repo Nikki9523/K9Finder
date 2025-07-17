@@ -1,27 +1,65 @@
 require('dotenv').config();
-const { CognitoIdentityProviderClient, InitiateAuthCommand,AdminDeleteUserCommand, AdminUpdateUserAttributesCommand, AdminCreateUserCommand, ListUsersCommand } = require("@aws-sdk/client-cognito-identity-provider");
+const { CognitoIdentityProviderClient,InitiateAuthCommand,AdminDeleteUserCommand, AdminUpdateUserAttributesCommand, AdminCreateUserCommand, ListUsersCommand } = require("@aws-sdk/client-cognito-identity-provider");
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFAULT_REGION });
 const {CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const testData = require('../seed-data.json');
+const { addUserToGroupInCognito } = require("../cognito");
+const testData = require("../seed-data.json");
+const crypto = require("crypto");
 
-async function generateBearerTokenForIntegrationTests() {
+const generateSecretHash = (username, clientId, clientSecret) => {
+  return crypto
+    .createHmac("SHA256", clientSecret)
+    .update(username + clientId)
+    .digest("base64");
+};
+
+async function generateBearerTokenForIntegrationTests(userType) {
+  const clientId = process.env.COGNITO_CLIENT_ID;
+  const clientSecret = process.env.COGNITO_CLIENT_SECRET;
+  let secret;
+
+  let username;
   if (
     !process.env.COGNITO_CLIENT_ID ||
     !process.env.TEST_USERNAME ||
     !process.env.TEST_PASSWORD ||
-    !process.env.SECRET_HASH
+    !process.env.COGNITO_CLIENT_SECRET ||
+    !process.env.TEST_USERNAME_ADMIN ||
+    !process.env.TEST_USERNAME_SHELTER
   ) {
     throw new Error(
-      "Missing required values for generating token. Please set COGNITO_CLIENT_ID, TEST_USERNAME, TEST_PASSWORD, and SECRET_HASH in your environment variables."
+      "Missing required values for generating token. Please set COGNITO_CLIENT_ID, TEST_USERNAME, TEST_PASSWORD, COGNITO_CLIENT_SECRET, TEST_USERNAME_ADMIN, and TEST_USERNAME_SHELTER in your environment variables."
     );
   }
+
+  if (userType === "adopter") {
+    username = process.env.TEST_USERNAME;
+    if (!username) {
+      throw new Error("TEST_USERNAME is not set. Please set it in your environment variables.");
+    }
+  } else if (userType === "admin") {
+    username = process.env.TEST_USERNAME_ADMIN;
+    if (!username) {
+      throw new Error("TEST_USERNAME_ADMIN is not set. Please set it in your environment variables.");
+    }
+  } else if (userType === "shelter") {
+    username = process.env.TEST_USERNAME_SHELTER;
+    if (!username) {
+      throw new Error("TEST_USERNAME_SHELTER is not set. Please set it in your environment variables.");
+    }
+  } else {
+    throw new Error("Invalid userType. Use 'adopter' or 'admin' or 'shelter'.");
+  }
+
+  secret = generateSecretHash(username, clientId, clientSecret);
+
   const params = {
     AuthFlow: "USER_PASSWORD_AUTH",
     ClientId: process.env.COGNITO_CLIENT_ID,
     AuthParameters: {
-      USERNAME: process.env.TEST_USERNAME,
+      USERNAME: username,
       PASSWORD: process.env.TEST_PASSWORD,
-      SECRET_HASH: process.env.SECRET_HASH,
+      SECRET_HASH: secret
     },
   };
 
@@ -128,6 +166,8 @@ const createCognitoTestUserForDeletionTest = async (email) => {
       Username: "nicolastack16+testdelete@gmail.com",
       TemporaryPassword: process.env.TEST_PASSWORD
     }));
+
+    await addUserToGroupInCognito(email, "adopter");
     console.log("Cognito test user created successfully.");
   } catch (error) {
     console.error("Error creating Cognito test user:", error);
