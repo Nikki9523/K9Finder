@@ -7,7 +7,7 @@ on:
     types:
       - completed
   push:
-    branches: [ "main" ]
+    branches: [ "only-deploy-on-merge" ]
   pull_request:
     branches: [ "main" ]
 env:
