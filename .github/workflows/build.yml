@@ -1,12 +1,9 @@
-name: Node.js CI
+name: Build, Test and Upload Artifact
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
-
-# Break out lint and test into separate jobs
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -49,33 +46,3 @@ jobs:
         retention-days: 1
         name: k9Finder.zip
         path: k9Finder.zip
-
-#make this conditional to only upload to s3 when merging to main
-
-# https://www.timveletta.com/blog/pushing-content-to-s3-from-github-actions/
-  upload:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup AWS CLI
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: k9Finder.zip
-      - name: Sync files to S3 bucket
-        run: |
-          aws s3 cp k9Finder.zip s3://k9finderhost/k9Finder.zip
-      - name: Update Lambda function
-        run: |
-          aws lambda update-function-code \
-            --function-name k9FinderAPI \
-            --s3-bucket k9finderhost \
-            --s3-key k9Finder.zip \
-            --region us-east-1
