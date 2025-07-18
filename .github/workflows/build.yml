@@ -40,9 +40,9 @@ jobs:
     - run: npm run integration
     - run: npm run build
     - run: zip -r k9Finder.zip dist/
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        retention-days: 1
-        name: k9Finder.zip
-        path: k9Finder.zip
+    # - name: Upload artifact
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     retention-days: 1
+    #     name: k9Finder.zip
+    #     path: k9Finder.zip
