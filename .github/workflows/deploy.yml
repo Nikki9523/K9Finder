@@ -25,19 +25,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: debug logs
-        run: |
-          echo "Repository: ${{ github.repository }}"
-          echo "Run ID: ${{ github.event.workflow_run.id }}"
-          echo "artifacts: $(curl -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
-            https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/artifacts)"
-          echo "Github Personal Access token exists: ${{ secrets.GH_PAT != '' }}"
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: k9Finder.zip
           github-token: ${{ secrets.GH_PAT }}
           run-id: ${{ github.event.workflow_run.id }}
-          repository: Nikki9523/k9Finder
+          repository: Nikki9523/K9Finder
       - name: Sync files to S3 bucket
         run: |
           aws s3 cp k9Finder.zip s3://k9finderhost/k9Finder.zip
