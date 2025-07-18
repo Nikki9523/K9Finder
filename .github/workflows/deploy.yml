@@ -25,10 +25,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: debug logs
-        with: 
-        github-token: ${{ secrets.GH_PAT }}
         run: |
-          echo "github token exists ${{ secrets.GH_PAT }}"
+          echo "github token exists in secrets ${{ secrets.GH_PAT != '' }}"
           echo "workflow run id exists ${{ github.event.workflow_run.id }}"
           echo "repository exists ${{ github.repository }}"
           echo "artifacts: $(curl -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
