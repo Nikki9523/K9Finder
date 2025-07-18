@@ -28,9 +28,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: k9Finder.zip
-          github-token: ${{ secrets.GITHUB_TOKEN}}
+          github-token: ${{ secrets.GH_PAT }}
           run-id: ${{ github.event.workflow_run.id }}
-          repository: k9Finder
+          repository: Nikki9523/k9Finder
       - name: Sync files to S3 bucket
         run: |
           aws s3 cp k9Finder.zip s3://k9finderhost/k9Finder.zip
@@ -41,3 +41,4 @@ jobs:
             --s3-bucket k9finderhost \
             --s3-key k9Finder.zip \
             --region us-east-1
+            
