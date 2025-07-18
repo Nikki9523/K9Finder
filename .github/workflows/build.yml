@@ -2,7 +2,7 @@ name: Build, Test and Upload Artifact
 
 on:
   push:
-    branches: [ "fix-download-artifact-gh-actions" ]
+    branches: [ "main" ]
   pull_request:
 jobs:
   build:
@@ -39,10 +39,17 @@ jobs:
     - run: npm run unit
     - run: npm run integration
     - run: npm run build
-    - run: zip -r k9Finder.zip dist/
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        retention-days: 1
-        name: k9Finder.zip
-        path: k9Finder.zip
+    
+  package_and_upload_artifact:
+    name: Package and Upload Artifact
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.head_branch == 'main' }}
+    needs: build
+    steps:
+      - run: zip -r k9Finder.zip dist/
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 1
+          name: k9Finder.zip
+          path: k9Finder.zip

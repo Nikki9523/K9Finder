@@ -15,6 +15,7 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.head_branch == 'main' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -24,15 +25,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - name: debug logs
-        run: |
-          echo "github token exists in secrets ${{ secrets.GH_PAT != '' }}"
-          echo "workflow run id exists ${{ github.event.workflow_run.id }}"
-          echo "repository exists ${{ github.repository }}"
-          echo "artifacts: $(curl -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
-            https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/artifacts)"
-          echo "Github Personal Access token exists: ${{ secrets.GH_PAT != '' }}"
-
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
