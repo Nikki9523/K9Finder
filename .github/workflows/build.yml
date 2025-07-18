@@ -2,7 +2,7 @@ name: Build, Test and Upload Artifact
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "fix-download-artifact-gh-actions" ]
   pull_request:
 jobs:
   build:
