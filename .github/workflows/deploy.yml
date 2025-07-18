@@ -24,6 +24,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+      - name: Test
+        run: echo "Testing deployment workflow"
+
       - name: debug logs
         run: |
           echo "github token exists in secrets ${{ secrets.GH_PAT != '' }}"
@@ -32,6 +35,7 @@ jobs:
           echo "artifacts: $(curl -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
             https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/artifacts)"
           echo "Github Personal Access token exists: ${{ secrets.GH_PAT != '' }}"
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
