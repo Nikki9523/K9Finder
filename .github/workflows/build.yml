@@ -2,11 +2,8 @@ name: Build, Test and Upload Artifact
 
 on:
   push:
-    branches: [ "only-deploy-on-merge" ]
-  pull_request:
     branches: [ "main" ]
-
-# Break out lint and test into separate jobs
+  pull_request:
 jobs:
   build:
     runs-on: ubuntu-latest
