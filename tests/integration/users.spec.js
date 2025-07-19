@@ -222,7 +222,6 @@ describe("Get Users with adopter userType as shelter user", () => {
     const token = await testUtils.generateBearerTokenForIntegrationTests(
       "shelter"
     );
-    console.log("Generated token for shelter user:", token);
     AUTH_HEADER = `Bearer ${token}`;
   });
   it("Success : Shelter User can retrieve all adopter users", async () => {
