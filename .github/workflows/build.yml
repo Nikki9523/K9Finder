@@ -2,7 +2,7 @@ name: Build and Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "fix-download-artifact-gh-actions" ]
   pull_request:
 jobs:
   build:
@@ -43,7 +43,8 @@ jobs:
   package_and_upload_artifact:
     name: Package and Upload Artifact
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.head_branch == 'fix-download-artifact-gh-actions' }}
+    if: github.ref == 'refs/heads/fix-download-artifact-gh-actions'
+    # if: ${{ github.event.workflow_run.head_branch == 'fix-download-artifact-gh-actions' }}
     needs: build
     steps:
       - run: zip -r k9Finder.zip dist/
