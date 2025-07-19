@@ -42,10 +42,11 @@ jobs:
   package_and_upload_artifact:
     name: Package and Upload Artifact
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/fix-download-artifact-gh-actions' }}
-    # if: ${{ github.event.workflow_run.head_branch == 'fix-download-artifact-gh-actions' }}
     needs: build
+    if: ${{ github.ref == 'refs/heads/fix-download-artifact-gh-actions' }}
     steps:
+      - uses: actions/checkout@v4
+      # if: ${{ github.event.workflow_run.head_branch == 'fix-download-artifact-gh-actions' }}
       - run: npm run build
       - run: ls ubuntu-latest
       - run: ls -l dist/
