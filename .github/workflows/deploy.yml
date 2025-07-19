@@ -4,7 +4,7 @@
 name: Download and Deploy Artifact to Lambda
 on:
   workflow_run:
-    workflows: ["Build, Test and Upload Artifact"]
+    workflows: ["Build and Test"]
     types:
       - completed
     branches:
