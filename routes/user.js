@@ -15,15 +15,12 @@ router.use(authenticateJWT);
 
 // refactor these users functions to be more DRY
 router.get("/", async (req, res) => {
-  console.log("Checking user permissions...");
   if (!checkPermissions(req.user, "admin")) {
     return res.status(403).json({ error: "Forbidden" });
   }
   try {
-    console.log("Retrieving users from DynamoDB...");
     const users = await getUsers();
     res.status(200).json(users.map((user) => unmarshall(user)));
-    console.log("Users retrieved successfully");
   } catch (error) {
     console.error("Error retrieving users:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -31,16 +28,13 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/shelters", async (req, res) => {
-  console.log("Checking user permissions...");
   if (!checkPermissions(req.user, "admin") && !checkPermissions(req.user, "adopter")) {
     return res.status(403).json({ error: "Forbidden" });
   }
   try {
-    console.log("Retrieving users from DynamoDB...");
     const users = await getUsers();
     const shelters = users.map(unmarshall).filter(u => u.userType === "shelter");
     res.status(200).json(shelters);
-    console.log("Shelter users retrieved successfully");
   } catch (error) {
     console.error("Error retrieving users:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -48,7 +42,6 @@ router.get("/shelters", async (req, res) => {
 });
 
 router.get("/adopters", async (req, res) => {
-  console.log("Checking user permissions...");
   if (!checkPermissions(req.user, "admin") && !checkPermissions(req.user, "shelter")) {
     return res.status(403).json({ error: "Forbidden" });
   }
@@ -56,7 +49,6 @@ router.get("/adopters", async (req, res) => {
     const users = await getUsers();
     const adopters = users.map(unmarshall).filter(u => u.userType === "adopter");
     res.status(200).json(adopters);
-    console.log("Adopter users retrieved successfully");
   } catch (error) {
     console.error("Error retrieving users:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -87,12 +79,10 @@ router.post('/', async (req, res) => {
     if (!req.body.email || !req.body.name || !req.body.userType || !req.body.password) {
       return res.status(400).json({ error: "Missing required fields: name, email, password" });
     }
-    console.log("Creating new user...");
     const cognitoUser = await createCognitoUser({ name: req.body.name, email: req.body.email, password: req.body.password});
     const cognitoUserId = cognitoUser.User.Username;
     await addUserToGroupInCognito(req.body.email, req.body.userType);
     const createdUser = await createUser({ id: cognitoUserId, name: req.body.name, email: req.body.email, userType: req.body.userType });
-    console.log("User created successfully in DynamoDB and Cognito:", createdUser);
     res.status(201).json(createdUser);
   } catch (error) {
     console.error("Error creating user:", error);

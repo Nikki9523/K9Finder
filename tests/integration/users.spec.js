@@ -138,7 +138,6 @@ describe("Get Users with adopter userType as admin user", () => {
     const response = await request(app)
       .get("/users")
       .set("Authorization", AUTH_HEADER);
-    console.log("Get Users response:", response.body);
     expect(response.status).toBe(200);
     expect(response.body).toEqual([                                                                
       {
@@ -198,7 +197,6 @@ describe("Get Users with shelter userType as admin user", () => {
     const response = await request(app)
       .get("/users/shelters")
       .set("Authorization", AUTH_HEADER);
-    console.log("Get Shelter Users response:", response.body);
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
       {
@@ -229,7 +227,6 @@ describe("Get Users with adopter userType as shelter user", () => {
       .get("/users/adopters")
       .set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(200);
-    console.log("Get Adopter Users response:", response.body);
     expect(response.body).toEqual([                                                        
       {
         name: 'nicola',
@@ -265,7 +262,6 @@ describe("Get Users with shelter userType as adopter user", () => {
     const response = await request(app)
       .get("/users/shelters")
       .set("Authorization", AUTH_HEADER);
-    console.log("Get Shelter Users response:", response.body);
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
       {
@@ -339,9 +335,6 @@ describe("Create User in dynamoDB + Cognito", () => {
       .post("/users")
       .send(newUser)
       .set("Authorization", AUTH_HEADER);
-
-    console.log("Create User response:", response.body);
-
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("id");
     expect(response.body.name).toBe("Nikki");
@@ -371,13 +364,10 @@ describe("Update User", () => {
       name: "Nikki",
       newEmail: "nicolastack16+updated@gmail.com",
     };
-    console.log("Updating user:", existingUser.id, updatedUser);
     const response = await request(app)
       .put(`/users/${existingUser.id}`)
       .send(updatedUser)
       .set("Authorization", AUTH_HEADER);
-
-    console.log("response:", response.body);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("id");
     expect(response.body.id).toBe(existingUser.id);
@@ -400,8 +390,6 @@ describe("Delete User", () => {
 
   it("Success : User can delete a user", async () => {
     const user = { id: "003", name: "test delete" };
-    console.log("Deleting user:", user.id);
-
     const response = await request(app)
       .delete(`/users/${user.id}`)
       .send({ email: "nicolastack16+testdelete@gmail.com" })
