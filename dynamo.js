@@ -16,7 +16,10 @@ const TABLE_NAME = "k9finder";
 
 const getUsers = async () => {
   const params = {
-    TableName: TABLE_NAME
+    TableName: TABLE_NAME,
+    FilterExpression: "NOT begins_with(#id, :idPrefix)",
+    ExpressionAttributeNames: { "#id": "id" },
+    ExpressionAttributeValues: { ":idPrefix": { S: "D" } },
   };
 
   try {
@@ -33,9 +36,9 @@ const createUser = async (user) => {
     TableName: TABLE_NAME,
     Item: {
       id: { S: user.id },
+      type: { S: "user" },
       name: { S: user.name },
-      email: { S: user.email },
-      userType: { S: user.userType}
+      email: { S: user.email }
     }
   };
 
@@ -89,4 +92,21 @@ const deleteUser = async (userId) => {
   }
 };
 
-module.exports = { getUsers, createUser, updateUser, deleteUser};
+const getDogs = async () => {
+  const params = {
+    TableName: TABLE_NAME,
+    FilterExpression: "begins_with(#id, :idPrefix)",
+    ExpressionAttributeNames: { "#id": "id" },
+    ExpressionAttributeValues: { ":idPrefix": { S: "D" } },
+  };
+
+  try {
+    const dogs = await dynamoClient.send(new ScanCommand(params));
+    return dogs.Items;
+  } catch (error) {
+    console.error("Error getting dogs:", error);
+    throw new Error("Could not get dogs");
+  }
+};
+
+module.exports = { getUsers, createUser, updateUser, deleteUser, getDogs };

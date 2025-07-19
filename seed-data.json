@@ -74,6 +74,60 @@
           "name": { "S": "Ron Weasley" },
           "email": { "S": "nicolastack16+adopter@gmail.com" },
           "userType": { "S": "adopter" }
+      }
+    }
+    },
+
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "D123" },
+          "name": { "S": "Bailey" },
+          "adoptionStatus": { "S": "adopted" },
+          "shelterId": { "S": "12345" },
+          "breed": { "S": "Labrador" },
+          "age": { "N": "1" },
+          "gender": { "S": "Female" },
+          "likes": { "SS": ["playing", "training"] },
+          "dislikes": { "SS": ["fireworks", "cats"] },
+          "goodWithChildren": { "BOOL": true },
+          "goodWithOtherDogs": { "BOOL": true },
+          "adopterId": { "S": "248814d8-00d1-707d-3f83-dbb749859424" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "D456" },
+          "name": { "S": "Chicky" },
+          "adoptionStatus": { "S": "reserved" },
+          "shelterId": { "S": "101010" },
+          "breed": { "S": "Chihuahua" },
+          "age": { "N": "5" },
+          "gender": { "S": "Male" },
+          "likes": { "SS": ["sleeping", "short walks"] },
+          "dislikes": { "SS": ["loud noises", "cats"] },
+          "goodWithChildren": { "BOOL": true },
+          "goodWithOtherDogs": { "BOOL": false },
+          "adopterId": { "S": "248814d8-00d1-707d-3f83-dbb749859424" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "D789" },
+          "name": { "S": "Poochy" },
+          "adoptionStatus": { "S": "available" },
+          "shelterId": { "S": "101010" },
+          "breed": { "S": "Beagle" },
+          "age": { "N": "3" },
+          "gender": { "S": "Male" },
+          "likes": { "SS": ["fetch"] },
+          "dislikes": { "SS": ["swimming", "cats"] },
+          "goodWithChildren": { "BOOL": false },
+          "goodWithOtherDogs": { "BOOL": true }
         }
       }
     }

@@ -1,4 +1,4 @@
-const { getUsers, createUser, deleteUser, updateUser } = require('../../dynamo');
+const { getUsers, createUser, deleteUser, updateUser, getDogs } = require('../../dynamo');
 const { DynamoDBClient, ScanCommand, PutItemCommand, DeleteItemCommand,UpdateItemCommand } = require('@aws-sdk/client-dynamodb');
 
 jest.mock('@aws-sdk/client-dynamodb', () => {
@@ -114,6 +114,35 @@ describe("dynamo helpers", () => {
     expect(mClient.send).toHaveBeenCalledWith(expect.any(UpdateItemCommand));
     expect(errorSpy).toHaveBeenCalledWith(
       "Error updating user:",
+      expect.any(Error)
+    );
+  });
+
+  it("Success: getDogs returns dog items", async () => {
+    mClient.send.mockResolvedValue({
+      Items: [
+        { id: { S: "dog1" }, name: { S: "Buddy" } },
+        { id: { S: "dog2" }, name: { S: "Max" } },
+      ],
+    });
+    const dogs = await getDogs();
+    const formattedDogs = dogs.map((dog) => ({
+      id: dog.id.S,
+      name: dog.name.S,
+    }));
+    expect(formattedDogs).toEqual([
+      { id: "dog1", name: "Buddy" },
+      { id: "dog2", name: "Max" },
+    ]);
+    expect(mClient.send).toHaveBeenCalledWith(expect.any(ScanCommand));
+  });
+
+  it("Failure: getDogs throws error on DynamoDB failure", async () => {
+    mClient.send.mockRejectedValue(new Error("DynamoDB error"));
+    await expect(getDogs()).rejects.toThrow("Could not get dogs");
+    expect(mClient.send).toHaveBeenCalledWith(expect.any(ScanCommand));
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Error getting dogs:",
       expect.any(Error)
     );
   });
