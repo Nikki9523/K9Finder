@@ -87,7 +87,6 @@ const TABLE_NAME = "k9finder";
 const createTableIfNotExists = async () => {
   try {
     await dynamoClient.send(new DescribeTableCommand({ TableName: TABLE_NAME }));
-    console.log("Table already exists.");
   } catch (err) {
     if (err.name === "ResourceNotFoundException") {
       const params = {
@@ -104,7 +103,6 @@ const createTableIfNotExists = async () => {
         }
       };
       await dynamoClient.send(new CreateTableCommand(params));
-      console.log("Table created.");
     } else {
       throw err;
     }
@@ -124,7 +122,6 @@ const seedTestData = async () => {
     };
     try {
       await dynamoClient.send(new PutItemCommand(params));
-      console.log(`Seeded item: ${JSON.stringify(item)}`);
     } catch (error) {
       console.error("Error seeding test data:", error);
       throw new Error("Could not seed test data");
@@ -183,7 +180,6 @@ const removeCognitoTestUser = async (email) => {
 
   try {
     await cognito.send(new AdminDeleteUserCommand(params));
-    console.log("Cognito test user removed successfully.");
     // add validation later to verify user was deleted
   } catch (error) {
     console.error("Error removing Cognito test user:", error);
