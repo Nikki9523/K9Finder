@@ -109,4 +109,81 @@ const getDogs = async () => {
   }
 };
 
-module.exports = { getUsers, createUser, updateUser, deleteUser, getDogs };
+const updateDogDetails = async (dogId, mergedDog) => {
+  const params = {
+    TableName: TABLE_NAME,
+    Key: { id: { S: dogId } },
+    UpdateExpression: "set #name = :name, #likes = :likes, #dislikes = :dislikes, #age = :age, #adoptionStatus = :adoptionStatus, #adopterId = :adopterId, #goodWithChildren = :goodWithChildren, #goodWithOtherDogs = :goodWithOtherDogs",
+    ExpressionAttributeNames: {
+      "#name": "name",
+      "#likes": "likes",
+      "#dislikes": "dislikes",
+      "#age": "age",
+      "#adoptionStatus": "adoptionStatus",
+      "#adopterId": "adopterId",
+      "#goodWithChildren": "goodWithChildren",
+      "#goodWithOtherDogs": "goodWithOtherDogs"
+    },
+    ExpressionAttributeValues: {
+      ":name": { S: mergedDog.name },
+      ":likes": { SS: Array.isArray(mergedDog.likes) ? mergedDog.likes : [] },
+      ":dislikes": { SS: Array.isArray(mergedDog.dislikes) ? mergedDog.dislikes : [] },
+      ":age": { N: mergedDog.age ? mergedDog.age.toString() : "0" },
+      ":adoptionStatus": { S: mergedDog.adoptionStatus || "available" },
+      ":adopterId": { S: mergedDog.adopterId || "" },
+      ":goodWithChildren": { BOOL: typeof mergedDog.goodWithChildren === "boolean" ? mergedDog.goodWithChildren : false },
+      ":goodWithOtherDogs": { BOOL: typeof mergedDog.goodWithOtherDogs === "boolean" ? mergedDog.goodWithOtherDogs : false }
+    },
+  };
+
+  try {
+    await dynamoClient.send(new UpdateItemCommand(params));
+  } catch (error) {
+    console.error("Error updating dog:", error);
+    throw new Error("Failed to update dog");
+  }
+};
+
+const deleteDog = async (dogId) => {
+  const params = {
+    TableName: TABLE_NAME,
+    Key: {
+      id: { S: dogId },
+    }
+  };
+
+  try {
+    await dynamoClient.send(new DeleteItemCommand(params));
+  } catch (error) {
+    console.error("Error deleting dog:", error);
+    throw new Error("Failed to delete dog");
+  }
+};
+
+const createDog = async (dog) => {
+  const params = {
+    TableName: TABLE_NAME,
+    Item: {
+      id: { S: dog.id },
+      name: { S: dog.name },
+      adoptionStatus: { S: dog.adoptionStatus },
+      shelterId: { S: dog.shelterId },
+      breed: { S: dog.breed },
+      age: { N: dog.age.toString() },
+      gender: { S: dog.gender },
+      likes: { SS: dog.likes },
+      dislikes: { SS: dog.dislikes },
+      goodWithChildren: { BOOL: dog.goodWithChildren },
+      ...(dog.adopterId && { adopterId: { S: dog.adopterId } })
+    }
+  };
+
+  try {
+    await dynamoClient.send(new PutItemCommand(params));
+  } catch (error) {
+    console.error("Error creating dog:", error);
+    throw new Error("Failed to create dog");
+  }
+};
+
+module.exports = { getUsers, createUser, updateUser, deleteUser, getDogs, updateDogDetails, deleteDog, createDog };
