@@ -1,21 +1,70 @@
 import http from 'k6/http';
-import { sleep } from 'k6';
-import { check } from 'k6';
+import { sleep, check } from 'k6';
 
 // eslint-disable-next-line no-undef
 const token = __ENV.JWT_TOKEN;
+
+// eslint-disable-next-line no-undef
+const password = __ENV.Test_Password;
 
 export const options = {
   iterations: 1,
 };
 
+export function setup() {
+  // Create a user for get and delete
+  let res = http.post(
+    "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
+    JSON.stringify({
+      name: "Test User",
+      email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
+      password: password,
+      userType: "adopter",
+    }),
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const userId = res.json().id;
+  const email1 = res.json().email;
 
-export default function () {
+
+  // create a user for update
+  res = http.post(
+    "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
+    JSON.stringify({
+      name: "Test User 2",
+      email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
+      password: password,
+      userType: "adopter",
+    }),
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const userId2 = res.json().id;
+  const email2 = res.json().email;
+  return { userId, userId2, email1, email2 };
+};
+
+
+export default function (userData) {
+  const userId = userData.userId;
+  const userId2 = userData.userId2;
+  const email1 = userData.email1;
+  const email2 = userData.email2;
+
   let data = {
     name: "Jack Smith",
-    email: "nicolastack16+perftest@gmail.com",
+    email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
     // eslint-disable-next-line no-undef
-    password: __ENV.password,
+    password: password,
     userType: "adopter",
   };
 
@@ -30,61 +79,93 @@ export default function () {
     }
   );
   check(res, { "POST /users status is 201": (r) => r.status === 201 });
-  const userId = res.json().id;
+  const userId3 = res.json().id;
   if (res.status !== 201) {
-    console.log('Failed with error:', res.status, "error is", res.error, "res body is", res.body);
-    return;
+    console.log(
+      "Failed with error:",
+      res.status,
+      "error is",
+      res.error,
+      "res body is",
+      res.body
+    );
   }
 
-  res = http.get("https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  res = http.get(
+    "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   check(res, { "GET /users status is 200": (r) => r.status === 200 });
   if (res.status !== 200) {
     return;
   }
 
-  res = http.put(`https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId}`, JSON.stringify({
-    email: data.email,
-    name: "Updated User Name",
-    newEmail: "nicolastack16+updatedperf@gmail.com",
-  }), {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
+  res = http.put(
+    `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId2}`,
+    JSON.stringify({
+      email: email2,
+      name: "Updated User Name",
+      newEmail: `nicolastack16+updatedperf${Date.now()}@gmail.com`,
+    }),
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
   check(res, { "PUT /users/:id status is 200": (r) => r.status === 200 });
   sleep(100);
   if (res.status !== 200) {
     console.log("response is", res);
-    console.log('PUT user Failed with error:', res.error, res.status, "res body is", res.body);
+    console.log(
+      "PUT user Failed with error:",
+      res.error,
+      res.status,
+      "res body is",
+      res.body
+    );
     console.log("user id is ", userId);
     return;
   }
-  res = http.get(`https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-  console.log("GET before DELETE:", res.status, res.body);
-  check(res, { "GET /dogs/:id status is 200": (r) => r.status === 200 });
+  res = http.get(
+    `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  check(res, { "GET /users/:id status is 200": (r) => r.status === 200 });
   if (res.status !== 200) {
-    console.log('GET user Failed with error:', res.error, res.status, "res body is", res.body);
+    console.log(
+      "GET user Failed with error:",
+      res.error,
+      res.status,
+      "res body is",
+      res.body
+    );
     return;
   }
-  res = http.del(`https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId}`, JSON.stringify({
-    email: "nicolastack16+updatedperf@gmail.com",
-  }), {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
+  res = http.del(
+    `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId}`,
+    JSON.stringify({
+      email: email1,
+    }),
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
   check(res, { "DELETE /users/:id status is 200": (r) => r.status === 200 });
+  console.log("Deleting user with id", userId, "response is", res.status);
   if (res.status !== 200) {
     console.log(
       "DELETE url:",
@@ -93,5 +174,32 @@ export default function () {
     console.log("DELETE response:", res.status, res.body);
     return;
   }
+
+  // try cleanup created user
+
+  if (userId3) {
+    let delRes = http.del(
+      `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId3}`,
+      null,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    console.log("Deleted userId3 in default:", userId3, delRes.status);
+  }
+
   sleep(1);
+}
+
+
+export function teardown(data) {
+  const userId2 = data.userId2;
+
+  if (userId2) {
+    console.log("userId2 in teardown is", userId2);
+    let res = http.del(
+      `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId2}`,
+      null,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    console.log("Teardown DELETE /users/:id", userId2, res.status);
+  }
 }
