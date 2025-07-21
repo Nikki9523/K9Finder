@@ -1,35 +1,135 @@
 // https://grafana.com/docs/k6/latest/get-started/write-your-first-test/
 
 import http from 'k6/http';
-import { sleep } from 'k6';
-import { check } from 'k6';
+import { sleep, check } from 'k6';
 
 // eslint-disable-next-line no-undef
 const token = __ENV.JWT_TOKEN;
+// eslint-disable-next-line no-undef
+const password = __ENV.Test_Password;
 
 export const options = {
   iterations: 1,
 };
 
-export default function () {
-  let data = {
-    id: "D1020",
-    name: "Hector",
-    age: 8,
-    breed: "Scottie Terrier",
-    gender: "Female",
-    adoptionStatus: "available",
-    shelterId: "12345",
-    likes: ["walks"],
-    dislikes: ["rain"],
-    goodWithChildren: true,
-    goodWithOtherDogs: true,
-    adopterId: "12345",
-  };
+export function setup() {
+  // Create a user
+  let res = http.post(
+    "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
+    JSON.stringify({
+      name: "Test User",
+      email: "nicolastack16+createtestdata@gmail.com",
+      password: password,
+      userType: "adopter",
+    }),
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const userId = res.json().id;
+
+  // // Create a shelter
+  res = http.post(
+    "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
+    JSON.stringify({
+      name: "Test Shelter",
+      email: "nicolastack16+perftestshelter@gmail.com",
+      password: password,
+      userType: "shelter",
+    }),
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const shelterId = res.json().id;
+
+  // Create a dog for get dog + deletion
+  res = http.post(
+    "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs",
+    JSON.stringify({
+      id: `D${Date.now()}${Math.floor(Math.random() * 1000)}`,
+      name: "Hector",
+      age: 8,
+      breed: "Scottie Terrier",
+      gender: "Female",
+      adoptionStatus: "available",
+      shelterId: "12345",
+      likes: ["walks"],
+      dislikes: ["rain"],
+      goodWithChildren: true,
+      goodWithOtherDogs: true,
+      adopterId: "12345",
+    }),
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  console.log("POST /dogs response:", res.status, res.body);
+  check(res, { "POST /dogs status is 201": (r) => r.status === 201 });
+  if (res.status !== 201) {
+    console.log('Failed with error:', res.status, "error is", res.error, "res body is", res.body);
+    throw new Error('Dog creation failed');
+  }
+  const dogId = res.json().id;
+
+  // Create a dog for update dog
+  res = http.post(
+    "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs",
+    JSON.stringify({
+      id: `D${Date.now()}${Math.floor(Math.random() * 1000)}`,
+      name: "Hector",
+      age: 8,
+      breed: "Scottie Terrier",
+      gender: "Female",
+      adoptionStatus: "available",
+      shelterId: "12345",
+      likes: ["walks"],
+      dislikes: ["rain"],
+      goodWithChildren: true,
+      goodWithOtherDogs: true,
+      adopterId: "12345",
+    }),
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const dogIdForUpdate = res.json().id;
+
+  return { dogId, dogIdForUpdate, userId, shelterId };
+}
+
+export default function (userData) {
+
+  const { userId, shelterId, dogId, dogIdForUpdate } = userData;
 
   let res = http.post(
     "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs",
-    JSON.stringify(data),
+    JSON.stringify({
+      id: `D${Date.now()}${Math.floor(Math.random() * 1000)}`,
+      name: "Hector",
+      age: 8,
+      breed: "Scottie Terrier",
+      gender: "Female",
+      adoptionStatus: "available",
+      shelterId: shelterId,
+      likes: ["walks"],
+      dislikes: ["rain"],
+      goodWithChildren: true,
+      goodWithOtherDogs: true,
+      adopterId: userId,
+    }),
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -39,6 +139,7 @@ export default function () {
   );
   check(res, { "POST /dogs status is 201": (r) => r.status === 201 });
   if (res.status !== 201) {
+
     console.log('Failed with error:', res.status, "error is", res.error, "res body is", res.body);
     return;
   }
@@ -53,7 +154,7 @@ export default function () {
     return;
   }
 
-  res = http.put("https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/D1020", JSON.stringify({
+  res = http.put(`https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/${dogIdForUpdate}`, JSON.stringify({
     name: "Updated Dog Name",
     age: 3,
     breed: "Updated Breed",
@@ -70,7 +171,7 @@ export default function () {
     console.log('PUT dog Failed with error:', res.error, res.status, "res body is", res.body);
     return;
   }
-  res = http.get("https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/D1020", {
+  res = http.get(`https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/${dogId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
@@ -81,7 +182,7 @@ export default function () {
     console.log('GET dog Failed with error:', res.error, res.status, "res body is", res.body);
     return;
   }
-  res = http.del("https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/D1020", null, {
+  res = http.del(`https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/${dogId}`, null, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -92,4 +193,46 @@ export default function () {
     return;
   }
   sleep(1);
+}
+
+export function teardown(data) {
+  const { userId, shelterId, dogId, dogIdForUpdate } = data;
+
+  // Delete the created dogs
+  if (dogId) {
+    let res = http.del(
+      `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/${dogId}`,
+      null,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    console.log("Teardown DELETE /dogs/:id", dogId, res.status);
+  }
+  if (dogIdForUpdate) {
+    let res = http.del(
+      `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/${dogIdForUpdate}`,
+      null,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    console.log("Teardown DELETE /dogs/:id", dogIdForUpdate, res.status);
+  }
+
+  // Delete the created shelter
+  if (shelterId) {
+    let res = http.del(
+      `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${shelterId}`,
+      JSON.stringify({ email: `nicolastack16+perftestshelter@gmail.com` }),
+      { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+    );
+    console.log("Teardown DELETE /users/:id (shelter)", shelterId, res.status);
+  }
+
+  // Delete the created user
+  if (userId) {
+    let res = http.del(
+      `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId}`,
+      JSON.stringify({ email: `nicolastack16+createtestdata@gmail.com` }),
+      { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+    );
+    console.log("Teardown DELETE /users/:id (user)", userId, res.status);
+  }
 }
