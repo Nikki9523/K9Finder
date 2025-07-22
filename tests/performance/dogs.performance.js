@@ -4,17 +4,38 @@ import http from 'k6/http';
 import { sleep, check } from 'k6';
 
 // eslint-disable-next-line no-undef
-const token = __ENV.JWT_TOKEN;
-// eslint-disable-next-line no-undef
-const password = __ENV.Test_Password;
+const password = __ENV.TEST_PASSWORD;
 
 export const options = {
   iterations: 1,
 };
 
 export function setup() {
-  // Create a user
+
+  // call login route to generate token
   let res = http.post(
+    "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/login",
+    JSON.stringify({
+      // eslint-disable-next-line no-undef
+      email: __ENV.TEST_USERNAME_ADMIN,
+      // eslint-disable-next-line no-undef
+      password: __ENV.TEST_PASSWORD,
+    }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  check(res, { "POST /login status is 200": (r) => r.status === 200 });
+  if (res.status !== 200) {
+    console.log('Failed with error:', res.status, "error is", res.error, "res body is", res.body);
+    throw new Error('Login failed');
+  }
+  const token = res.json().token;
+
+  // Create a user
+  res = http.post(
     "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
     JSON.stringify({
       name: "Test User",
@@ -73,7 +94,6 @@ export function setup() {
       },
     }
   );
-  console.log("POST /dogs response:", res.status, res.body);
   check(res, { "POST /dogs status is 201": (r) => r.status === 201 });
   if (res.status !== 201) {
     console.log('Failed with error:', res.status, "error is", res.error, "res body is", res.body);
@@ -112,7 +132,7 @@ export function setup() {
 
 export default function (userData) {
 
-  const { userId, shelterId, dogId, dogIdForUpdate } = userData;
+  const { userId, shelterId, dogId, dogIdForUpdate, token } = userData;
 
   let res = http.post(
     "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs",
@@ -196,7 +216,7 @@ export default function (userData) {
 }
 
 export function teardown(data) {
-  const { userId, shelterId, dogId, dogIdForUpdate } = data;
+  const { userId, shelterId, dogId, dogIdForUpdate, token } = data;
 
   // Delete the created dogs
   if (dogId) {

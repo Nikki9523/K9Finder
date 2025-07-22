@@ -1,19 +1,46 @@
 import http from 'k6/http';
 import { sleep, check } from 'k6';
 
-// eslint-disable-next-line no-undef
-const token = __ENV.JWT_TOKEN;
 
 // eslint-disable-next-line no-undef
-const password = __ENV.Test_Password;
+const password = __ENV.Test_PASSWORD;
 
 export const options = {
   iterations: 1,
 };
 
 export function setup() {
-  // Create a user for get and delete
+  // call login route to generate token
   let res = http.post(
+    "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/login",
+    JSON.stringify({
+      // eslint-disable-next-line no-undef
+      email: __ENV.TEST_USERNAME_ADMIN,
+      // eslint-disable-next-line no-undef
+      password: __ENV.TEST_PASSWORD,
+    }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  check(res, { "POST /login status is 200": (r) => r.status === 200 });
+  if (res.status !== 200) {
+    console.log(
+      "Failed with error:",
+      res.status,
+      "error is",
+      res.error,
+      "res body is",
+      res.body
+    );
+    throw new Error("Login failed");
+  }
+  const token = res.json().token;
+
+  // Create a user for get and delete
+  res = http.post(
     "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
     JSON.stringify({
       name: "Test User",
@@ -30,7 +57,6 @@ export function setup() {
   );
   const userId = res.json().id;
   const email1 = res.json().email;
-
 
   // create a user for update
   res = http.post(
@@ -59,11 +85,11 @@ export default function (userData) {
   const userId2 = userData.userId2;
   const email1 = userData.email1;
   const email2 = userData.email2;
+  const token = userData.token;
 
   let data = {
     name: "Jack Smith",
     email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
-    // eslint-disable-next-line no-undef
     password: password,
     userType: "adopter",
   };
@@ -192,6 +218,7 @@ export default function (userData) {
 
 export function teardown(data) {
   const userId2 = data.userId2;
+  const token = data.token;
 
   if (userId2) {
     console.log("userId2 in teardown is", userId2);
