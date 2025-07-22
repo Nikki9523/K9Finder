@@ -7,7 +7,7 @@ const password = __ENV.Test_PASSWORD;
 
 export const options = {
   iterations: 1,
-  vu: 1
+  vus: 1
 };
 
 export function setup() {
