@@ -1,0 +1,30 @@
+name: k6 Test
+
+on:
+  workflow_run:
+    workflows: ["Download and Deploy Artifact to Lambda"]
+    types:
+      - completed
+
+jobs:
+  run-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup K6
+        uses: grafana/setup-k6-action@v1
+      - name: Run k6 tests on dogs endpoint
+        uses: grafana/run-k6-action@v1
+        with:
+          path: tests/performance/dogs.performance.js
+      - name: Run k6 tests on users endpoint
+        uses: grafana/run-k6-action@v1
+        with:
+          path: tests/performance/users.performance.js
+      - name: upload k6 results
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-results
+          path: tests/performance/results/
