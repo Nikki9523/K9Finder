@@ -2,7 +2,7 @@ name: Build and Test
 
 on:
   push:
-    branches: [ "performance-tests-part-2" ]
+    branches: [ "main" ]
   pull_request:
 jobs:
   build:
