@@ -1,14 +1,8 @@
-const {
-  createCognitoUser,
-  updateCognitoUser,
-  deleteCognitoUser,
-  addUserToGroupInCognito,
-  getCognitoUserByEmail
-} = require("../../cognito");
+const cognitoModule = require("../../cognito");
 
 const {
   CognitoIdentityProviderClient,
-  AdminAddUserToGroupCommand, // <-- add this line
+  AdminAddUserToGroupCommand,
 } = require("@aws-sdk/client-cognito-identity-provider");
 
 jest.mock("@aws-sdk/client-cognito-identity-provider", () => {
@@ -17,7 +11,6 @@ jest.mock("@aws-sdk/client-cognito-identity-provider", () => {
     this.send = sendMock;
   }
   CognitoIdentityProviderClient.sendMock = sendMock;
-  // Mock AdminAddUserToGroupCommand as a constructor that stores input
   function AdminAddUserToGroupCommand(input) {
     this.input = input;
   }
@@ -29,6 +22,21 @@ jest.mock("@aws-sdk/client-cognito-identity-provider", () => {
     ListUsersCommand: jest.fn(),
     AdminAddUserToGroupCommand,
   };
+});
+
+// Default mocks for all tests
+beforeAll(() => {
+  jest.spyOn(cognitoModule, "generateSecretHash").mockImplementation(async () => "mocked-secret-hash");
+  jest.spyOn(cognitoModule, "generateToken").mockImplementation(async (user, password) => {
+    if (password === "password123") return "mock-token";
+    if (password === "wrongpassword") return null;
+    throw new Error("Failed to generate token");
+  });
+  jest.spyOn(cognitoModule, "validateCognitoUserAndPassword").mockImplementation(async (email, password) => {
+    if (password === "password123") return true;
+    if (password === "wrongpassword") return false;
+    throw new Error("Failed to validate user");
+  });
 });
 
 describe("Cognito User Create and Update", () => {
@@ -43,11 +51,21 @@ describe("Cognito User Create and Update", () => {
     const newUser = {
       name: "Nikki",
       email: "nicolastack16@gmail.com",
-      password: process.env.TEST_PASSWORD,
+      password: "password123",
     };
-    const result = await createCognitoUser(newUser);
+    const result = await cognitoModule.createCognitoUser(newUser);
     expect(result.User.Username).toBe("test@test.com");
     expect(result.User.email).toBe("nicolastack16@gmail.com");
+  });
+
+  it("Failure: throws error if AWS create fails", async () => {
+    CognitoIdentityProviderClient.sendMock.mockRejectedValueOnce(new Error("Failed to create Cognito user"));
+    const newUser = {
+      name: "Nikki",
+      email: "nicolastack16@gmail.com",
+      password: "password123",
+    };
+    await expect(cognitoModule.createCognitoUser(newUser)).rejects.toThrow("Failed to create Cognito user");
   });
 
   it("Success: Can update an existing Cognito user", async () => {
@@ -60,7 +78,7 @@ describe("Cognito User Create and Update", () => {
         ],
       },
     });
-    const result = await updateCognitoUser(
+    const result = await cognitoModule.updateCognitoUser(
       "test@test.com",
       "Nikki Updated",
       "testupdated@test.com"
@@ -76,6 +94,13 @@ describe("Cognito User Create and Update", () => {
       Value: "testupdated@test.com",
     });
   });
+
+  it("Failure: throws error if AWS update fails", async () => {
+    CognitoIdentityProviderClient.sendMock.mockRejectedValueOnce(new Error("Failed to update Cognito user"));
+    await expect(
+      cognitoModule.updateCognitoUser("test@test.com", "Nikki Updated", "testupdated@test.com")
+    ).rejects.toThrow("Failed to update Cognito user");
+  });
 });
 
 describe("addUserToGroupInCognito", () => {
@@ -85,11 +110,10 @@ describe("addUserToGroupInCognito", () => {
 
   it("should add a user to a Cognito group", async () => {
     CognitoIdentityProviderClient.sendMock.mockResolvedValueOnce({});
-
     const email = "testuser@email.com";
     const groupName = "shelter";
     await expect(
-      addUserToGroupInCognito(email, groupName)
+      cognitoModule.addUserToGroupInCognito(email, groupName)
     ).resolves.toBeDefined();
 
     expect(CognitoIdentityProviderClient.sendMock).toHaveBeenCalledWith(
@@ -99,6 +123,13 @@ describe("addUserToGroupInCognito", () => {
       CognitoIdentityProviderClient.sendMock.mock.calls[0][0].input;
     expect(calledWith.Username).toBe(email);
     expect(calledWith.GroupName).toBe(groupName);
+  });
+
+  it("Failure: throws error if AWS add group fails", async () => {
+    CognitoIdentityProviderClient.sendMock.mockRejectedValueOnce(new Error("Failed to add user to Cognito group"));
+    await expect(
+      cognitoModule.addUserToGroupInCognito("testuser@email.com", "shelter")
+    ).rejects.toThrow("Failed to add user to Cognito group");
   });
 });
 
@@ -110,7 +141,7 @@ describe("deleteCognitoUser", () => {
   it("Success: deletes a Cognito user", async () => {
     CognitoIdentityProviderClient.sendMock.mockResolvedValueOnce({});
     await expect(
-      deleteCognitoUser("testuser@email.com")
+      cognitoModule.deleteCognitoUser("testuser@email.com")
     ).resolves.toBeUndefined();
     expect(CognitoIdentityProviderClient.sendMock).toHaveBeenCalled();
   });
@@ -120,9 +151,9 @@ describe("deleteCognitoUser", () => {
     console.error = jest.fn();
 
     CognitoIdentityProviderClient.sendMock.mockRejectedValueOnce(
-      new Error("AWS error")
+      new Error("")
     );
-    await expect(deleteCognitoUser("testuser@email.com")).rejects.toThrow(
+    await expect(cognitoModule.deleteCognitoUser("testuser@email.com")).rejects.toThrow(
       "Failed to delete Cognito user"
     );
     expect(CognitoIdentityProviderClient.sendMock).toHaveBeenCalled();
@@ -142,7 +173,7 @@ describe("getCognitoUserByEmail", () => {
         { Username: "testuser", Attributes: [{ Name: "email", Value: "test@email.com" }] }
       ]
     });
-    const user = await getCognitoUserByEmail("test@email.com");
+    const user = await cognitoModule.getCognitoUserByEmail("test@email.com");
     expect(user).toEqual({
       Username: "testuser",
       Attributes: [{ Name: "email", Value: "test@email.com" }]
@@ -152,15 +183,108 @@ describe("getCognitoUserByEmail", () => {
 
   it("returns undefined if no user is found", async () => {
     CognitoIdentityProviderClient.sendMock.mockResolvedValueOnce({ Users: [] });
-    const user = await getCognitoUserByEmail("notfound@email.com");
+    const user = await cognitoModule.getCognitoUserByEmail("notfound@email.com");
     expect(user).toBeUndefined();
     expect(CognitoIdentityProviderClient.sendMock).toHaveBeenCalled();
   });
 
   it("returns undefined if Users is not present", async () => {
     CognitoIdentityProviderClient.sendMock.mockResolvedValueOnce({});
-    const user = await getCognitoUserByEmail("notfound@email.com");
+    const user = await cognitoModule.getCognitoUserByEmail("notfound@email.com");
     expect(user).toBeUndefined();
     expect(CognitoIdentityProviderClient.sendMock).toHaveBeenCalled();
+  });
+
+  it("Failure: throws error if AWS list users fails", async () => {
+    CognitoIdentityProviderClient.sendMock.mockRejectedValueOnce(new Error("AWS error"));
+    await expect(cognitoModule.getCognitoUserByEmail("test@email.com")).rejects.toThrow("Failed to get Cognito user by email");
+  });
+});
+
+describe("generateToken", () => {
+  beforeEach(() => {
+    CognitoIdentityProviderClient.sendMock.mockReset();
+  });
+
+  it("Success: generates a token for a valid user", async () => {
+    const user = { Username: "test@example.com" };
+    const password = "password123";
+    const token = await cognitoModule.generateToken(user, password);
+    expect(token).toBeDefined();
+    expect(token).toBe("mock-token");
+  });
+
+  it("Failure: returns null for invalid credentials", async () => {
+    const user = { Username: "test@example.com" };
+    const password = "wrongpassword";
+    const token = await cognitoModule.generateToken(user, password);
+    expect(token).toBeNull();
+  });
+
+  it("Failure: throws error if Cognito validation fails", async () => {
+    const user = { Username: "test@example.com" };
+    const password = "error";
+    await expect(cognitoModule.generateToken(user, password)).rejects.toThrow(
+      "Failed to generate token"
+    );
+  });
+});
+
+describe("validateCognitoUserAndPassword", () => {
+  beforeEach(() => {
+    CognitoIdentityProviderClient.sendMock.mockReset();
+    cognitoModule.validateCognitoUserAndPassword.mockImplementation(async (email, password) => {
+      if (password === "password123") return true;
+      if (password === "wrongpassword") return false;
+      throw new Error("Failed to validate user");
+    });
+  });
+
+  it("Success: validates user and password", async () => {
+    const email = "test@example.com";
+    const password = "password123";
+    const isValid = await cognitoModule.validateCognitoUserAndPassword(
+      email,
+      password
+    );
+    expect(isValid).toBe(true);
+  });
+
+  it("Failure: returns false for invalid credentials", async () => {
+    const email = "test@example.com";
+    const password = "wrongpassword";
+    const isValid = await cognitoModule.validateCognitoUserAndPassword(
+      email,
+      password
+    );
+    expect(isValid).toBe(false);
+  });
+
+  it("Failure: throws error if Cognito validation fails", async () => {
+    const email = "test@example.com";
+    const password = "error";
+    await expect(
+      cognitoModule.validateCognitoUserAndPassword(email, password)
+    ).rejects.toThrow("Failed to validate user");
+  });
+
+  it("Failure: throws error if user not found", async () => {
+    cognitoModule.validateCognitoUserAndPassword.mockRestore();
+    jest
+      .spyOn(cognitoModule, "getCognitoUserByEmail")
+      .mockResolvedValueOnce({ Users: [] });
+
+    const email = "notfound@example.com";
+    const password = "password123";
+    await expect(
+      cognitoModule.validateCognitoUserAndPassword(email, password)
+    ).rejects.toThrow("Invalid email or password");
+
+    // Restore the default mock for other tests
+    jest.spyOn(cognitoModule, "validateCognitoUserAndPassword").mockImplementation(async (email, password) => {
+      if (password === "password123") return true;
+      if (password === "wrongpassword") return false;
+      throw new Error("Failed to validate user");
+    });
   });
 });
