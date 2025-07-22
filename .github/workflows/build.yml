@@ -43,7 +43,7 @@ jobs:
     name: Package and Upload Artifact
     runs-on: ubuntu-latest
     needs: build
-    if: ${{ github.ref == 'refs/heads/main' }}
+    # if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v4
       - run: npm ci
