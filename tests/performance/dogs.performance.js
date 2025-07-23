@@ -135,6 +135,13 @@ export default function (userData) {
 
   const { userId, shelterId, dogId, dogIdForUpdate, token } = userData;
 
+  console.log("Running performance test with userId:", userId, "shelterId:", shelterId, "dogId:", dogId, "dogIdForUpdate:", dogIdForUpdate);
+
+  if( !token ){
+    console.error("Token is not defined");
+    return;
+  }
+
   let res = http.post(
     "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs",
     JSON.stringify({

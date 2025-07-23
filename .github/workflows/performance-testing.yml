@@ -21,16 +21,6 @@ jobs:
           TEST_USERNAME_ADMIN: ${{ secrets.TEST_USERNAME_ADMIN }}
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
         with:
-          path: tests/performance/dogs.performance.js
-      - name: Run k6 tests on users endpoint
-        uses: grafana/run-k6-action@v1
-        env:
-          TEST_USERNAME_ADMIN: ${{ secrets.TEST_USERNAME_ADMIN }}
-          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-        with:
-          path: tests/performance/users.performance.js
-      - name: upload k6 results
-        uses: actions/upload-artifact@v4
-        with:
-          name: k6-results
-          path: tests/performance/results/
+          path: |
+            ./tests/performance/**
+            ./tests/app*.js

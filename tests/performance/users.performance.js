@@ -82,11 +82,17 @@ export function setup() {
 
 
 export default function (userData) {
-  const userId = userData.userId;
-  const userId2 = userData.userId2;
-  const email1 = userData.email1;
-  const email2 = userData.email2;
-  const token = userData.token;
+  const {userId, userId2, email1, email2, token} = userData;
+
+  console.log("userId in default function is", userId);
+  console.log("userId2 in default function is", userId2);
+  console.log("email1 in default function is", email1);
+  console.log("email2 in default function is", email2);
+
+  if (!token) {
+    console.error("Token is not defined");
+    return;
+  }
 
   let data = {
     name: "Jack Smith",
