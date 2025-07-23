@@ -42,6 +42,7 @@ export function setup() {
     JSON.stringify({
       name: "Test User",
       email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
+      // eslint-disable-next-line no-undef
       password: __ENV.TEST_PASSWORD,
       userType: "adopter",
     }),
@@ -61,6 +62,7 @@ export function setup() {
     JSON.stringify({
       name: "Test User 2",
       email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
+      // eslint-disable-next-line no-undef
       password: __ENV.TEST_PASSWORD,
       userType: "adopter",
     }),
@@ -80,11 +82,6 @@ export function setup() {
 export default function (userData) {
   const {userId, userId2, email1, email2, token} = userData;
 
-  console.log("userId in default function is", userId);
-  console.log("userId2 in default function is", userId2);
-  console.log("email1 in default function is", email1);
-  console.log("email2 in default function is", email2);
-
   if (!token) {
     console.error("Token is not defined");
     return;
@@ -93,6 +90,7 @@ export default function (userData) {
   let data = {
     name: "Jack Smith",
     email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
+    // eslint-disable-next-line no-undef
     password: __ENV.TEST_PASSWORD,
     userType: "adopter",
   };
@@ -150,7 +148,6 @@ export default function (userData) {
   check(res, { "PUT /users/:id status is 200": (r) => r.status === 200 });
   sleep(100);
   if (res.status !== 200) {
-    console.log("response is", res);
     console.log(
       "PUT user Failed with error:",
       res.error,
@@ -196,10 +193,6 @@ export default function (userData) {
   check(res, { "DELETE /users/:id status is 200": (r) => r.status === 200 });
   console.log("Deleting user with id", userId, "response is", res.status);
   if (res.status !== 200) {
-    console.log(
-      "DELETE url:",
-      `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId}`
-    );
     console.log("DELETE response:", res.status, res.body);
     return;
   }
@@ -224,7 +217,6 @@ export function teardown(data) {
   const token = data.token;
 
   if (userId2) {
-    console.log("userId2 in teardown is", userId2);
     let res = http.del(
       `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId2}`,
       null,
