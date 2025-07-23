@@ -3,9 +3,6 @@
 import http from 'k6/http';
 import { sleep, check } from 'k6';
 
-// eslint-disable-next-line no-undef
-const password = __ENV.TEST_PASSWORD;
-
 export const options = {
   iterations: 1,
   vus: 1
@@ -18,9 +15,9 @@ export function setup() {
     "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/login",
     JSON.stringify({
       // eslint-disable-next-line no-undef
-      email: "nicolastack16+admin@gmail.com",
+      email: `nicolastack16+admin${Date.now()}@gmail.com`,
       // eslint-disable-next-line no-undef
-      password: "purpleyogamatU2!",
+      password: __ENV.TEST_PASSWORD,
     }),
     {
       headers: {
@@ -40,8 +37,8 @@ export function setup() {
     "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
     JSON.stringify({
       name: "Test User",
-      email: "nicolastack16+createtestdata@gmail.com",
-      password: password,
+      email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
+      password: __ENV.TEST_PASSWORD,
       userType: "adopter",
     }),
     {
@@ -58,8 +55,8 @@ export function setup() {
     "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
     JSON.stringify({
       name: "Test Shelter",
-      email: "nicolastack16+perftestshelter@gmail.com",
-      password: password,
+      email: `nicolastack16+perftestshelter${Date.now()}@gmail.com`,
+      password: __ENV.TEST_PASSWORD,
       userType: "shelter",
     }),
     {
@@ -128,7 +125,7 @@ export function setup() {
   );
   const dogIdForUpdate = res.json().id;
 
-  return { dogId, dogIdForUpdate, userId, shelterId };
+  return { dogId, dogIdForUpdate, userId, shelterId, token };
 }
 
 export default function (userData) {
@@ -137,10 +134,7 @@ export default function (userData) {
 
   console.log("Running performance test with userId:", userId, "shelterId:", shelterId, "dogId:", dogId, "dogIdForUpdate:", dogIdForUpdate);
 
-  if( !token ){
-    console.error("Token is not defined");
-    return;
-  }
+ console.log("Token:", token);
 
   let res = http.post(
     "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs",
@@ -223,44 +217,44 @@ export default function (userData) {
   sleep(1);
 }
 
-export function teardown(data) {
-  const { userId, shelterId, dogId, dogIdForUpdate, token } = data;
+// export function teardown(data) {
+//   const { userId, shelterId, dogId, dogIdForUpdate, token } = data;
 
-  // Delete the created dogs
-  if (dogId) {
-    let res = http.del(
-      `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/${dogId}`,
-      null,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    console.log("Teardown DELETE /dogs/:id", dogId, res.status);
-  }
-  if (dogIdForUpdate) {
-    let res = http.del(
-      `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/${dogIdForUpdate}`,
-      null,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    console.log("Teardown DELETE /dogs/:id", dogIdForUpdate, res.status);
-  }
+//   // Delete the created dogs
+//   if (dogId) {
+//     let res = http.del(
+//       `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/${dogId}`,
+//       null,
+//       { headers: { Authorization: `Bearer ${token}` } }
+//     );
+//     console.log("Teardown DELETE /dogs/:id", dogId, res.status);
+//   }
+//   if (dogIdForUpdate) {
+//     let res = http.del(
+//       `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/${dogIdForUpdate}`,
+//       null,
+//       { headers: { Authorization: `Bearer ${token}` } }
+//     );
+//     console.log("Teardown DELETE /dogs/:id", dogIdForUpdate, res.status);
+//   }
 
-  // Delete the created shelter
-  if (shelterId) {
-    let res = http.del(
-      `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${shelterId}`,
-      JSON.stringify({ email: `nicolastack16+perftestshelter@gmail.com` }),
-      { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
-    );
-    console.log("Teardown DELETE /users/:id (shelter)", shelterId, res.status);
-  }
+//   // Delete the created shelter
+//   if (shelterId) {
+//     let res = http.del(
+//       `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${shelterId}`,
+//       JSON.stringify({ email: `nicolastack16+perftestshelter@gmail.com` }),
+//       { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+//     );
+//     console.log("Teardown DELETE /users/:id (shelter)", shelterId, res.status);
+//   }
 
-  // Delete the created user
-  if (userId) {
-    let res = http.del(
-      `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId}`,
-      JSON.stringify({ email: `nicolastack16+createtestdata@gmail.com` }),
-      { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
-    );
-    console.log("Teardown DELETE /users/:id (user)", userId, res.status);
-  }
-}
+//   // Delete the created user
+//   if (userId) {
+//     let res = http.del(
+//       `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId}`,
+//       JSON.stringify({ email: `nicolastack16+createtestdata@gmail.com` }),
+//       { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+//     );
+//     console.log("Teardown DELETE /users/:id (user)", userId, res.status);
+//   }
+// }

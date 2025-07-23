@@ -1,10 +1,6 @@
 import http from 'k6/http';
 import { sleep, check } from 'k6';
 
-
-// eslint-disable-next-line no-undef
-const password = __ENV.Test_PASSWORD;
-
 export const options = {
   iterations: 1,
   vus: 1
@@ -46,7 +42,7 @@ export function setup() {
     JSON.stringify({
       name: "Test User",
       email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
-      password: password,
+      password: __ENV.TEST_PASSWORD,
       userType: "adopter",
     }),
     {
@@ -65,7 +61,7 @@ export function setup() {
     JSON.stringify({
       name: "Test User 2",
       email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
-      password: password,
+      password: __ENV.TEST_PASSWORD,
       userType: "adopter",
     }),
     {
@@ -77,7 +73,7 @@ export function setup() {
   );
   const userId2 = res.json().id;
   const email2 = res.json().email;
-  return { userId, userId2, email1, email2 };
+  return { userId, userId2, email1, email2, token };
 };
 
 
@@ -97,7 +93,7 @@ export default function (userData) {
   let data = {
     name: "Jack Smith",
     email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
-    password: password,
+    password: __ENV.TEST_PASSWORD,
     userType: "adopter",
   };
 
