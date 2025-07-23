@@ -15,7 +15,7 @@ export function setup() {
     "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/login",
     JSON.stringify({
       // eslint-disable-next-line no-undef
-      email: `nicolastack16+admin${Date.now()}@gmail.com`,
+      email: __ENV.TEST_USERNAME_ADMIN,
       // eslint-disable-next-line no-undef
       password: __ENV.TEST_PASSWORD,
     }),
