@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-detect-secrets scan --baseline .secrets.baseline
+detect-secrets-hook --baseline .secrets.baseline
