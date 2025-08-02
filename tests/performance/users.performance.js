@@ -1,12 +1,9 @@
 import http from 'k6/http';
 import { sleep, check } from 'k6';
 
-
-// eslint-disable-next-line no-undef
-const password = __ENV.Test_PASSWORD;
-
 export const options = {
   iterations: 1,
+  vus: 1
 };
 
 export function setup() {
@@ -45,7 +42,8 @@ export function setup() {
     JSON.stringify({
       name: "Test User",
       email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
-      password: password,
+      // eslint-disable-next-line no-undef
+      password: __ENV.TEST_PASSWORD,
       userType: "adopter",
     }),
     {
@@ -64,7 +62,8 @@ export function setup() {
     JSON.stringify({
       name: "Test User 2",
       email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
-      password: password,
+      // eslint-disable-next-line no-undef
+      password: __ENV.TEST_PASSWORD,
       userType: "adopter",
     }),
     {
@@ -76,21 +75,23 @@ export function setup() {
   );
   const userId2 = res.json().id;
   const email2 = res.json().email;
-  return { userId, userId2, email1, email2 };
+  return { userId, userId2, email1, email2, token };
 };
 
 
 export default function (userData) {
-  const userId = userData.userId;
-  const userId2 = userData.userId2;
-  const email1 = userData.email1;
-  const email2 = userData.email2;
-  const token = userData.token;
+  const {userId, userId2, email1, email2, token} = userData;
+
+  if (!token) {
+    console.error("Token is not defined");
+    return;
+  }
 
   let data = {
     name: "Jack Smith",
     email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
-    password: password,
+    // eslint-disable-next-line no-undef
+    password: __ENV.TEST_PASSWORD,
     userType: "adopter",
   };
 
@@ -147,7 +148,6 @@ export default function (userData) {
   check(res, { "PUT /users/:id status is 200": (r) => r.status === 200 });
   sleep(100);
   if (res.status !== 200) {
-    console.log("response is", res);
     console.log(
       "PUT user Failed with error:",
       res.error,
@@ -193,10 +193,6 @@ export default function (userData) {
   check(res, { "DELETE /users/:id status is 200": (r) => r.status === 200 });
   console.log("Deleting user with id", userId, "response is", res.status);
   if (res.status !== 200) {
-    console.log(
-      "DELETE url:",
-      `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId}`
-    );
     console.log("DELETE response:", res.status, res.body);
     return;
   }
@@ -221,7 +217,6 @@ export function teardown(data) {
   const token = data.token;
 
   if (userId2) {
-    console.log("userId2 in teardown is", userId2);
     let res = http.del(
       `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId2}`,
       null,

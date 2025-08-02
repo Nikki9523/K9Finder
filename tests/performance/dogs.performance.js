@@ -3,11 +3,9 @@
 import http from 'k6/http';
 import { sleep, check } from 'k6';
 
-// eslint-disable-next-line no-undef
-const password = __ENV.TEST_PASSWORD;
-
 export const options = {
   iterations: 1,
+  vus: 1
 };
 
 export function setup() {
@@ -29,7 +27,6 @@ export function setup() {
   );
   check(res, { "POST /login status is 200": (r) => r.status === 200 });
   if (res.status !== 200) {
-    console.log('Failed with error:', res.status, "error is", res.error, "res body is", res.body);
     throw new Error('Login failed');
   }
   const token = res.json().token;
@@ -39,8 +36,9 @@ export function setup() {
     "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
     JSON.stringify({
       name: "Test User",
-      email: "nicolastack16+createtestdata@gmail.com",
-      password: password,
+      email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
+      // eslint-disable-next-line no-undef
+      password: __ENV.TEST_PASSWORD,
       userType: "adopter",
     }),
     {
@@ -51,14 +49,16 @@ export function setup() {
     }
   );
   const userId = res.json().id;
+  const userEmail = res.json().email;
 
   // // Create a shelter
   res = http.post(
     "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
     JSON.stringify({
       name: "Test Shelter",
-      email: "nicolastack16+perftestshelter@gmail.com",
-      password: password,
+      email: `nicolastack16+perftestshelter${Date.now()}@gmail.com`,
+      // eslint-disable-next-line no-undef
+      password: __ENV.TEST_PASSWORD,
       userType: "shelter",
     }),
     {
@@ -69,6 +69,7 @@ export function setup() {
     }
   );
   const shelterId = res.json().id;
+  const shelterEmail = res.json().email;
 
   // Create a dog for get dog + deletion
   res = http.post(
@@ -127,7 +128,7 @@ export function setup() {
   );
   const dogIdForUpdate = res.json().id;
 
-  return { dogId, dogIdForUpdate, userId, shelterId };
+  return { dogId, dogIdForUpdate, userId, userEmail, shelterId, shelterEmail, token };
 }
 
 export default function (userData) {
@@ -216,9 +217,8 @@ export default function (userData) {
 }
 
 export function teardown(data) {
-  const { userId, shelterId, dogId, dogIdForUpdate, token } = data;
+  const { userId, shelterId, dogId, dogIdForUpdate, token, userEmail, shelterEmail } = data;
 
-  // Delete the created dogs
   if (dogId) {
     let res = http.del(
       `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/${dogId}`,
@@ -240,7 +240,7 @@ export function teardown(data) {
   if (shelterId) {
     let res = http.del(
       `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${shelterId}`,
-      JSON.stringify({ email: `nicolastack16+perftestshelter@gmail.com` }),
+      JSON.stringify({ email: shelterEmail }),
       { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
     );
     console.log("Teardown DELETE /users/:id (shelter)", shelterId, res.status);
@@ -250,7 +250,7 @@ export function teardown(data) {
   if (userId) {
     let res = http.del(
       `https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/${userId}`,
-      JSON.stringify({ email: `nicolastack16+createtestdata@gmail.com` }),
+      JSON.stringify({ email: userEmail }),
       { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
     );
     console.log("Teardown DELETE /users/:id (user)", userId, res.status);
