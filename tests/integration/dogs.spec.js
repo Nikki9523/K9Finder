@@ -6,7 +6,7 @@ let AUTH_HEADER;
 
 const { seedTestData, teardownTestData, createTableIfNotExists } = require("../testUtils");
 
-const password = "password";
+const password = "password2";
 
 beforeEach(async () => {
   await createTableIfNotExists();
