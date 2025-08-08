@@ -9,8 +9,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "node build.js",
-    "dev": "node local.js",
-    "prepare": "husky"
+    "dev": "node local.js"
   },
   "keywords": [],
   "author": "",
