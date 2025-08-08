@@ -6,11 +6,6 @@ let AUTH_HEADER;
 
 const { seedTestData, teardownTestData, createTableIfNotExists } = require("../testUtils");
 
-// beforeAll(async () => {
-//   const token = await testUtils.generateBearerTokenForIntegrationTests(userType);
-//   AUTH_HEADER = `Bearer ${token}`;
-// });
-
 beforeEach(async () => {
   await createTableIfNotExists();
   await seedTestData();
