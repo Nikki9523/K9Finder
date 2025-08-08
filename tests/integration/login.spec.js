@@ -16,8 +16,6 @@ describe("Login API", () => {
     const response = await request(app).post("/login").send({
       email: process.env.TEST_USERNAME,
       password: "wrongpassword",
-      password2: "wrongpassword",
-      password3: "wrongpassword",
     });
     expect(response.statusCode).toBe(401);
     expect(response.body).toHaveProperty("message", "Invalid email or password");
