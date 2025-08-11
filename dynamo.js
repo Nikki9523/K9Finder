@@ -36,7 +36,7 @@ const createUser = async (user) => {
     TableName: TABLE_NAME,
     Item: {
       id: { S: user.id },
-      type: { S: "user" },
+      type: { S: user.userType },
       name: { S: user.name },
       email: { S: user.email }
     }
