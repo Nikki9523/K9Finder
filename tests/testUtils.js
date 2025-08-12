@@ -21,7 +21,7 @@ async function generateBearerTokenForIntegrationTests(userType) {
   let username;
   if (
     !process.env.COGNITO_CLIENT_ID ||
-    !process.env.TEST_USERNAME ||
+    !process.env.TEST_USERNAME_ADOPTER ||
     !process.env.TEST_PASSWORD ||
     !process.env.COGNITO_CLIENT_SECRET ||
     !process.env.TEST_USERNAME_ADMIN ||
@@ -33,9 +33,9 @@ async function generateBearerTokenForIntegrationTests(userType) {
   }
 
   if (userType === "adopter") {
-    username = process.env.TEST_USERNAME;
+    username = process.env.TEST_USERNAME_ADOPTER;
     if (!username) {
-      throw new Error("TEST_USERNAME is not set. Please set it in your environment variables.");
+      throw new Error("TEST_USERNAME_ADOPTER is not set. Please set it in your environment variables.");
     }
   } else if (userType === "admin") {
     username = process.env.TEST_USERNAME_ADMIN;
@@ -160,7 +160,7 @@ const createCognitoTestUserForDeletionTest = async (email) => {
   try {
     await cognito.send(new AdminCreateUserCommand({
       ...params,
-      Username: "nicolastack16+testdelete@gmail.com",
+      Username: "k9finder25+testdelete@gmail.com",
       TemporaryPassword: process.env.TEST_PASSWORD
     }));
 
@@ -202,10 +202,10 @@ async function getCognitoUserByEmail(email) {
 const resetCognitoTestUser = async () => {
   const params = {
     UserPoolId: process.env.COGNITO_USER_POOL_ID,
-    Username: "nicolastack16+updated@gmail.com",
+    Username: "k9finder25+updated@gmail.com",
     UserAttributes: [
       { Name: "name", Value: "jane" },
-      { Name: "email", Value:"nicolastack16+test@gmail.com"}
+      { Name: "email", Value:"k9finder25+testing@gmail.com"}
     ],
   };
   return cognito.send(new AdminUpdateUserAttributesCommand(params));

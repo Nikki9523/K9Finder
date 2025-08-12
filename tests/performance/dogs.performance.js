@@ -36,7 +36,7 @@ export function setup() {
     "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
     JSON.stringify({
       name: "Test User",
-      email: `nicolastack16+createtestdata${Date.now()}@gmail.com`,
+      email: `k9finder25+createtestdata${Date.now()}@gmail.com`,
       // eslint-disable-next-line no-undef
       password: __ENV.TEST_PASSWORD,
       userType: "adopter",
@@ -56,7 +56,7 @@ export function setup() {
     "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
     JSON.stringify({
       name: "Test Shelter",
-      email: `nicolastack16+perftestshelter${Date.now()}@gmail.com`,
+      email: `k9finder25+perftestshelter${Date.now()}@gmail.com`,
       // eslint-disable-next-line no-undef
       password: __ENV.TEST_PASSWORD,
       userType: "shelter",

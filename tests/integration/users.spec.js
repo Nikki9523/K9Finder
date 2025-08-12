@@ -24,13 +24,13 @@ describe("Get Specific existing User as admin", () => {
   });
   it("Success : User can retrieve existing user", async () => {
     const response = await request(app)
-      .get("/users/248814d8-00d1-707d-3f83-dbb749859424")
+      .get("/users/c4f8a478-6051-7012-f983-4dbb08b90c6e")
       .set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
-      id: "248814d8-00d1-707d-3f83-dbb749859424",
+      id: "c4f8a478-6051-7012-f983-4dbb08b90c6e",
       name: "nicola",
-      email: "nicolastack16@gmail.com",
+      email: "k9finder25+adopter@gmail.com",
       userType: "adopter"
     });
   });
@@ -53,13 +53,13 @@ describe("Get Specific existing User as shelter user", () => {
 
   it("Success : Shelter User can retrieve existing adopter user", async () => {
     const response = await request(app)
-      .get("/users/248814d8-00d1-707d-3f83-dbb749859424")
+      .get("/users/c4f8a478-6051-7012-f983-4dbb08b90c6e")
       .set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
-      id: "248814d8-00d1-707d-3f83-dbb749859424",
+      id: "c4f8a478-6051-7012-f983-4dbb08b90c6e",
       name: "nicola",
-      email: "nicolastack16@gmail.com",
+      email: "k9finder25+adopter@gmail.com",
       userType: "adopter"
     });
   });
@@ -72,7 +72,7 @@ describe("Get Specific existing User as shelter user", () => {
       id: "12345",
       name: "Waterford Dog Adoption Shelter",
       userType: "shelter",
-      email: "nicolastack16+shelter1@gmail.com"
+      email: "k9finder25+shelter1@gmail.com"
     });
   });
   it("Failure: Shelter User cannot get list of other shelters", async () => {
@@ -101,13 +101,13 @@ describe("Get Specific existing User as adopter user", () => {
     });
     it("Success : Adopter User can retrieve their own details", async () => {
       const response = await request(app)
-        .get("/users/248814d8-00d1-707d-3f83-dbb749859424")
+        .get("/users/c4f8a478-6051-7012-f983-4dbb08b90c6e")
         .set("Authorization", AUTH_HEADER);
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
-        id: "248814d8-00d1-707d-3f83-dbb749859424",
+        id: "c4f8a478-6051-7012-f983-4dbb08b90c6e",
         name: "nicola",
-        email: "nicolastack16@gmail.com",
+        email: "k9finder25+adopter@gmail.com",
         "userType": "adopter"
       });
     });
@@ -137,45 +137,45 @@ describe("Get Users with adopter userType as admin user", () => {
     expect(response.body).toEqual([                                                                
       {
         name: 'nicola',
-        id: '248814d8-00d1-707d-3f83-dbb749859424',
+        id: 'c4f8a478-6051-7012-f983-4dbb08b90c6e',
         userType: 'adopter',
-        email: 'nicolastack16@gmail.com'
+        email: 'k9finder25+adopter@gmail.com'
       },
       {
         name: 'Waterford Dog Adoption Shelter',
         id: '12345',
         userType: 'shelter',
-        email: 'nicolastack16+shelter1@gmail.com'
+        email: 'k9finder25+shelter1@gmail.com'
       },
       {
         name: 'Cody Smith',
         id: '78910',
         userType: 'admin',
-        email: 'nicolastack16+admin@gmail.com'
+        email: 'k9finder25+admin@gmail.com'
       },
       { name: 'bob', id: '002' },
       {
         name: 'test delete',
-        email: 'nicolastack16+testdelete@gmail.com',
+        email: 'k9finder25+testdelete@gmail.com',
         id: '003'
       },
       {
         name: 'Ron Weasley',
         id: '3456',
         userType: 'adopter',
-        email: 'nicolastack16+adopter@gmail.com'
+        email: 'k9finder25+adopter@gmail.com'
       },
       {
         name: 'jane',
         id: '004',
         userType: 'adopter',
-        email: 'nicolastack16+test@gmail.com'
+        email: 'k9finder25+testing@gmail.com'
       },
       {
         name: 'Carlow Dog Adoption Shelter',
         id: '101010',
         userType: 'shelter',
-        email: 'nicolastack16+shelter2@gmail.com'
+        email: 'k9finder25+shelter2@gmail.com'
       }
     ]);
   });
@@ -198,13 +198,13 @@ describe("Get Users with shelter userType as admin user", () => {
         name: "Waterford Dog Adoption Shelter",
         id: "12345",
         userType: "shelter",
-        email: "nicolastack16+shelter1@gmail.com"
+        email: "k9finder25+shelter1@gmail.com"
       },
       {
         name: "Carlow Dog Adoption Shelter",
         id: "101010",
         userType: "shelter",
-        email: "nicolastack16+shelter2@gmail.com"
+        email: "k9finder25+shelter2@gmail.com"
       }
     ]);
   });
@@ -225,21 +225,21 @@ describe("Get Users with adopter userType as shelter user", () => {
     expect(response.body).toEqual([                                                        
       {
         name: 'nicola',
-        id: '248814d8-00d1-707d-3f83-dbb749859424',
+        id: 'c4f8a478-6051-7012-f983-4dbb08b90c6e',
         userType: 'adopter',
-        email: 'nicolastack16@gmail.com'
+        email: 'k9finder25+adopter@gmail.com'
       },
       {
         name: 'Ron Weasley',
         id: '3456',
         userType: 'adopter',
-        email: 'nicolastack16+adopter@gmail.com'
+        email: 'k9finder25+adopter@gmail.com'
       },
       {
         name: 'jane',
         id: '004',
         userType: 'adopter',
-        email: 'nicolastack16+test@gmail.com'
+        email: 'k9finder25+testing@gmail.com'
       }
     ]);
   });
@@ -263,13 +263,13 @@ describe("Get Users with shelter userType as adopter user", () => {
         name: "Waterford Dog Adoption Shelter",
         id: "12345",
         userType: "shelter",
-        email: "nicolastack16+shelter1@gmail.com",
+        email: "k9finder25+shelter1@gmail.com",
       },
       {
         name: "Carlow Dog Adoption Shelter",
         id: "101010",
         userType: "shelter",
-        email: "nicolastack16+shelter2@gmail.com",
+        email: "k9finder25+shelter2@gmail.com",
       },
     ]);
   });
@@ -316,13 +316,13 @@ describe("Create User in dynamoDB + Cognito", () => {
   });
 
   afterEach(async () => {
-    await testUtils.removeCognitoTestUser("nicolastack16+create@gmail.com");
+    await testUtils.removeCognitoTestUser("k9finder25+create@gmail.com");
   });
 
   it("Success : User can create a new user", async () => {
     const newUser = {
       name: "Nikki",
-      email: "nicolastack16+create@gmail.com",
+      email: "k9finder25+create@gmail.com",
       password: process.env.TEST_PASSWORD,
       userType: "adopter",
     };
@@ -333,7 +333,7 @@ describe("Create User in dynamoDB + Cognito", () => {
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("id");
     expect(response.body.name).toBe("Nikki");
-    expect(response.body.email).toBe("nicolastack16+create@gmail.com");
+    expect(response.body.email).toBe("k9finder25+create@gmail.com");
   });
 });
 
@@ -351,13 +351,13 @@ describe("Update User", () => {
     const existingUser = {
       id: "004",
       name: "jane",
-      email: "nicolastack16+test@gmail.com",
+      email: "k9finder25+testing@gmail.com",
     };
 
     const updatedUser = {
       email: existingUser.email,
       name: "Nikki",
-      newEmail: "nicolastack16+updated@gmail.com",
+      newEmail: "k9finder25+updated@gmail.com",
     };
     const response = await request(app)
       .put(`/users/${existingUser.id}`)
@@ -378,7 +378,7 @@ describe("Delete User", () => {
     );
     AUTH_HEADER = `Bearer ${token}`;
     await testUtils.createCognitoTestUserForDeletionTest(
-      "nicolastack16+testdelete@gmail.com"
+      "k9finder25+testdelete@gmail.com"
     );
     await new Promise((resolve) => setTimeout(resolve, 2000));
   });
@@ -387,7 +387,7 @@ describe("Delete User", () => {
     const user = { id: "003", name: "test delete" };
     const response = await request(app)
       .delete(`/users/${user.id}`)
-      .send({ email: "nicolastack16+testdelete@gmail.com" })
+      .send({ email: "k9finder25+testdelete@gmail.com" })
       .set("Authorization", AUTH_HEADER);
 
     expect(response.status).toBe(200);

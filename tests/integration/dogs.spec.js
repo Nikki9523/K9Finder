@@ -29,7 +29,7 @@ describe("Dogs API", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([
       {
-        adopterId: "248814d8-00d1-707d-3f83-dbb749859424",
+        adopterId: "c4f8a478-6051-7012-f983-4dbb08b90c6e",
         adoptionStatus: "adopted",
         age: 1,
         breed: "Labrador",
@@ -56,7 +56,7 @@ describe("Dogs API", () => {
         shelterId: "101010",
       },
       {
-        adopterId: "248814d8-00d1-707d-3f83-dbb749859424",
+        adopterId: "c4f8a478-6051-7012-f983-4dbb08b90c6e",
         adoptionStatus: "reserved",
         age: 5,
         breed: "Chihuahua",
@@ -77,7 +77,7 @@ describe("Dogs API", () => {
       .set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
-      adopterId: "248814d8-00d1-707d-3f83-dbb749859424",
+      adopterId: "c4f8a478-6051-7012-f983-4dbb08b90c6e",
       adoptionStatus: "adopted",
       age: 1,
       breed: "Labrador",
@@ -108,7 +108,7 @@ it("Success: user can update all details of specific dog", async () => {
     age: 4,
     likes: ["fetch"],
     dislikes: ["cats", "swimming"],
-    adopterId: "248814d8-00d1-707d-3f83-dbb749859424",
+    adopterId: "c4f8a478-6051-7012-f983-4dbb08b90c6e",
     adoptionStatus: "adopted",
 
   };
@@ -124,7 +124,7 @@ it("Success: user can update all details of specific dog", async () => {
     age: 4,
     breed: "Beagle",
     dislikes: ["cats", "swimming"],
-    adopterId: "248814d8-00d1-707d-3f83-dbb749859424",
+    adopterId: "c4f8a478-6051-7012-f983-4dbb08b90c6e",
     adoptionStatus: "adopted",
     gender: "Male",
     goodWithChildren: false,
@@ -148,7 +148,7 @@ it("Success: User can update specific fields of dog details", async () => {
     .send(updatedDog);
   expect(response.statusCode).toBe(200);
   expect(response.body).toEqual({
-    adopterId: "248814d8-00d1-707d-3f83-dbb749859424",
+    adopterId: "c4f8a478-6051-7012-f983-4dbb08b90c6e",
     adoptionStatus: "reserved",
     goodWithChildren: true,
     goodWithOtherDogs: false,

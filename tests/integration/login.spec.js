@@ -5,7 +5,7 @@ const app = require("./../../server");
 describe("Login API", () => {
   it("Success: returns a valid token when valid credentials are provided", async () => {
     const response = await request(app).post("/login").send({
-      email: process.env.TEST_USERNAME,
+      email: process.env.TEST_USERNAME_ADMIN,
       password: process.env.TEST_PASSWORD,
     });
     expect(response.statusCode).toBe(200);
@@ -14,7 +14,7 @@ describe("Login API", () => {
 
   it("Failure: returns an error when invalid credentials are provided", async () => {
     const response = await request(app).post("/login").send({
-      email: process.env.TEST_USERNAME,
+      email: process.env.TEST_USERNAME_ADMIN,
       password: "wrongpassword",
     });
     expect(response.statusCode).toBe(401);
