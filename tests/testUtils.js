@@ -28,7 +28,7 @@ async function generateBearerTokenForIntegrationTests(userType) {
     !process.env.TEST_USERNAME_SHELTER
   ) {
     throw new Error(
-      "Missing required values for generating token. Please set COGNITO_CLIENT_ID, TEST_USERNAME, TEST_PASSWORD, COGNITO_CLIENT_SECRET, TEST_USERNAME_ADMIN, and TEST_USERNAME_SHELTER in your environment variables."
+      "Missing required values for generating token. Please set COGNITO_CLIENT_ID, TEST_USERNAME_ADOPTER, TEST_PASSWORD, COGNITO_CLIENT_SECRET, TEST_USERNAME_ADMIN, and TEST_USERNAME_SHELTER in your environment variables."
     );
   }
 
