@@ -1,0 +1,405 @@
+{
+	"info": {
+		"_postman_id": "b098c576-4f78-4588-b1c4-f614b149175f",
+		"name": "K9Finder API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9034778"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/c45894d8-b061-70f9-e27d-745b62ba0575",
+							"protocol": "https",
+							"host": [
+								"jo0vpfwya1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"users",
+								"c45894d8-b061-70f9-e27d-745b62ba0575"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
+							"protocol": "https",
+							"host": [
+								"jo0vpfwya1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Shelter Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
+							"protocol": "https",
+							"host": [
+								"jo0vpfwya1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Adopter Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
+							"protocol": "https",
+							"host": [
+								"jo0vpfwya1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/84284408-10b1-70a8-4c34-20b90c070832",
+							"protocol": "https",
+							"host": [
+								"jo0vpfwya1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"users",
+								"84284408-10b1-70a8-4c34-20b90c070832"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"k9finder25+adopter@gmail.com\",\r\n    \"name\": \"Stephanie Smith\",\r\n    \"userType\": \"adopter\",\r\n    \"password\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
+							"protocol": "https",
+							"host": [
+								"jo0vpfwya1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"nicolastack16+createuser2@gmail.com\",\r\n    \"newEmail\": \"nicolastack16+update@gmail.com\",\r\n    \"name\": \"Nicola\",\r\n    \"userType\": \"adpoter\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/84b834b8-0041-70ab-125f-8cec517b387c",
+							"protocol": "https",
+							"host": [
+								"jo0vpfwya1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"users",
+								"84b834b8-0041-70ab-125f-8cec517b387c"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Dogs",
+			"item": [
+				{
+					"name": "Get Dog",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/c45894d8-b061-70f9-e27d-745b62ba0575",
+							"protocol": "https",
+							"host": [
+								"jo0vpfwya1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"users",
+								"c45894d8-b061-70f9-e27d-745b62ba0575"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Dogs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
+							"protocol": "https",
+							"host": [
+								"jo0vpfwya1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Dog Entry",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/D1754748714393761",
+							"protocol": "https",
+							"host": [
+								"jo0vpfwya1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"dogs",
+								"D1754748714393761"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Dog Entry",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \"id\": \"D10201\",\r\n    \"name\": \"Goldie\",\r\n    \"age\": 3,\r\n    \"breed\": \"Lab\",\r\n    \"dislikes\": [\r\n        \"rain\"\r\n    ],\r\n    \"gender\": \"Female\",\r\n    \"adoptionStatus\": \"available\",\r\n    \"goodWithChildren\": true,\r\n    \"goodWithOtherDogs\": true,\r\n    \"likes\": [\r\n        \"lazing around\"\r\n    ],\r\n    \"shelterId\": \"12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs",
+							"protocol": "https",
+							"host": [
+								"jo0vpfwya1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"dogs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Dog",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"nicolastack16+createuser2@gmail.com\",\r\n    \"newEmail\": \"nicolastack16+update@gmail.com\",\r\n    \"name\": \"Nicola\",\r\n    \"userType\": \"adpoter\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/84b834b8-0041-70ab-125f-8cec517b387c",
+							"protocol": "https",
+							"host": [
+								"jo0vpfwya1",
+								"execute-api",
+								"us-east-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"users",
+								"84b834b8-0041-70ab-125f-8cec517b387c"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"k9finder25+testauth@gmail.com\",\r\n    \"password\": \"rAinyday334!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/login",
+					"protocol": "https",
+					"host": [
+						"jo0vpfwya1",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
