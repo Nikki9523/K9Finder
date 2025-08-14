@@ -383,7 +383,7 @@ describe("Delete User", () => {
     await new Promise((resolve) => setTimeout(resolve, 2000));
   });
 
-  it.only("Success : User can delete a user", async () => {
+  it("Success : User can delete a user", async () => {
     const user = { id: "003", name: "test delete" };
     const response = await request(app)
       .delete(`/users/${user.id}`)
