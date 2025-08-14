@@ -383,6 +383,10 @@ describe("Delete User", () => {
     await new Promise((resolve) => setTimeout(resolve, 2000));
   });
 
+  afterAll(async () => {
+    await testUtils.removeCognitoTestUser("k9finder25+testdelete@gmail.com");
+  });
+
   it("Success : User can delete a user", async () => {
     const user = { id: "003", name: "test delete" };
     const response = await request(app)
