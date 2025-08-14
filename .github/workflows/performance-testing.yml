@@ -6,6 +6,18 @@ on:
     types:
       - completed
 jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check conditional run logic
+        run: |
+          echo "=== debug logs ==="
+          cat "$GITHUB_EVENT_PATH"
+          echo
+          echo "head_branch=${{ github.event.workflow_run.head_branch }}"
+          echo "conclusion=${{ github.event.workflow_run.conclusion }}"
+          echo "name=${{ github.event.workflow_run.name }}"
+          echo "repo=${{ github.event.workflow_run.repository }}"
   run-performance-tests:
     if: ${{ github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest

@@ -160,7 +160,6 @@ const createCognitoTestUserForDeletionTest = async (email) => {
   try {
     await cognito.send(new AdminCreateUserCommand({
       ...params,
-      Username: "k9finder25+testdelete@gmail.com",
       TemporaryPassword: process.env.TEST_PASSWORD
     }));
 
