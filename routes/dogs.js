@@ -1,103 +1,19 @@
 const express = require('express');
+const dogController = require('../controllers/dogController');
+
 const router = express.Router();
 const { authenticateJWT } = require('../auth');
-const { unmarshall } = require("@aws-sdk/util-dynamodb");
-const { getDogs, createDog, updateDogDetails, deleteDog } = require("../dynamo.js");
 
 router.use(authenticateJWT);
 
-router.post("/", async (req, res) => {
-  const newDog = req.body;
-  if (!newDog.name || !newDog.breed || !newDog.age || !newDog.adoptionStatus || !newDog.shelterId) {
-    return res.status(400).json({ error: "Missing required fields" });
-  }
-  try {
-    await createDog(newDog);
-    res.status(201).json(newDog);
-  } catch (error) {
-    console.error("Error creating dog:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+router.post("/", dogController.createDog);
 
-router.get("/", async (req, res) => {
-  try {
-    const dogs = await getDogs();
-    const formattedDogs = dogs.map((item) => {
-      const dog = unmarshall(item);
-      // aws sdkv3 coverts SS to string sets not arrays
-      //JSON doesn't support sets so convert them to arrays
-      dog.likes = Array.from(dog.likes);
-      dog.dislikes = Array.from(dog.dislikes);
-      return dog;
-    });
-    res.status(200).json(formattedDogs);
-  } catch (error) {
-    console.error("Error retrieving dogs:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+router.get("/", dogController.getDogs);
 
-router.get("/:id", async (req, res) => {
-  const dogId = req.params.id;
-  try {
-    const dogs = await getDogs();
-    const formattedDogs = dogs.map((item) => unmarshall(item));
-    const dog = formattedDogs.find((d) => d.id === dogId);
-    if (!dog) {
-      return res.status(404).json({ error: "Dog not found" });
-    }
-    if (dog) {
-      dog.likes = Array.from(dog.likes);
-      dog.dislikes = Array.from(dog.dislikes);
-    }
-    res.status(200).json(dog);
-  } catch (error) {
-    console.error("Error retrieving dog:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+router.get("/:id", dogController.getDogById);
 
-router.put("/:id", async (req, res) => {
-  const dogId = req.params.id;
-  const updatedData = req.body;
+router.put("/:id", dogController.updateDog);
 
-  try {
-    const dogs = await getDogs();
-    const formattedDogs = dogs.map(item => unmarshall(item));
-    const existingDog = formattedDogs.find(d => d.id === dogId);
-    if (!existingDog) {
-      return res.status(404).json({ error: "Dog not found" });
-    }
-    const mergedDog = { ...existingDog, ...updatedData };
-
-    await updateDogDetails(dogId, mergedDog);
-
-    mergedDog.likes = mergedDog.likes instanceof Set ? Array.from(mergedDog.likes) : (Array.isArray(mergedDog.likes) ? mergedDog.likes : []);
-    mergedDog.dislikes = mergedDog.dislikes instanceof Set ? Array.from(mergedDog.dislikes) : (Array.isArray(mergedDog.dislikes) ? mergedDog.dislikes : []);
-
-    res.status(200).json(mergedDog);
-  } catch (error) {
-    console.error("Error updating dog:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-router.delete("/:id", async (req, res) => {
-  const dogId = req.params.id;
-  try {
-    const dogs = await getDogs();
-    const formattedDogs = dogs.map((item) => unmarshall(item));
-    const existingDog = formattedDogs.find((d) => d.id === dogId);
-    if (!existingDog) {
-      return res.status(404).json({ error: "Dog not found" });
-    }
-    await deleteDog(dogId);
-    res.status(204).send();
-  } catch (error) {
-    console.error("Error deleting dog:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+router.delete("/:id", dogController.deleteDog);
 
 module.exports = router;

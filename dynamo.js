@@ -92,7 +92,7 @@ const deleteUserInDynamo = async (userId) => {
   }
 };
 
-const getDogs = async () => {
+const getDogsInDynamo = async () => {
   const params = {
     TableName: TABLE_NAME,
     FilterExpression: "begins_with(#id, :idPrefix)",
@@ -109,7 +109,7 @@ const getDogs = async () => {
   }
 };
 
-const updateDogDetails = async (dogId, mergedDog) => {
+const updateDogInDynamo = async (dogId, mergedDog) => {
   const params = {
     TableName: TABLE_NAME,
     Key: { id: { S: dogId } },
@@ -144,7 +144,7 @@ const updateDogDetails = async (dogId, mergedDog) => {
   }
 };
 
-const deleteDog = async (dogId) => {
+const deleteDogInDynamo = async (dogId) => {
   const params = {
     TableName: TABLE_NAME,
     Key: {
@@ -160,7 +160,7 @@ const deleteDog = async (dogId) => {
   }
 };
 
-const createDog = async (dog) => {
+const createDogInDynamo = async (dog) => {
   const params = {
     TableName: TABLE_NAME,
     Item: {
@@ -186,4 +186,4 @@ const createDog = async (dog) => {
   }
 };
 
-module.exports = { getUsersFromDynamo, createUserInDynamo, updateUserInDynamo, deleteUserInDynamo, getDogs, updateDogDetails, deleteDog, createDog };
+module.exports = { getUsersFromDynamo, createUserInDynamo, updateUserInDynamo, deleteUserInDynamo, getDogsInDynamo, deleteDogInDynamo, createDogInDynamo, updateDogInDynamo };
