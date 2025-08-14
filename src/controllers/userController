@@ -84,7 +84,6 @@ async function deleteUser(req, res) {
     const userId = req.params.id;
     const email = req.body.email;
 
-    // dynamoDB
     await deleteUserInDynamo(userId);
 
     const validateUserExists = await getCognitoUserByEmail(email);

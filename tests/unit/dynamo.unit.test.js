@@ -1,4 +1,4 @@
-const { getUsersFromDynamo, createUserInDynamo, deleteUserInDynamo, updateUserInDynamo, getDogsInDynamo, deleteDogInDynamo, createDogInDynamo, updateDogInDynamo } = require('../../dynamo');
+const { getUsersFromDynamo, createUserInDynamo, deleteUserInDynamo, updateUserInDynamo, getDogsInDynamo, deleteDogInDynamo, createDogInDynamo, updateDogInDynamo } = require('../../src/dynamo');
 const { DynamoDBClient, ScanCommand, PutItemCommand, DeleteItemCommand, UpdateItemCommand } = require('@aws-sdk/client-dynamodb');
 
 jest.mock('@aws-sdk/client-dynamodb', () => {

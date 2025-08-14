@@ -1,4 +1,4 @@
-const cognitoModule = require("../../cognito");
+const cognitoModule = require("../../src/cognito");
 
 const {
   CognitoIdentityProviderClient,

@@ -5,7 +5,7 @@ jest.mock('jwks-rsa', () => () => ({
   getSigningKey: (kid, cb) => cb(null, { publicKey: 'test-key' }),
 }));
 
-const { authenticateJWT, getKey, checkPermissions, checkIfUserIsRequestingOwnDetails } = require('../../auth');
+const { authenticateJWT, getKey, checkPermissions, checkIfUserIsRequestingOwnDetails } = require('../../src/auth');
 
 describe("getKey", () => {
   it("Success: uses publicKey if present", (done) => {
@@ -118,8 +118,8 @@ describe("authenticateJWT middleware", () => {
     jest.doMock("jwks-rsa", () => () => ({
       getSigningKey: (kid, cb) => cb(new Error("Signing key not found")),
     }));
-   
-    const { authenticateJWT } = require("../../auth");
+
+    const { authenticateJWT } = require('../../src/auth');
 
     const token = jwt.sign({ sub: "123" }, "test-key", { algorithm: "HS256" });
     const req = httpMocks.createRequest({
