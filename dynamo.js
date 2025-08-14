@@ -14,7 +14,7 @@ const dynamoClient = new DynamoDBClient({
 const TABLE_NAME = "k9finder";
 
 
-const getUsers = async () => {
+const getUsersFromDynamo = async () => {
   const params = {
     TableName: TABLE_NAME,
     FilterExpression: "NOT begins_with(#id, :idPrefix)",
@@ -31,7 +31,7 @@ const getUsers = async () => {
   }
 };
 
-const createUser = async (user) => {
+const createUserInDynamo = async (user) => {
   const params = {
     TableName: TABLE_NAME,
     Item: {
@@ -52,7 +52,7 @@ const createUser = async (user) => {
 };
 // https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html#DDB-UpdateItem-request-AttributeUpdates
 
-const updateUser = async (userId, updatedUser) => {
+const updateUserInDynamo = async (userId, updatedUser) => {
   const params = {
     TableName: TABLE_NAME,
     Key: {
@@ -76,7 +76,7 @@ const updateUser = async (userId, updatedUser) => {
   }
 };
 
-const deleteUser = async (userId) => {
+const deleteUserInDynamo = async (userId) => {
   const params = {
     TableName: TABLE_NAME,
     Key: {
@@ -186,4 +186,4 @@ const createDog = async (dog) => {
   }
 };
 
-module.exports = { getUsers, createUser, updateUser, deleteUser, getDogs, updateDogDetails, deleteDog, createDog };
+module.exports = { getUsersFromDynamo, createUserInDynamo, updateUserInDynamo, deleteUserInDynamo, getDogs, updateDogDetails, deleteDog, createDog };

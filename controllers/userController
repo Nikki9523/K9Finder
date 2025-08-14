@@ -1,0 +1,151 @@
+const { unmarshall } = require('@aws-sdk/util-dynamodb');
+const { getUsersFromDynamo, createUserInDynamo, updateUserInDynamo, deleteUserInDynamo } = require('../dynamo');
+const {checkPermissions, checkIfUserIsRequestingOwnDetails } = require('../auth');
+
+const { createCognitoUser, addUserToGroupInCognito, updateCognitoUser, deleteCognitoUser, getCognitoUserByEmail} = require('../cognito');
+
+async function getAllUsers(req, res) {
+    if (!checkPermissions(req.user, "admin")) {
+        return res.status(403).json({ error: "Forbidden" });
+    }
+    try {
+  const users = await getUsersFromDynamo();
+    res.status(200).json(users.map((user) => unmarshall(user)));
+    } catch (err) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+async function getShelterUsers(req, res){
+  if (!checkPermissions(req.user, "admin") && !checkPermissions(req.user, "adopter")) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  try {
+    const users = await getUsersFromDynamo();
+    const shelters = users.map(unmarshall).filter(u => u.userType === "shelter");
+    res.status(200).json(shelters);
+  } catch (error) {
+    console.error("Error retrieving users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+async function getAdopterUsers(req, res){
+  if (!checkPermissions(req.user, "admin") && !checkPermissions(req.user, "shelter")) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  try {
+    const users = await getUsersFromDynamo();
+    const adopters = users.map(unmarshall).filter(u => u.userType === "adopter");
+    res.status(200).json(adopters);
+  } catch (error) {
+    console.error("Error retrieving users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+async function getUserById(req, res){
+  const userId = req.params.id;
+  const cognitoUserId = req.user.sub;
+  if (!checkPermissions(req.user, "admin") && !checkPermissions(req.user, "shelter") && !checkIfUserIsRequestingOwnDetails(userId, cognitoUserId)) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  const users = await getUsersFromDynamo();
+
+  const usersFormatted = users.map(user => unmarshall(user));
+  const user = usersFormatted.find(user => user.id === userId);
+
+  if (!user) {
+    return res.status(404).json({ message: "User does not exist" });
+  }
+  res.json(user);
+};
+
+async function createUser(req, res){
+  try {
+    if (!req.body.email || !req.body.name || !req.body.userType || !req.body.password) {
+      return res.status(400).json({ error: "Missing required fields: name, email, userType, password" });
+    }
+    const cognitoUser = await createCognitoUser({ name: req.body.name, email: req.body.email, password: req.body.password});
+    const cognitoUserId = cognitoUser.User.Username;
+    await addUserToGroupInCognito(req.body.email, req.body.userType);
+    const createdUser = await createUserInDynamo({ id: cognitoUserId, name: req.body.name, email: req.body.email, userType: req.body.userType });
+    res.status(201).json(createdUser);
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ error: "Failed to create user" });
+  }
+};
+
+async function deleteUser(req, res) {
+  try {
+    const userId = req.params.id;
+    const email = req.body.email;
+
+    // dynamoDB
+    await deleteUserInDynamo(userId);
+
+    const validateUserExists = await getCognitoUserByEmail(email);
+
+    if (!validateUserExists) {
+      return res.status(404).json({ message: "User does not exist" });
+    }
+    
+    await deleteCognitoUser(email);
+    
+    res.status(200).json({ message: "User deleted successfully", id: userId });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return res.status(500).json({ error: "Failed to delete user" });
+  }
+}
+
+async function updateUser(req, res) {
+  try {
+    const userId = req.params.id;
+
+    const users = await getUsersFromDynamo();
+    const usersFormatted = users.map((user) => unmarshall(user));
+    const existingUser = usersFormatted.find((user) => user.id === userId);
+
+    if (!existingUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const updatedUser = {
+      id: userId,
+      name: req.body.name,
+      email: req.body.email,
+      newEmail: req.body.newEmail,
+      userType: existingUser.userType // Don't think userType should be able to be updated but might change
+    };
+
+    await updateUserInDynamo(updatedUser.id, {
+      name: updatedUser.name,
+      email: updatedUser.newEmail,
+    });
+
+    await updateCognitoUser(
+      updatedUser.email,
+      updatedUser.name,
+      updatedUser.newEmail
+    );
+
+    res.status(200).json({ id: updatedUser.id, name: updatedUser.name, email: updatedUser.email, userType: updatedUser.userType });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return res.status(500).json({ error: "Failed to update user" });
+  }
+}
+
+module.exports = {
+  getAllUsers,
+  getShelterUsers,
+  getAdopterUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser
+};
