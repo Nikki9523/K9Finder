@@ -14,7 +14,7 @@ const dynamoClient = new DynamoDBClient({
 const TABLE_NAME = "k9finder";
 
 
-const getUsers = async () => {
+const getUsersFromDynamo = async () => {
   const params = {
     TableName: TABLE_NAME,
     FilterExpression: "NOT begins_with(#id, :idPrefix)",
@@ -31,7 +31,7 @@ const getUsers = async () => {
   }
 };
 
-const createUser = async (user) => {
+const createUserInDynamo = async (user) => {
   const params = {
     TableName: TABLE_NAME,
     Item: {
@@ -52,7 +52,7 @@ const createUser = async (user) => {
 };
 // https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html#DDB-UpdateItem-request-AttributeUpdates
 
-const updateUser = async (userId, updatedUser) => {
+const updateUserInDynamo = async (userId, updatedUser) => {
   const params = {
     TableName: TABLE_NAME,
     Key: {
@@ -76,7 +76,7 @@ const updateUser = async (userId, updatedUser) => {
   }
 };
 
-const deleteUser = async (userId) => {
+const deleteUserInDynamo = async (userId) => {
   const params = {
     TableName: TABLE_NAME,
     Key: {
@@ -92,7 +92,7 @@ const deleteUser = async (userId) => {
   }
 };
 
-const getDogs = async () => {
+const getDogsInDynamo = async () => {
   const params = {
     TableName: TABLE_NAME,
     FilterExpression: "begins_with(#id, :idPrefix)",
@@ -109,7 +109,7 @@ const getDogs = async () => {
   }
 };
 
-const updateDogDetails = async (dogId, mergedDog) => {
+const updateDogInDynamo = async (dogId, mergedDog) => {
   const params = {
     TableName: TABLE_NAME,
     Key: { id: { S: dogId } },
@@ -144,7 +144,7 @@ const updateDogDetails = async (dogId, mergedDog) => {
   }
 };
 
-const deleteDog = async (dogId) => {
+const deleteDogInDynamo = async (dogId) => {
   const params = {
     TableName: TABLE_NAME,
     Key: {
@@ -160,7 +160,7 @@ const deleteDog = async (dogId) => {
   }
 };
 
-const createDog = async (dog) => {
+const createDogInDynamo = async (dog) => {
   const params = {
     TableName: TABLE_NAME,
     Item: {
@@ -186,4 +186,4 @@ const createDog = async (dog) => {
   }
 };
 
-module.exports = { getUsers, createUser, updateUser, deleteUser, getDogs, updateDogDetails, deleteDog, createDog };
+module.exports = { getUsersFromDynamo, createUserInDynamo, updateUserInDynamo, deleteUserInDynamo, getDogsInDynamo, deleteDogInDynamo, createDogInDynamo, updateDogInDynamo };

@@ -1,6 +1,6 @@
 require("dotenv").config();
 const request = require("supertest");
-const app = require("./../../server");
+const app = require("../../src/server");
 
 describe("Login API", () => {
   it("Success: returns a valid token when valid credentials are provided", async () => {

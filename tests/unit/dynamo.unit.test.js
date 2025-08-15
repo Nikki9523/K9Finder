@@ -1,4 +1,4 @@
-const { getUsers, createUser, deleteUser, updateUser, getDogs,deleteDog, createDog, updateDogDetails } = require('../../dynamo');
+const { getUsersFromDynamo, createUserInDynamo, deleteUserInDynamo, updateUserInDynamo, getDogsInDynamo, deleteDogInDynamo, createDogInDynamo, updateDogInDynamo } = require('../../src/dynamo');
 const { DynamoDBClient, ScanCommand, PutItemCommand, DeleteItemCommand, UpdateItemCommand } = require('@aws-sdk/client-dynamodb');
 
 jest.mock('@aws-sdk/client-dynamodb', () => {
@@ -28,14 +28,14 @@ describe("dynamo helpers", () => {
     errorSpy.mockRestore();
   });
 
-  it("Success getUsers returns user items", async () => {
+  it("Success getUsersFromDynamo returns user items", async () => {
     mClient.send.mockResolvedValue({
       Items: [
         { id: { S: "123abc" }, name: { S: "Anne" } },
         { id: { S: "456def" }, name: { S: "Sarah" } },
       ],
     });
-    const users = await getUsers();
+    const users = await getUsersFromDynamo();
     const formattedUsers = users.map((user) => ({
       id: user.id.S,
       name: user.name.S,
@@ -47,9 +47,9 @@ describe("dynamo helpers", () => {
     expect(mClient.send).toHaveBeenCalledWith(expect.any(ScanCommand));
   });
 
-  it("Failure: user receives error message when getUsers fails", async () => {
-    mClient.send.mockRejectedValue(new Error("Failure on getUsers"));
-    await expect(getUsers()).rejects.toThrow("Could not get users");
+  it("Failure: user receives error message when getUsersFromDynamo fails", async () => {
+    mClient.send.mockRejectedValue(new Error("Failure on getUsersFromDynamo"));
+    await expect(getUsersFromDynamo()).rejects.toThrow("Could not get users");
     expect(mClient.send).toHaveBeenCalledWith(expect.any(ScanCommand));
     expect(errorSpy).toHaveBeenCalledWith(
       "Error getting users:",
@@ -60,14 +60,14 @@ describe("dynamo helpers", () => {
   it("Success: User creates new item", async () => {
     mClient.send.mockResolvedValue({});
     const user = { id: "456", name: "Bob", email: "test@test.com" };
-    await expect(createUser(user)).resolves.toEqual(user);
+    await expect(createUserInDynamo(user)).resolves.toEqual(user);
     expect(mClient.send).toHaveBeenCalledWith(expect.any(PutItemCommand));
   });
 
-  it("Failure: error thrown when createUser fails", async () => {
-    mClient.send.mockRejectedValue(new Error("CreateUser failed"));
+  it("Failure: error thrown when createUserInDynamo fails", async () => {
+    mClient.send.mockRejectedValue(new Error("createUserInDynamo failed"));
     const user = { id: "789", name: "Sandy", email: "test@test.com" };
-    await expect(createUser(user)).rejects.toThrow("Failed to create user");
+    await expect(createUserInDynamo(user)).rejects.toThrow("Failed to create user");
     expect(mClient.send).toHaveBeenCalledWith(expect.any(PutItemCommand));
     expect(errorSpy).toHaveBeenCalledWith(
       "Error creating user:",
@@ -77,13 +77,13 @@ describe("dynamo helpers", () => {
 
   it("Success: User can delete item", async () => {
     mClient.send.mockResolvedValue({});
-    await expect(deleteUser("456")).resolves.toBeUndefined();
+    await expect(deleteUserInDynamo("456")).resolves.toBeUndefined();
     expect(mClient.send).toHaveBeenCalledWith(expect.any(DeleteItemCommand));
   });
 
-  it("Failure: deleteUser throws error on DynamoDB failure", async () => {
+  it("Failure: deleteUserInDynamo throws error on DynamoDB failure", async () => {
     mClient.send.mockRejectedValue(new Error("Deletion Fails"));
-    await expect(deleteUser("456")).rejects.toThrow("Failed to delete user");
+    await expect(deleteUserInDynamo("456")).rejects.toThrow("Failed to delete user");
     expect(mClient.send).toHaveBeenCalledWith(expect.any(DeleteItemCommand));
     expect(errorSpy).toHaveBeenCalledWith(
       "Error deleting user:",
@@ -97,18 +97,18 @@ describe("dynamo helpers", () => {
     });
     const userId = "456def";
     const updatedUser = { name: "Sarah Updated" };
-    const result = await updateUser(userId, updatedUser);
+    const result = await updateUserInDynamo(userId, updatedUser);
     expect(result).toEqual({
       Attributes: { id: { S: "456def" }, name: { S: "Sarah Updated" } },
     });
     expect(mClient.send).toHaveBeenCalledWith(expect.any(UpdateItemCommand));
   });
 
-  it("Failure: updateUser throws error on DynamoDB failure", async () => {
+  it("Failure: updateUserInDynamo throws error on DynamoDB failure", async () => {
     mClient.send.mockRejectedValue(new Error("DynamoDB error"));
     const userId = "456";
     const updatedUser = { name: "Bob Updated" };
-    await expect(updateUser(userId, updatedUser)).rejects.toThrow(
+    await expect(updateUserInDynamo(userId, updatedUser)).rejects.toThrow(
       "Failed to update user"
     );
     expect(mClient.send).toHaveBeenCalledWith(expect.any(UpdateItemCommand));
@@ -125,7 +125,7 @@ describe("dynamo helpers", () => {
         { id: { S: "dog2" }, name: { S: "Max" } },
       ],
     });
-    const dogs = await getDogs();
+    const dogs = await getDogsInDynamo();
     const formattedDogs = dogs.map((dog) => ({
       id: dog.id.S,
       name: dog.name.S,
@@ -137,9 +137,9 @@ describe("dynamo helpers", () => {
     expect(mClient.send).toHaveBeenCalledWith(expect.any(ScanCommand));
   });
 
-  it("Failure: getDogs throws error on DynamoDB failure", async () => {
+  it("Failure: getDogsInDynamo throws error on DynamoDB failure", async () => {
     mClient.send.mockRejectedValue(new Error("DynamoDB error"));
-    await expect(getDogs()).rejects.toThrow("Could not get dogs");
+    await expect(getDogsInDynamo()).rejects.toThrow("Could not get dogs");
     expect(mClient.send).toHaveBeenCalledWith(expect.any(ScanCommand));
     expect(errorSpy).toHaveBeenCalledWith(
       "Error getting dogs:",
@@ -147,7 +147,7 @@ describe("dynamo helpers", () => {
     );
   });
 
-  it("Success: updateDogDetails updates all fields", async () => {
+  it("Success: updateDogInDynamo updates all fields", async () => {
     mClient.send.mockResolvedValue({});
     const dogId = "dog1";
     const updatedData = {
@@ -156,22 +156,22 @@ describe("dynamo helpers", () => {
       dislikes: ["cats"],
       age: 5,
     };
-    await expect(updateDogDetails(dogId, updatedData)).resolves.toBeUndefined();
+    await expect(updateDogInDynamo(dogId, updatedData)).resolves.toBeUndefined();
     expect(mClient.send).toHaveBeenCalledWith(expect.any(UpdateItemCommand));
   });
 
-  it("Success: updateDogDetails updates only some fields", async () => {
+  it("Success: updateDogInDynamo updates only some fields", async () => {
     mClient.send.mockResolvedValue({});
     const dogId = "dog2";
     const updatedData = {
       name: "Max Updated",
       // likes, dislikes, age omitted
     };
-    await expect(updateDogDetails(dogId, updatedData)).resolves.toBeUndefined();
+    await expect(updateDogInDynamo(dogId, updatedData)).resolves.toBeUndefined();
     expect(mClient.send).toHaveBeenCalledWith(expect.any(UpdateItemCommand));
   });
 
-  it("Failure: updateDogDetails throws error on DynamoDB failure", async () => {
+  it("Failure: updateDogInDynamo throws error on DynamoDB failure", async () => {
     mClient.send.mockRejectedValue(new Error("DynamoDB error"));
     const dogId = "dog3";
     const updatedData = {
@@ -180,7 +180,7 @@ describe("dynamo helpers", () => {
       dislikes: ["water"],
       age: 2,
     };
-    await expect(updateDogDetails(dogId, updatedData)).rejects.toThrow(
+    await expect(updateDogInDynamo(dogId, updatedData)).rejects.toThrow(
       "Failed to update dog"
     );
     expect(mClient.send).toHaveBeenCalledWith(expect.any(UpdateItemCommand));
@@ -190,7 +190,7 @@ describe("dynamo helpers", () => {
     );
   });
 
-  it("Failure: updateDogDetails throws error for unsupported type", async () => {
+  it("Failure: updateDogInDynamo throws error for unsupported type", async () => {
     mClient.send.mockRejectedValue(new Error("Unsupported type passed: 0"));
     const dogId = "dog4";
     const updatedData = {
@@ -199,7 +199,7 @@ describe("dynamo helpers", () => {
       dislikes: ["noise"],
       age: 3,
     };
-    await expect(updateDogDetails(dogId, updatedData)).rejects.toThrow(
+    await expect(updateDogInDynamo(dogId, updatedData)).rejects.toThrow(
       "Failed to update dog"
     );
     expect(mClient.send).toHaveBeenCalledWith(expect.any(UpdateItemCommand));
@@ -208,15 +208,15 @@ describe("dynamo helpers", () => {
       expect.any(Error)
     );
   });
-  it("Success: deleteDog deletes a dog item", async () => {
+  it("Success: deleteDogInDynamo deletes a dog item", async () => {
     mClient.send.mockResolvedValue({});
-    await expect(deleteDog("D123")).resolves.toBeUndefined();
+    await expect(deleteDogInDynamo("D123")).resolves.toBeUndefined();
     expect(mClient.send).toHaveBeenCalledWith(expect.any(DeleteItemCommand));
   });
 
-  it("Failure: deleteDog throws error on DynamoDB failure", async () => {
+  it("Failure: deleteDogInDynamo throws error on DynamoDB failure", async () => {
     mClient.send.mockRejectedValue(new Error("Delete failed"));
-    await expect(deleteDog("D123")).rejects.toThrow("Failed to delete dog");
+    await expect(deleteDogInDynamo("D123")).rejects.toThrow("Failed to delete dog");
     expect(mClient.send).toHaveBeenCalledWith(expect.any(DeleteItemCommand));
     expect(errorSpy).toHaveBeenCalledWith(
       "Error deleting dog:",
@@ -224,7 +224,7 @@ describe("dynamo helpers", () => {
     );
   });
 
-  it("Success: createDog creates a dog item", async () => {
+  it("Success: createDogInDynamo creates a dog item", async () => {
     mClient.send.mockResolvedValue({});
     const dog = {
       id: "D999",
@@ -239,11 +239,11 @@ describe("dynamo helpers", () => {
       goodWithChildren: true,
       adopterId: "adopter-123",
     };
-    await expect(createDog(dog)).resolves.toBeUndefined();
+    await expect(createDogInDynamo(dog)).resolves.toBeUndefined();
     expect(mClient.send).toHaveBeenCalledWith(expect.any(PutItemCommand));
   });
 
-  it("Failure: createDog throws error on DynamoDB failure", async () => {
+  it("Failure: createDogInDynamo throws error on DynamoDB failure", async () => {
     mClient.send.mockRejectedValue(new Error("PutItem failed"));
     const dog = {
       id: "D999",
@@ -258,7 +258,7 @@ describe("dynamo helpers", () => {
       goodWithChildren: true,
       adopterId: "adopter-123",
     };
-    await expect(createDog(dog)).rejects.toThrow("Failed to create dog");
+    await expect(createDogInDynamo(dog)).rejects.toThrow("Failed to create dog");
     expect(mClient.send).toHaveBeenCalledWith(expect.any(PutItemCommand));
     expect(errorSpy).toHaveBeenCalledWith(
       "Error creating dog:",
