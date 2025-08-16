@@ -1,6 +1,3 @@
-# https://www.timveletta.com/blog/pushing-content-to-s3-from-github-actions/
-# https://github.com/actions/download-artifact?tab=readme-ov-file#download-artifacts-from-other-workflow-runs-or-repositories
-
 name: Download and Deploy Artifact to Lambda
 on:
   workflow_run:
