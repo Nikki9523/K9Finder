@@ -2,11 +2,11 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: An AWS Serverless Application Model to deploy K9Finder Resources
 Parameters:
-  COGNITO_CLIENT_ID:
+  COGNITOCLIENTID:
     Type: String
-  COGNITO_CLIENT_SECRET:
+  COGNITOCLIENTSECRET:
     Type: String
-  COGNITO_USER_POOL_ID:
+  COGNITOUSERPOOLID:
     Type: String
 Resources:
   k9FinderAPITestingSAM:
@@ -24,9 +24,9 @@ Resources:
         Size: 512
       Environment:
         Variables:
-          COGNITO_CLIENT_ID: !Ref COGNITO_CLIENT_ID
-          COGNITO_CLIENT_SECRET: !Ref COGNITO_CLIENT_SECRET
-          COGNITO_USER_POOL_ID: !Ref COGNITO_USER_POOL_ID
+          COGNITO_CLIENT_ID: !Ref COGNITOCLIENTID
+          COGNITO_CLIENT_SECRET: !Ref COGNITOCLIENTSECRET
+          COGNITO_USER_POOL_ID: !Ref COGNITOUSERPOOLID
       EventInvokeConfig:
         MaximumEventAgeInSeconds: 21600
         MaximumRetryAttempts: 2
