@@ -33,7 +33,7 @@ Resources:
       PackageType: Zip
       Policies:
         - Statement:
-            - Sid: VisualEditor0
+            - Sid: CognitoPermissions
               Effect: Allow
               Action:
                 - cognito-idp:AdminDeleteUser
@@ -43,7 +43,7 @@ Resources:
                 - cognito-idp:AdminGetUser
                 - cognito-idp:ListUsers
               Resource: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
-            - Sid: VisualEditor0
+            - Sid: DynamoDBPermissions
               Effect: Allow
               Action:
                 - dynamodb:PutItem
