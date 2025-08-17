@@ -12,11 +12,11 @@ Resources:
   k9FinderAPITestingSAM:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: .
+      CodeUri: dist/ 
       Description: ''
       MemorySize: 128
       Timeout: 3
-      Handler: dist/index.handler
+      Handler: index.handler
       Runtime: nodejs22.x
       Architectures:
         - x86_64
