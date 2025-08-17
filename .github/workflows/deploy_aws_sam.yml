@@ -54,6 +54,6 @@ jobs:
                   --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
                   --region "${{ secrets.AWS_REGION }}" \
                   --parameter-overrides \
-                    ParameterKey=COGNITO_CLIENT_ID,ParameterValue=${{ secrets.COGNITO_CLIENT_ID }} \
-                    ParameterKey=COGNITO_CLIENT_SECRET,ParameterValue=${{ secrets.COGNITO_CLIENT_SECRET }} \
-                    ParameterKey=COGNITO_USER_POOL_ID,ParameterValue=${{ secrets.COGNITO_USER_POOL_ID }}
+                    ParameterKey=COGNITOCLIENTID,ParameterValue=${{ secrets.COGNITO_CLIENT_ID }} \
+                    ParameterKey=COGNITOCLIENTSECRET,ParameterValue=${{ secrets.COGNITO_CLIENT_SECRET }} \
+                    ParameterKey=COGNITOUSERPOOLID,ParameterValue=${{ secrets.COGNITO_USER_POOL_ID }}
