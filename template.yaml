@@ -216,6 +216,7 @@ Resources:
         Login:
           Type: HttpApi
           Properties:
+           ApiId: !Ref K9FinderHttpApi
             Path: /login
             Method: post
       RuntimeManagementConfig:
