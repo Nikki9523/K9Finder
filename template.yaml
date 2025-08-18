@@ -33,7 +33,7 @@ Resources:
               Audience:
                 - !Ref COGNITOCLIENTID
               Issuer: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/${COGNITOUSERPOOLID}"
-  k9FinderAPITestingSAM:
+  k9Finder:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: dist/ 
