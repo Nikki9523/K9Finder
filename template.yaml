@@ -122,30 +122,82 @@ Resources:
       SnapStart:
         ApplyOn: None
       Events:
-        Api1:
-          Type: Api
+        UsersGetAll:
+          Type: HttpApi
           Properties:
             Path: /users
-            Method: ANY
-        Api2:
-          Type: Api
+            Method: get
+            Auth:
+              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+        UsersCreate:
+          Type: HttpApi
+          Properties:
+            Path: /users
+            Method: post
+            Auth:
+              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+        UsersDelete:
+          Type: HttpApi
           Properties:
             Path: /users/{id}
-            Method: ANY
-        Api3:
-          Type: Api
+            Method: delete
+            Auth:
+              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+        UsersUpdate:
+          Type: HttpApi
+          Properties:
+            Path: /users/{id}
+            Method: put
+            Auth:
+              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+        UsersGetById:
+          Type: HttpApi
+          Properties:
+            Path: /users/{id}
+            Method: get
+            Auth:
+              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+        GetAllDogs:
+          Type: HttpApi
           Properties:
             Path: /dogs
-            Method: ANY
-        Api4:
-          Type: Api
+            Method: get
+            Auth:
+              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+        CreateDog:
+          Type: HttpApi
+          Properties:
+            Path: /dogs
+            Method: post
+            Auth:
+              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+        GetDogById:
+          Type: HttpApi
           Properties:
             Path: /dogs/{id}
-            Method: ANY
-        Api5:
-          Type: Api
+            Method: get
+            Auth:
+              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+        DeleteDog:
+          Type: HttpApi
+          Properties:
+            Path: /dogs/{id}
+            Method: delete
+            Auth:
+              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+        UpdateDog:
+           Type: HttpApi
+           Properties:
+             Path: /dogs/{id}
+             Method: put
+             Auth:
+               Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+        Login:
+          Type: HttpApi
           Properties:
             Path: /login
-            Method: ANY
+            Method: post
+            Auth:
+              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
       RuntimeManagementConfig:
         UpdateRuntimeOn: Auto
