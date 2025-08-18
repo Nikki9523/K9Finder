@@ -12,7 +12,7 @@ Resources:
   K9FinderTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: k9finder_AWS_SAM
+      TableName: k9finder
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
