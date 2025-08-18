@@ -2,7 +2,7 @@ name: K6 Performance Tests
 
 on:
   workflow_run:
-    workflows: ["Download and Deploy Artifact to Lambda"]
+    workflows: ["IAC Deployment with AWS SAM"]
     types:
       - completed
 jobs:
