@@ -9,6 +9,19 @@ Parameters:
   COGNITOUSERPOOLID:
     Type: String
 Resources:
+  K9FinderTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: k9finder_AWS_SAM
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
   K9FinderHttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
@@ -60,7 +73,7 @@ Resources:
                 - dynamodb:PutItem
                 - dynamodb:DeleteItem
                 - dynamodb:UpdateItem
-              Resource: arn:aws:dynamodb:us-east-1:050451372171:table/k9finder
+              Resource: !GetAtt K9FinderTable.Arn
             - Sid: GeneralReadOnlyAccess
               Action:
                 - application-autoscaling:DescribeScalableTargets
