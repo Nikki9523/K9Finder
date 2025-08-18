@@ -9,6 +9,17 @@ Parameters:
   COGNITOUSERPOOLID:
     Type: String
 Resources:
+  K9FinderHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Auth:
+        Authorizers:
+          CognitoAuthorizer:
+            IdentitySource: "$request.header.Authorization"
+            JwtConfiguration:
+              Audience:
+                - !Ref COGNITOCLIENTID
+              Issuer: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/${COGNITOUSERPOOLID}"
   k9FinderAPITestingSAM:
     Type: AWS::Serverless::Function
     Properties:
@@ -149,55 +160,53 @@ Resources:
             Path: /users/{id}
             Method: put
             Auth:
-              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+              Authorizer: CognitoAuthorizer
         UsersGetById:
           Type: HttpApi
           Properties:
             Path: /users/{id}
             Method: get
             Auth:
-              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+              Authorizer: CognitoAuthorizer
         GetAllDogs:
           Type: HttpApi
           Properties:
             Path: /dogs
             Method: get
             Auth:
-              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+              Authorizer: CognitoAuthorizer
         CreateDog:
           Type: HttpApi
           Properties:
             Path: /dogs
             Method: post
             Auth:
-              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+              Authorizer: CognitoAuthorizer
         GetDogById:
           Type: HttpApi
           Properties:
             Path: /dogs/{id}
             Method: get
             Auth:
-              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+              Authorizer: CognitoAuthorizer
         DeleteDog:
           Type: HttpApi
           Properties:
             Path: /dogs/{id}
             Method: delete
             Auth:
-              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+              Authorizer: CognitoAuthorizer
         UpdateDog:
            Type: HttpApi
            Properties:
              Path: /dogs/{id}
              Method: put
              Auth:
-               Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+               Authorizer: CognitoAuthorizer
         Login:
           Type: HttpApi
           Properties:
             Path: /login
             Method: post
-            Auth:
-              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
       RuntimeManagementConfig:
         UpdateRuntimeOn: Auto
