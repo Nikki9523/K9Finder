@@ -136,27 +136,31 @@ Resources:
         UsersGetAll:
           Type: HttpApi
           Properties:
+            ApiId: !Ref K9FinderHttpApi
             Path: /users
             Method: get
             Auth:
-              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+              Authorizer: CognitoAuthorizer
         UsersCreate:
           Type: HttpApi
           Properties:
+            ApiId: !Ref K9FinderHttpApi
             Path: /users
             Method: post
             Auth:
-              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+              Authorizer: CognitoAuthorizer
         UsersDelete:
           Type: HttpApi
           Properties:
+            ApiId: !Ref K9FinderHttpApi
             Path: /users/{id}
             Method: delete
             Auth:
-              Authorizer: arn:aws:cognito-idp:us-east-1:050451372171:userpool/us-east-1_IvczIRf2M
+              Authorizer: CognitoAuthorizer
         UsersUpdate:
           Type: HttpApi
           Properties:
+            ApiId: !Ref K9FinderHttpApi
             Path: /users/{id}
             Method: put
             Auth:
@@ -164,6 +168,7 @@ Resources:
         UsersGetById:
           Type: HttpApi
           Properties:
+            ApiId: !Ref K9FinderHttpApi
             Path: /users/{id}
             Method: get
             Auth:
@@ -171,6 +176,7 @@ Resources:
         GetAllDogs:
           Type: HttpApi
           Properties:
+            ApiId: !Ref K9FinderHttpApi
             Path: /dogs
             Method: get
             Auth:
@@ -178,6 +184,7 @@ Resources:
         CreateDog:
           Type: HttpApi
           Properties:
+            ApiId: !Ref K9FinderHttpApi
             Path: /dogs
             Method: post
             Auth:
@@ -185,6 +192,7 @@ Resources:
         GetDogById:
           Type: HttpApi
           Properties:
+            ApiId: !Ref K9FinderHttpApi
             Path: /dogs/{id}
             Method: get
             Auth:
@@ -192,6 +200,7 @@ Resources:
         DeleteDog:
           Type: HttpApi
           Properties:
+            ApiId: !Ref K9FinderHttpApi
             Path: /dogs/{id}
             Method: delete
             Auth:
@@ -199,6 +208,7 @@ Resources:
         UpdateDog:
            Type: HttpApi
            Properties:
+             ApiId: !Ref K9FinderHttpApi
              Path: /dogs/{id}
              Method: put
              Auth:
