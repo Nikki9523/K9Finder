@@ -73,7 +73,8 @@ async function getCognitoUserByEmail(email) {
   try {
     const command = new ListUsersCommand(params);
     const result = await cognito.send(command);
-    if (!result || !result.Users || result.Users.length === 0) return undefined;    return result.Users[0];
+    if (!result || !result.Users || result.Users.length === 0) return undefined;    
+    return result.Users[0];
   } catch (err) {
     console.error("Error getting Cognito user by email:", err);
     throw new Error("Failed to get Cognito user by email");
