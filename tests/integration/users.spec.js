@@ -367,7 +367,7 @@ describe("Update User", () => {
     expect(response.body).toHaveProperty("id");
     expect(response.body.id).toBe(existingUser.id);
     expect(response.body.name).toBe("Nikki");
-    expect(response.body.email).toBe(updatedUser.email);
+    expect(response.body.email).toBe(updatedUser.newEmail);
   });
 });
 
