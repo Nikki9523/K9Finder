@@ -13,7 +13,7 @@
     {
       "PutRequest": {
         "Item": {
-          "id": { "S": "004" },
+          "id": { "S": "f4885488-6081-70b9-3576-cb1d6feb8cf6" },
           "name": { "S": "jane" },
           "email": { "S": "k9finder25+testing@gmail.com" },
           "userType": { "S": "adopter" }

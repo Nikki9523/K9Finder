@@ -1,11 +1,11 @@
-name: Build and Test
+name: Test Code
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     services:
       dynamodb-local:
@@ -36,20 +36,3 @@ jobs:
     - run: npm run lint
     - run: npm run unit
     - run: npm run integration
-    
-  package_and_upload_artifact:
-    name: Package and Upload Artifact
-    runs-on: ubuntu-latest
-    needs: build
-    if: ${{ github.ref == 'refs/heads/main' }}
-    steps:
-      - uses: actions/checkout@v4
-      - run: npm ci
-      - run: npm run build
-      - run: zip -r k9Finder.zip dist/
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          retention-days: 1
-          name: k9Finder.zip
-          path: k9Finder.zip

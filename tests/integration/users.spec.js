@@ -134,12 +134,18 @@ describe("Get Users with adopter userType as admin user", () => {
       .get("/users")
       .set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(200);
-    expect(response.body).toEqual([                                                                
+    expect(response.body).toEqual([
       {
         name: 'nicola',
         id: 'c4f8a478-6051-7012-f983-4dbb08b90c6e',
         userType: 'adopter',
         email: 'k9finder25+adopter@gmail.com'
+      },
+      {
+        name: 'jane',
+        id: 'f4885488-6081-70b9-3576-cb1d6feb8cf6',
+        userType: 'adopter',
+        email: 'k9finder25+testing@gmail.com'
       },
       {
         name: 'Waterford Dog Adoption Shelter',
@@ -164,12 +170,6 @@ describe("Get Users with adopter userType as admin user", () => {
         id: '3456',
         userType: 'adopter',
         email: 'k9finder25+adopter@gmail.com'
-      },
-      {
-        name: 'jane',
-        id: '004',
-        userType: 'adopter',
-        email: 'k9finder25+testing@gmail.com'
       },
       {
         name: 'Carlow Dog Adoption Shelter',
@@ -222,7 +222,7 @@ describe("Get Users with adopter userType as shelter user", () => {
       .get("/users/adopters")
       .set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(200);
-    expect(response.body).toEqual([                                                        
+    expect(response.body).toEqual([
       {
         name: 'nicola',
         id: 'c4f8a478-6051-7012-f983-4dbb08b90c6e',
@@ -230,16 +230,16 @@ describe("Get Users with adopter userType as shelter user", () => {
         email: 'k9finder25+adopter@gmail.com'
       },
       {
+        name: 'jane',
+        id: 'f4885488-6081-70b9-3576-cb1d6feb8cf6',
+        userType: 'adopter',
+        email: 'k9finder25+testing@gmail.com'
+      },
+      {
         name: 'Ron Weasley',
         id: '3456',
         userType: 'adopter',
         email: 'k9finder25+adopter@gmail.com'
-      },
-      {
-        name: 'jane',
-        id: '004',
-        userType: 'adopter',
-        email: 'k9finder25+testing@gmail.com'
       }
     ]);
   });
@@ -349,7 +349,7 @@ describe("Update User", () => {
   });
   it("should update an existing user in cognito and dynamo", async () => {
     const existingUser = {
-      id: "004",
+      id: "f4885488-6081-70b9-3576-cb1d6feb8cf6",
       name: "jane",
       email: "k9finder25+testing@gmail.com",
     };
@@ -367,7 +367,7 @@ describe("Update User", () => {
     expect(response.body).toHaveProperty("id");
     expect(response.body.id).toBe(existingUser.id);
     expect(response.body.name).toBe("Nikki");
-    expect(response.body.email).toBe(updatedUser.email);
+    expect(response.body.email).toBe(updatedUser.newEmail);
   });
 });
 
