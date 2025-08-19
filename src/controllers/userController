@@ -85,7 +85,7 @@ async function deleteUser(req, res) {
     const email = req.body.email;
 
     const validateUserExists = await getCognitoUserByEmail(email);
-    
+
     if (!validateUserExists) {
       return res.status(404).json({ message: "User does not exist in cognito" });
     }
@@ -132,7 +132,7 @@ async function updateUser(req, res) {
       updatedUser.newEmail
     );
 
-    res.status(200).json({ id: updatedUser.id, name: updatedUser.name, email: updatedUser.email, userType: updatedUser.userType });
+    res.status(200).json({ id: updatedUser.id, name: updatedUser.name, email: updatedUser.newEmail, userType: updatedUser.userType });
   } catch (error) {
     console.error("Error updating user:", error);
     return res.status(500).json({ error: "Failed to update user" });
