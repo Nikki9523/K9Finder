@@ -167,7 +167,7 @@ describe("Get Users with adopter userType as admin user", () => {
       },
       {
         name: 'jane',
-        id: '004',
+        id: 'f4885488-6081-70b9-3576-cb1d6feb8cf6',
         userType: 'adopter',
         email: 'k9finder25+testing@gmail.com'
       },
@@ -237,7 +237,7 @@ describe("Get Users with adopter userType as shelter user", () => {
       },
       {
         name: 'jane',
-        id: '004',
+        id: 'f4885488-6081-70b9-3576-cb1d6feb8cf6',
         userType: 'adopter',
         email: 'k9finder25+testing@gmail.com'
       }
