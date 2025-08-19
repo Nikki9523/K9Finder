@@ -349,7 +349,7 @@ describe("Update User", () => {
   });
   it("should update an existing user in cognito and dynamo", async () => {
     const existingUser = {
-      id: "004",
+      id: "f4885488-6081-70b9-3576-cb1d6feb8cf6",
       name: "jane",
       email: "k9finder25+testing@gmail.com",
     };

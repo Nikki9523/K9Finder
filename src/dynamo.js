@@ -65,7 +65,7 @@ const updateUserInDynamo = async (userId, updatedUser) => {
     },
     ExpressionAttributeValues: {
       ":name": { S: updatedUser.name },
-      ":email": { S: updatedUser.newEmail }
+      ":email": { S: updatedUser.email }
     },
     ReturnValues: "UPDATED_NEW"
   };
