@@ -134,12 +134,18 @@ describe("Get Users with adopter userType as admin user", () => {
       .get("/users")
       .set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(200);
-    expect(response.body).toEqual([                                                                
+    expect(response.body).toEqual([
       {
         name: 'nicola',
         id: 'c4f8a478-6051-7012-f983-4dbb08b90c6e',
         userType: 'adopter',
         email: 'k9finder25+adopter@gmail.com'
+      },
+      {
+        name: 'jane',
+        id: 'f4885488-6081-70b9-3576-cb1d6feb8cf6',
+        userType: 'adopter',
+        email: 'k9finder25+testing@gmail.com'
       },
       {
         name: 'Waterford Dog Adoption Shelter',
@@ -164,12 +170,6 @@ describe("Get Users with adopter userType as admin user", () => {
         id: '3456',
         userType: 'adopter',
         email: 'k9finder25+adopter@gmail.com'
-      },
-      {
-        name: 'jane',
-        id: 'f4885488-6081-70b9-3576-cb1d6feb8cf6',
-        userType: 'adopter',
-        email: 'k9finder25+testing@gmail.com'
       },
       {
         name: 'Carlow Dog Adoption Shelter',
@@ -222,16 +222,10 @@ describe("Get Users with adopter userType as shelter user", () => {
       .get("/users/adopters")
       .set("Authorization", AUTH_HEADER);
     expect(response.status).toBe(200);
-    expect(response.body).toEqual([                                                        
+    expect(response.body).toEqual([
       {
         name: 'nicola',
         id: 'c4f8a478-6051-7012-f983-4dbb08b90c6e',
-        userType: 'adopter',
-        email: 'k9finder25+adopter@gmail.com'
-      },
-      {
-        name: 'Ron Weasley',
-        id: '3456',
         userType: 'adopter',
         email: 'k9finder25+adopter@gmail.com'
       },
@@ -240,6 +234,12 @@ describe("Get Users with adopter userType as shelter user", () => {
         id: 'f4885488-6081-70b9-3576-cb1d6feb8cf6',
         userType: 'adopter',
         email: 'k9finder25+testing@gmail.com'
+      },
+      {
+        name: 'Ron Weasley',
+        id: '3456',
+        userType: 'adopter',
+        email: 'k9finder25+adopter@gmail.com'
       }
     ]);
   });
