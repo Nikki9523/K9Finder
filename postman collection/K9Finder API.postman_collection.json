@@ -15,14 +15,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/c45894d8-b061-70f9-e27d-745b62ba0575",
-							"protocol": "https",
+							"raw": "{{baseURL}}/users/c45894d8-b061-70f9-e27d-745b62ba0575",
 							"host": [
-								"jo0vpfwya1",
-								"execute-api",
-								"us-east-1",
-								"amazonaws",
-								"com"
+								"{{baseURL}}"
 							],
 							"path": [
 								"users",
@@ -38,14 +33,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
-							"protocol": "https",
+							"raw": "{{baseURL}}/users",
 							"host": [
-								"jo0vpfwya1",
-								"execute-api",
-								"us-east-1",
-								"amazonaws",
-								"com"
+								"{{baseURL}}"
 							],
 							"path": [
 								"users"
@@ -60,14 +50,9 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
-							"protocol": "https",
+							"raw": "{{baseURL}}/users",
 							"host": [
-								"jo0vpfwya1",
-								"execute-api",
-								"us-east-1",
-								"amazonaws",
-								"com"
+								"{{baseURL}}"
 							],
 							"path": [
 								"users"
@@ -82,17 +67,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
-							"protocol": "https",
+							"raw": "{{baseURL}}/users/adopters",
 							"host": [
-								"jo0vpfwya1",
-								"execute-api",
-								"us-east-1",
-								"amazonaws",
-								"com"
+								"{{baseURL}}"
 							],
 							"path": [
-								"users"
+								"users",
+								"adopters"
 							]
 						}
 					},
@@ -105,7 +86,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
+							"raw": "{\"email\": \"k9finder25+testingdeletemanually@gmail.com\"}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -113,18 +94,13 @@
 							}
 						},
 						"url": {
-							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/84284408-10b1-70a8-4c34-20b90c070832",
-							"protocol": "https",
+							"raw": "{{baseURL}}/users/c4282468-5061-70e7-8690-51c88c8c6afa",
 							"host": [
-								"jo0vpfwya1",
-								"execute-api",
-								"us-east-1",
-								"amazonaws",
-								"com"
+								"{{baseURL}}"
 							],
 							"path": [
 								"users",
-								"84284408-10b1-70a8-4c34-20b90c070832"
+								"c4282468-5061-70e7-8690-51c88c8c6afa"
 							]
 						}
 					},
@@ -137,7 +113,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"k9finder25+adopter@gmail.com\",\r\n    \"name\": \"Stephanie Smith\",\r\n    \"userType\": \"adopter\",\r\n    \"password\": \"\"\r\n}",
+							"raw": "{\r\n    \"email\": \"k9finder25+testadopter@gmail.com\",\r\n    \"name\": \"Nicola\",\r\n    \"userType\": \"adopter\",\r\n    \"password\": \"\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -145,14 +121,9 @@
 							}
 						},
 						"url": {
-							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
-							"protocol": "https",
+							"raw": "{{baseURL}}/users",
 							"host": [
-								"jo0vpfwya1",
-								"execute-api",
-								"us-east-1",
-								"amazonaws",
-								"com"
+								"{{baseURL}}"
 							],
 							"path": [
 								"users"
@@ -168,7 +139,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"nicolastack16+createuser2@gmail.com\",\r\n    \"newEmail\": \"nicolastack16+update@gmail.com\",\r\n    \"name\": \"Nicola\",\r\n    \"userType\": \"adpoter\"\r\n}",
+							"raw": "{\r\n    \"email\": \"k9finder25+testadopter@gmail.com\",\r\n    \"newEmail\": \"k9finder25+testingdynamo@gmail.com\",\r\n    \"name\": \"Nikki\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -176,18 +147,13 @@
 							}
 						},
 						"url": {
-							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/84b834b8-0041-70ab-125f-8cec517b387c",
-							"protocol": "https",
+							"raw": "{{baseURL}}/users/e4785498-a0d1-7091-8ef0-558fdb9da44a",
 							"host": [
-								"jo0vpfwya1",
-								"execute-api",
-								"us-east-1",
-								"amazonaws",
-								"com"
+								"{{baseURL}}"
 							],
 							"path": [
 								"users",
-								"84b834b8-0041-70ab-125f-8cec517b387c"
+								"e4785498-a0d1-7091-8ef0-558fdb9da44a"
 							]
 						}
 					},
@@ -204,18 +170,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/c45894d8-b061-70f9-e27d-745b62ba0575",
-							"protocol": "https",
+							"raw": "{{baseURL}}/dogs/D10201",
 							"host": [
-								"jo0vpfwya1",
-								"execute-api",
-								"us-east-1",
-								"amazonaws",
-								"com"
+								"{{baseURL}}"
 							],
 							"path": [
-								"users",
-								"c45894d8-b061-70f9-e27d-745b62ba0575"
+								"dogs",
+								"D10201"
 							]
 						}
 					},
@@ -227,17 +188,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users",
-							"protocol": "https",
+							"raw": "{{baseURL}}/dogs",
 							"host": [
-								"jo0vpfwya1",
-								"execute-api",
-								"us-east-1",
-								"amazonaws",
-								"com"
+								"{{baseURL}}"
 							],
 							"path": [
-								"users"
+								"dogs"
 							]
 						}
 					},
@@ -258,14 +214,9 @@
 							}
 						},
 						"url": {
-							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs/D1754748714393761",
-							"protocol": "https",
+							"raw": "{{baseURL}}/dogs/D1754748714393761",
 							"host": [
-								"jo0vpfwya1",
-								"execute-api",
-								"us-east-1",
-								"amazonaws",
-								"com"
+								"{{baseURL}}"
 							],
 							"path": [
 								"dogs",
@@ -290,14 +241,9 @@
 							}
 						},
 						"url": {
-							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/dogs",
-							"protocol": "https",
+							"raw": "{{baseURL}}/dogs",
 							"host": [
-								"jo0vpfwya1",
-								"execute-api",
-								"us-east-1",
-								"amazonaws",
-								"com"
+								"{{baseURL}}"
 							],
 							"path": [
 								"dogs"
@@ -313,7 +259,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"nicolastack16+createuser2@gmail.com\",\r\n    \"newEmail\": \"nicolastack16+update@gmail.com\",\r\n    \"name\": \"Nicola\",\r\n    \"userType\": \"adpoter\"\r\n}",
+							"raw": "{{\"name\": \"honey\"}}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -321,18 +267,13 @@
 							}
 						},
 						"url": {
-							"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/users/84b834b8-0041-70ab-125f-8cec517b387c",
-							"protocol": "https",
+							"raw": "{{baseURL}}/dogs/D10201",
 							"host": [
-								"jo0vpfwya1",
-								"execute-api",
-								"us-east-1",
-								"amazonaws",
-								"com"
+								"{{baseURL}}"
 							],
 							"path": [
-								"users",
-								"84b834b8-0041-70ab-125f-8cec517b387c"
+								"dogs",
+								"D10201"
 							]
 						}
 					},
@@ -347,7 +288,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\": \"k9finder25+testauth@gmail.com\",\r\n    \"password\": \"rAinyday334!\"\r\n}",
+					"raw": "{\r\n    \"email\": \"k9finder25+admin@gmail.com\",\r\n    \"password\": \"\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -355,14 +296,9 @@
 					}
 				},
 				"url": {
-					"raw": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com/login",
-					"protocol": "https",
+					"raw": "{{baseURL}}/login",
 					"host": [
-						"jo0vpfwya1",
-						"execute-api",
-						"us-east-1",
-						"amazonaws",
-						"com"
+						"{{baseURL}}"
 					],
 					"path": [
 						"login"
@@ -400,6 +336,12 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "https://jo0vpfwya1.execute-api.us-east-1.amazonaws.com"
 		}
 	]
 }
