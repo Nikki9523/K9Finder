@@ -19,15 +19,16 @@ K9Finder is an application built with node.js and Express.js and AWS. It current
 - Node.js (v22+)
 - npm
 - python (for pre-commit hooks)
-- AWS account credentials for account with dynamoDB, S3, Lambda, AWS Cognito resources created
+- AWS account credentials for account with Cognito user pool created and github actions role with relevant permissions
 - [Postman](https://www.postman.com/) (or similar tool for hitting api)
+- [Docker](https://www.docker.com/products/docker-desktop/) for running integration tests locally
 
 ### Installation
 
 1. Clone the repository:
-   git clone https://github.com/Nikki9523/K9Finder.git
-   cd K9Finder
-2. Run npm install
+   Run `git clone https://github.com/Nikki9523/K9Finder.git`
+   `cd K9Finder`
+2. Run `npm install`
 3. Set up environment variables in .env file. Environment variables needed can be seen in .env.example file.
 4. Set github secrets for the required environment variables
 
@@ -42,22 +43,31 @@ K9Finder uses [pre-commit](https://pre-commit.com/) to run pre-commit checks bef
 To set up secret scanning pre-commit hook : 
 
 1. Install pre-commit (requires Python):
-   ```sh
-   pip3 install pre-commit
+   `pip3 install pre-commit`
 
-2.  pre-commit install
+2.  `pre-commit install`
 
 3. If a secret is found a commit will be blocked until it is reviewed
 
 4. If a valid secret is found please remove it before committing
 
 5. If it is a false positive or test secret run:
-   ```sh
-   detect-secrets audit .secrets.baseline
+   `detect-secrets audit .secrets.baseline`
 
 6. Review each secret and mark as not a secret if it is a false positive
 
 7. Save and commit .secrets.baseline
+
+### Running lint and unit tests locally
+
+1. Lint tests - `npm run lint`
+2. Unit tests - `npm run unit`
+
+### Running integration tests locally
+1. Install Docker Desktop
+2. Run Docker Desktop
+3. Run `docker start dynamodb-local`
+4. Run `npm run integration`
 
 ### CI/CD Pipeline
 
@@ -65,10 +75,10 @@ Automated testing, build and deployment are run via Github Actions pipelines.
 
 Workflows exist in .github/workflows/.
 
-build.yml runs on each push to an open PR or main branch.
+test.yml runs on each push to an open PR or main branch.
 
-deploy.yml runs following a successful run of build.yml on main branch.
+deploy_aws_sam.yml runs following a successful run of test.yml on main branch.
 
-performance-testing.yml workflow runs following successful run of deploy.yml
+performance-testing.yml workflow runs following successful run of deploy_aws_sam.yml
 
 You can view pipeline runs and logs in the Actions tab of the GitHub repository.

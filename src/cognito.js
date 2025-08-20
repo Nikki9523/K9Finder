@@ -38,6 +38,7 @@ async function addUserToGroupInCognito(email, groupName) {
 async function updateCognitoUser(email, name, newEmail) {
   const params = {
     UserPoolId: process.env.COGNITO_USER_POOL_ID,
+    MessageAction: "SUPPRESS",
     Username: email,
     UserAttributes: [
       { Name: "name", Value: name },
