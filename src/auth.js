@@ -22,7 +22,7 @@ function getKey(header, callback, customClient) {
   });
 }
 
-
+// demo project
 const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
