@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { CognitoIdentityProviderClient,InitiateAuthCommand,AdminDeleteUserCommand, AdminUpdateUserAttributesCommand, AdminCreateUserCommand, ListUsersCommand } = require("@aws-sdk/client-cognito-identity-provider");
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_DEFAULT_REGION });
-const {CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const {CreateTableCommand, DescribeTableCommand, DeleteTableCommand, PutItemCommand, DynamoDBClient, waitUntilTableExists } = require("@aws-sdk/client-dynamodb");
 const { addUserToGroupInCognito } = require("../src/cognito");
 const testData = require("../seed-data.json");
 const crypto = require("crypto");
@@ -103,6 +103,7 @@ const createTableIfNotExists = async () => {
         }
       };
       await dynamoClient.send(new CreateTableCommand(params));
+      await waitUntilTableExists({ client: dynamoClient, maxWaitTime: 10 }, { TableName: TABLE_NAME });
     } else {
       throw err;
     }
