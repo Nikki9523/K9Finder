@@ -21,8 +21,7 @@ beforeAll(async () => {
 });
 
 describe("Dogs API", () => {
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip("Success: user can get dogs", async () => {
+  it("Success: user can get dogs", async () => {
     const response = await request(app)
       .get("/dogs")
       .set("Authorization", AUTH_HEADER);
