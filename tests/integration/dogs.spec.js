@@ -19,7 +19,7 @@ beforeAll(async () => {
   const token = await testUtils.generateBearerTokenForIntegrationTests("admin");
   AUTH_HEADER = `Bearer ${token}`;
 });
-
+// test
 describe("Dogs API", () => {
   it("Success: user can get dogs", async () => {
     const response = await request(app)
