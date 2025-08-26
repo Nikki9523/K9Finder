@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "unit": "jest tests/unit --coverage",
-    "integration": "jest tests/integration",
+    "integration": "jest tests/integration --runInBand",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "node src/build.js",
