@@ -6,8 +6,11 @@ let AUTH_HEADER;
 
 const { seedTestData, teardownTestData, createTableIfNotExists } = require("../testUtils");
 
-beforeEach(async () => {
+beforeAll(async () => {
   await createTableIfNotExists();
+});
+
+beforeEach(async () => {
   await seedTestData();
 });
 
