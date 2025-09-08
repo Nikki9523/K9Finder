@@ -1,5 +1,3 @@
-// https://grafana.com/docs/k6/latest/get-started/write-your-first-test/
-
 import http from 'k6/http';
 import { sleep, check } from 'k6';
 
